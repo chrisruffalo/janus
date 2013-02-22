@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uuid_id">
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+        <dc:identifier opf:scheme="calibre" id="calibre_id">11</dc:identifier>
+        <dc:identifier opf:scheme="uuid" id="uuid_id">2e13b765-3ead-471a-ad4c-8416a752ac63</dc:identifier>
+        <dc:title>Siddhartha</dc:title>
+        <dc:creator opf:file-as="Hesse, Hermann" opf:role="aut">Hermann Hesse</dc:creator>
+        <dc:contributor opf:file-as="calibre" opf:role="bkp">calibre (0.9.19) [http://calibre-ebook.com]</dc:contributor>
+        <dc:date>2001-02-01T05:00:00+00:00</dc:date>
+        <dc:language>eng</dc:language>
+        <dc:subject>Gautama Buddha -- Fiction</dc:subject>
+        <meta content="{&quot;Hermann Hesse&quot;: &quot;&quot;}" name="calibre:author_link_map"/>
+        <meta content="2012-07-16T13:20:31+00:00" name="calibre:timestamp"/>
+        <meta content="Siddhartha" name="calibre:title_sort"/>
+    </metadata>
+    <guide>
+        <reference href="cover.jpg" type="cover" title="Cover"/>
+    </guide>
+</package>

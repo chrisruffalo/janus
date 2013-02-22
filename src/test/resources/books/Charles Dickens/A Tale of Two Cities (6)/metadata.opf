@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uuid_id">
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+        <dc:identifier opf:scheme="calibre" id="calibre_id">6</dc:identifier>
+        <dc:identifier opf:scheme="uuid" id="uuid_id">36c196d3-d9e8-4a2e-85ce-9c0575937ac4</dc:identifier>
+        <dc:title>A Tale of Two Cities</dc:title>
+        <dc:creator opf:file-as="Dickens, Charles" opf:role="aut">Charles Dickens</dc:creator>
+        <dc:contributor opf:file-as="calibre" opf:role="bkp">calibre (0.9.19) [http://calibre-ebook.com]</dc:contributor>
+        <dc:date>1994-01-01T05:00:00+00:00</dc:date>
+        <dc:language>eng</dc:language>
+        <dc:subject>1789-1799 -- Fiction</dc:subject>
+        <dc:subject>Executions and executioners -- Fiction</dc:subject>
+        <dc:subject>France -- History -- Revolution</dc:subject>
+        <dc:subject>French -- England -- London -- Fiction</dc:subject>
+        <dc:subject>Paris (France) -- History -- 1789-1799 -- Fiction</dc:subject>
+        <dc:subject>London (England) -- History -- 18th century -- Fiction</dc:subject>
+        <dc:subject>British -- France -- Paris -- Fiction</dc:subject>
+        <dc:subject>Historical fiction</dc:subject>
+        <dc:subject>Lookalikes -- Fiction</dc:subject>
+        <meta content="{&quot;Charles Dickens&quot;: &quot;&quot;}" name="calibre:author_link_map"/>
+        <meta content="2012-07-16T13:18:35+00:00" name="calibre:timestamp"/>
+        <meta content="Tale of Two Cities, A" name="calibre:title_sort"/>
+    </metadata>
+    <guide>
+        <reference href="cover.jpg" type="cover" title="Cover"/>
+    </guide>
+</package>

@@ -1,0 +1,7 @@
+<janus>
+	<library>
+		<path>${project.build.directory}/test-classes/books</path>
+		<database>metadata.db</database>
+		<scan>false</scan>
+	</library>
+</janus>

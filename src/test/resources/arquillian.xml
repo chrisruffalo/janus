@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<arquillian xmlns="http://jboss.com/arquillian" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<defaultProtocol type="Servlet 3.0" />
+
+	<container qualifier="jbossas-local" default="true">
+		<protocol type="Servlet 3.0">
+			<property name="executionType">MANAGED</property>
+		</protocol>
+		<configuration>
+			<property name="javaVmArguments">-Xmx512m -Xms512m -XX:MaxPermSize=128m</property>
+		</configuration>
+
+	</container>
+
+	<container qualifier="jbossas-managed">
+		<protocol type="Servlet 3.0">
+			<property name="executionType">MANAGED</property>
+		</protocol>
+		<configuration>
+			<property name="jbossHome">target/jboss-as-7.1.1.Final</property>
+			<property name="javaVmArguments">-Xmx512m -Xms512m -XX:MaxPermSize=128m
+				-Djboss.socket.binding.port-offset=100</property>
+			<property name="managementPort">10099</property>
+		</configuration>
+	</container>
+
+	<extension qualifier="persistence">
+		<property name="defaultDataSource">java:jboss/datasources/ExampleDS</property>
+
+		<!-- Data Dumps. Set to False to Disable. -->
+		<property name="dumpData">false</property>
+	</extension>
+
+	<extension qualifier="persistence-dbunit">
+		<property name="datatypeFactory">org.dbunit.ext.h2.H2DataTypeFactory</property>
+		<property name="excludePoi">true</property>
+	</extension>
+</arquillian>

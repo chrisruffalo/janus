@@ -1,0 +1,11 @@
+<janus>
+	<!-- library details -->
+	<library>
+		<path>/var/calibre</path>
+		<database>metadata.db</database>
+		<scan>true</scan>
+	</library>
+	
+	<!-- email settings -->
+	
+</janus>

@@ -1,0 +1,18 @@
+<jboss-deployment-structure>
+	<deployment>
+		<dependencies>
+			<!-- enable antlr client module -->
+			<module name="org.antlr" services="import" />
+			
+			<!-- infinispan support for hibernate-search -->
+			<module name="org.infinispan" services="import" />
+			
+			<!-- enable apache common configuration -->
+			<module name="org.apache.commons.configuration" services="import" />
+			
+			<!-- enable logging support -->
+			<module name="org.slf4j" services="import" />
+			<module name="org.slf4j.jcl-over-slf4j" services="import" />
+		</dependencies>
+	</deployment>
+</jboss-deployment-structure>

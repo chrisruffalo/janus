@@ -1,0 +1,363 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.googlecode.janus</groupId>
+	<artifactId>janus-server</artifactId>
+	<version>2.0-SNAPSHOT</version>
+	<packaging>war</packaging>
+	<name>janus-server</name>
+	<description>janus server for calibre</description>
+
+	<properties>
+		<!-- source output version -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- set data source for build output -->
+		<data.source.name>java:jboss/datasources/JanusDS</data.source.name>
+
+		<!-- product/dependency versions, based on EAP6/AS7.1.1 included versions -->
+		<!-- https://access.redhat.com/knowledge/articles/112673 -->
+		<hibernate.version>4.1.3.Final</hibernate.version>
+		<resteasy.version>2.3.3.Final</resteasy.version>
+		<cxf.version>2.7.0</cxf.version> <!-- was 2.4.6 but was changed for compatibility reasons in the client -->
+		<hibernate.validator.version>4.2.0.Final</hibernate.validator.version>
+		<jee6.version>3.0.1.Final</jee6.version>
+		<h2.version>1.3.161</h2.version>
+		<jboss-as.version>7.1.1.Final</jboss-as.version>
+		<slf4j.version>1.6.1</slf4j.version> <!-- from JBoss Logging 3.1.X.GA and Hibernate Validator -->
+		<jetty.version>8.1.8.v20121106</jetty.version>
+		<guava.version>11.0.2</guava.version> <!-- bundled with jboss as 7.1 and eap 6.0x -->
+		<commons.configuration.version>1.6</commons.configuration.version> <!-- bundled with jboss as 7.1 and eap 6.0x -->
+
+		<!-- sqljet, not provided -->
+		<sqljet.version>1.1.1-SNAPSHOT_v20130219_1303</sqljet.version>
+
+		<!-- arquillian for testing -->
+		<arquillian.version>1.0.3.Final</arquillian.version>
+
+		<!-- junit -->
+		<junit.version>4.10</junit.version>
+	</properties>
+
+	<!-- supplementary repositories -->
+	<repositories>
+		<!-- jboss dependencies -->
+		<repository>
+			<id>jboss</id>
+			<url>https://repository.jboss.org/nexus/content/repositories/releases</url>
+		</repository>
+		<repository>
+			<id>jboss-snapshots</id>
+			<url>https://repository.jboss.org/nexus/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>thirdparty-releases</id>
+			<name>JBoss Thirdparty Releases</name>
+			<url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
+		</repository>
+	</repositories>
+
+
+	<!-- manage dependency groups -->
+	<dependencyManagement>
+		<dependencies>
+			<!-- JEE6 -->
+			<dependency>
+				<groupId>org.jboss.spec</groupId>
+				<artifactId>jboss-javaee-6.0</artifactId>
+				<type>pom</type>
+				<version>${jee6.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.jboss.arquillian</groupId>
+				<artifactId>arquillian-bom</artifactId>
+				<scope>import</scope>
+				<type>pom</type>
+				<version>${arquillian.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.arquillian.junit</groupId>
+				<artifactId>arquillian-junit-container</artifactId>
+				<version>${arquillian.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.arquillian.protocol</groupId>
+				<artifactId>arquillian-protocol-servlet</artifactId>
+				<version>${arquillian.version}</version>
+				<scope>test</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<!-- manage individual dependencies -->
+	<dependencies>
+		<!-- JEE6 -->
+		<dependency>
+			<groupId>org.jboss.spec</groupId>
+			<artifactId>jboss-javaee-6.0</artifactId>
+			<type>pom</type>
+		</dependency>
+
+		<!-- object to/from xml mapping annotations -->
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.2.7</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- text searching -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-search</artifactId>
+			<version>4.2.0.Final</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>hibernate-core</artifactId>
+					<groupId>org.hibernate</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>slf4j-api</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>
+						hibernate-commons-annotations
+					</artifactId>
+					<groupId>org.hibernate.common</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jboss-logging</artifactId>
+					<groupId>org.jboss.logging</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-search-infinispan</artifactId>
+			<version>4.2.0.Final</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>hibernate-search-engine</artifactId>
+					<groupId>org.hibernate</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>infinispan-core</artifactId>
+					<groupId>org.infinispan</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.0.9</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- configuration -->
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			<version>1.9</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- accessing sqlite directly in pure java -->
+		<dependency>
+			<groupId>org.tmatesoft.sqljet</groupId>
+			<artifactId>sqljet</artifactId>
+			<version>${sqljet.version}</version>
+		</dependency>
+
+		<!-- supports sqljet -->
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>stringtemplate</artifactId>
+			<version>3.2.1</version>
+		</dependency>
+
+		<!-- testing -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+		</dependency>
+
+		<!-- Arquillian -->
+		<dependency>
+			<groupId>org.jboss.arquillian.junit</groupId>
+			<artifactId>arquillian-junit-container</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.arquillian.protocol</groupId>
+			<artifactId>arquillian-protocol-servlet</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<!-- resource filtering -->
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*.xml</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<excludes>
+					<exclude>**/*.xml</exclude>
+				</excludes>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
+		
+		<!-- test resource filtering -->
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<includes>
+					<include>**/*.xml</include>
+				</includes>
+				<filtering>true</filtering>
+			</testResource>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<excludes>
+					<exclude>**/*.xml</exclude>
+				</excludes>
+				<filtering>false</filtering>
+			</testResource>
+		</testResources>
+	
+		<!-- manage default plugin behavior -->
+		<pluginManagement>
+			<plugins>
+				<!-- use java 6 through maven compiler 2.5 -->
+				<plugin>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.5.1</version>
+					<configuration>
+						<verbose>true</verbose>
+						<source>1.6</source>
+						<target>1.6</target>
+						<fork>true</fork>
+						<compilerVersion>1.6</compilerVersion>
+					</configuration>
+				</plugin>
+
+				<!-- sync with eclipse (download code, etc) -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-eclipse-plugin</artifactId>
+					<version>2.8</version>
+					<configuration>
+						<downloadSources>true</downloadSources>
+						<downloadJavadocs>true</downloadJavadocs>
+					</configuration>
+				</plugin>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-dependency-plugin
+										</artifactId>
+										<versionRange>
+											[2.1,)
+										</versionRange>
+										<goals>
+											<goal>unpack</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>arquillian-jboss-managed</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.jboss.as</groupId>
+					<artifactId>jboss-as-arquillian-container-managed</artifactId>
+					<version>${jboss-as.version}</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>unpack</id>
+								<phase>process-test-classes</phase>
+								<goals>
+									<goal>unpack</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>org.jboss.as</groupId>
+											<artifactId>jboss-as-dist</artifactId>
+											<version>${jboss-as.version}</version>
+											<type>zip</type>
+											<overWrite>false</overWrite>
+											<outputDirectory>target</outputDirectory>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.12.3</version>
+						<configuration>
+							<systemPropertyVariables>
+								<arquillian.launch>jbossas-managed</arquillian.launch>
+							</systemPropertyVariables>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>

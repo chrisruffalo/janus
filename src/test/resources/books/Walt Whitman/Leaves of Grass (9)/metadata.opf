@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='utf-8'?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uuid_id">
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+        <dc:identifier opf:scheme="calibre" id="calibre_id">9</dc:identifier>
+        <dc:identifier opf:scheme="uuid" id="uuid_id">0179f993-a266-4661-9c18-f6f2e826e2c3</dc:identifier>
+        <dc:title>Leaves of Grass</dc:title>
+        <dc:creator opf:file-as="Whitman, Walt" opf:role="aut">Walt Whitman</dc:creator>
+        <dc:contributor opf:file-as="calibre" opf:role="bkp">calibre (0.9.19) [http://calibre-ebook.com]</dc:contributor>
+        <dc:date>2011-09-02T03:28:06+00:00</dc:date>
+        <dc:identifier opf:scheme="URI">http|//www.gutenberg.org/ebooks/1322</dc:identifier>
+        <dc:language>eng</dc:language>
+        <dc:subject>Poetry</dc:subject>
+        <meta content="{&quot;Walt Whitman&quot;: &quot;&quot;}" name="calibre:author_link_map"/>
+        <meta content="2012-07-16T13:19:12+00:00" name="calibre:timestamp"/>
+        <meta content="Leaves of Grass" name="calibre:title_sort"/>
+    </metadata>
+    <guide>
+        <reference href="cover.jpg" type="cover" title="Cover"/>
+    </guide>
+</package>
