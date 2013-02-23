@@ -11,6 +11,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.xml.bind.annotation.XmlElementWrapper;
 
 import com.janus.model.Book;
 import com.janus.server.providers.BookProvider;
@@ -41,12 +42,17 @@ public class BookService {
 	
 	@GET
 	@Path("/start/{start}")
-	public List<Book> startsWith(@PathParam("start") char start) {
-		return this.provider.getStartsWith(start);
+	@XmlElementWrapper(name="books")
+	public List<Book> startsWith(@PathParam("start") String start) {
+		if(start != null && !start.isEmpty()) {
+			return this.provider.getStartsWith(start.charAt(0));	
+		}
+		return Collections.emptyList();		
 	}
 	
 	@GET
 	@Path("/list/{sortTypeString}/{start}/{end}")
+	@XmlElementWrapper(name="books")
 	public List<Book> list(@PathParam("sortTypeString") String sortTypeString, @PathParam("start") int start, @PathParam("end") int end) {
 		return Collections.emptyList();
 	}

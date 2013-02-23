@@ -51,7 +51,7 @@ public class BookServiceTest {
 	@Test
 	public void testStartsWith() throws SqlJetException {
 		// get books
-		List<Book> books = this.bookService.startsWith('l');
+		List<Book> books = this.bookService.startsWith("l");
 		
 		// found more than one
 		Assert.assertTrue(books.size() > 2);
@@ -60,7 +60,7 @@ public class BookServiceTest {
 	@Test
 	public void testStartsWithSymbol() throws SqlJetException {
 		// get books
-		List<Book> books = this.bookService.startsWith('!');
+		List<Book> books = this.bookService.startsWith("!");
 		
 		// found more than one
 		Assert.assertEquals(0, books.size());

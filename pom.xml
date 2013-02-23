@@ -151,6 +151,10 @@
 					<artifactId>infinispan-core</artifactId>
 					<groupId>org.infinispan</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>lucene-core</artifactId>
+					<groupId>org.apache.lucene</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
