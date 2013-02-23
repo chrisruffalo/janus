@@ -51,7 +51,7 @@ public class BookServiceTest {
 	@Test
 	public void testStartsWith() throws SqlJetException {
 		// get books
-		List<Book> books = this.bookService.startsWith("l");
+		List<Book> books = this.bookService.startsWith("l", 0, 0);
 		
 		// found more than one
 		Assert.assertTrue(books.size() > 2);
@@ -60,10 +60,41 @@ public class BookServiceTest {
 	@Test
 	public void testStartsWithSymbol() throws SqlJetException {
 		// get books
-		List<Book> books = this.bookService.startsWith("!");
+		List<Book> books = this.bookService.startsWith("!", 0, 0);
 		
 		// found more than one
 		Assert.assertEquals(0, books.size());
+	}
+	
+	@Test
+	public void testBasicBookPaging() {
+		// page size 0 gives whole set
+		List<Book> books = this.bookService.list("default", 0, 99);
+		Assert.assertEquals(10, books.size());
+		
+		// page size 1 on large page gives 0
+		books = this.bookService.list("default", 1, 99);
+		Assert.assertEquals(0, books.size());
+
+		// page size 100 on page 0 gives full result
+		books = this.bookService.list("default", 100, 0);
+		Assert.assertEquals(10, books.size());
+
+		// page size 5 on page 1 gives 5 responses
+		books = this.bookService.list("default", 5, 1);
+		Assert.assertEquals(5, books.size());
+
+		// page size 5 on page 2 gives 0
+		books = this.bookService.list("default", 5, 2);
+		Assert.assertEquals(0, books.size());
+		
+		// page size 4 on page 2 (2+1 * 4 = 12 - 4 = 8) gives two responses
+		books = this.bookService.list("default", 4, 2);
+		Assert.assertEquals(2, books.size());
+		
+		// one and one gives one response
+		books = this.bookService.list("default", 1, 1);
+		Assert.assertEquals(1, books.size());
 	}
 
 }

@@ -84,8 +84,12 @@ public class BookProvider extends AbstractProvider {
 	 * @param start
 	 * @return
 	 */
-	public List<Book> getStartsWith(char start) {
-		return this.getStartsWith(this.manager, Book.class, Book.SORT_FIRST_CHARACTER, this.logger, start);
+	public List<Book> getStartsWith(char start, int pageSize, int size) {
+		return this.getStartsWith(this.manager, Book.class, Book.SORT_FIRST_CHARACTER, this.logger, start, pageSize, size);
+	}
+	
+	public List<Book> list(int page, int pageSize) {
+		return this.list(this.manager, Book.class, page, pageSize);
 	}
 
 	/**
