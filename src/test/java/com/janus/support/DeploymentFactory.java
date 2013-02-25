@@ -44,6 +44,7 @@ public final class DeploymentFactory {
 		archive.addAsLibraries(resolver.artifact("org.hibernate:hibernate-search-infinispan:4.2.0.Final")
 									   .exclusion("org.hibernate:hibernate-search-engine")
 									   .exclusion("org.infinispan:infinispan-core")
+									   .exclusion("org.apache.lucene:lucene-core")
 									   .resolveAsFiles());
 		
 		// persistence
