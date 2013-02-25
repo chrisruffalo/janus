@@ -29,7 +29,7 @@ public final class DeploymentFactory {
 		
 		// import supporting libraries
 		resolver.configureFrom("pom.xml");
-		archive.addAsLibraries(resolver.artifact("org.tmatesoft.sqljet:sqljet:1.1.1-SNAPSHOT_v20130219_1303").resolveAsFiles());
+		archive.addAsLibraries(resolver.artifact("org.tmatesoft.sqljet:sqljet:1.1.1-JANUS").resolveAsFiles());
 
 		archive.addAsLibraries(resolver.artifact("org.hibernate:hibernate-search:4.2.0.Final")
 									   .exclusion("org.hibernate:hibernate-core")
