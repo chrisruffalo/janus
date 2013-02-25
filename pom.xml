@@ -29,8 +29,8 @@
 		<guava.version>11.0.2</guava.version> <!-- bundled with jboss as 7.1 and eap 6.0x -->
 		<commons.configuration.version>1.6</commons.configuration.version> <!-- bundled with jboss as 7.1 and eap 6.0x -->
 
-		<!-- sqljet, not provided -->
-		<sqljet.version>1.1.1-SNAPSHOT_v20130219_1303</sqljet.version>
+		<!-- sqljet, not provided, provided locally -->
+		<sqljet.version>1.1.1-JANUS</sqljet.version>
 
 		<!-- arquillian for testing -->
 		<arquillian.version>1.0.3.Final</arquillian.version>
@@ -58,6 +58,13 @@
 			<name>JBoss Thirdparty Releases</name>
 			<url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
 		</repository>
+
+		<!-- included version of sqljet -->
+		<repository>
+			<id>tmate</id>
+			<url>file://${basedir}/ext</url>
+		</repository>
+
 	</repositories>
 
 
@@ -230,7 +237,7 @@
 				<filtering>false</filtering>
 			</resource>
 		</resources>
-		
+
 		<!-- test resource filtering -->
 		<testResources>
 			<testResource>
@@ -248,7 +255,7 @@
 				<filtering>false</filtering>
 			</testResource>
 		</testResources>
-	
+
 		<!-- manage default plugin behavior -->
 		<pluginManagement>
 			<plugins>
