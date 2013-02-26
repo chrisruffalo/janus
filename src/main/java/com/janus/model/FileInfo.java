@@ -2,8 +2,8 @@ package com.janus.model;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -104,7 +104,7 @@ public class FileInfo implements IDepthOneCloneable<FileInfo> {
 		return info;
 	}
 	
-	public static Set<FileInfo> getFileInfoForBook(String basePath, Book book) {
+	public static Map<FileType, FileInfo> getFileInfoForBook(String basePath, Book book) {
 		
 		Logger logger = LoggerFactory.getLogger(FileInfo.class);
 		
@@ -117,7 +117,7 @@ public class FileInfo implements IDepthOneCloneable<FileInfo> {
 		// if the path does not exist, leave
 		if(!bookBase.exists() || !bookBase.isDirectory()) {
 			logger.debug("Book base '{}' does not exist or is not a directory", bookBase.getAbsolutePath());
-			return Collections.emptySet();
+			return Collections.emptyMap();
 		} else {
 			logger.debug("Found book base '{}'", bookBase.getAbsolutePath());
 		}
@@ -128,12 +128,12 @@ public class FileInfo implements IDepthOneCloneable<FileInfo> {
 		// if no books are available, bail out
 		if(candidateBooks == null || candidateBooks.length == 0) {
 			logger.debug("No candidates found in directory", bookBase.getAbsolutePath());
-			return Collections.emptySet();
+			return Collections.emptyMap();
 		} else {
 			logger.debug("Found {} candidate book files", candidateBooks.length);
 		}
 		
-		Set<FileInfo> fileInfoSet = new HashSet<FileInfo>();
+		Map<FileType, FileInfo> fileInfoSet = new HashMap<FileType, FileInfo>();
 		
 		// inspect each possible book
 		for(File candidateBook : candidateBooks) {
@@ -163,7 +163,7 @@ public class FileInfo implements IDepthOneCloneable<FileInfo> {
 			logger.trace("Found book for '{}' with size {} and identifier {}", new Object[]{book.getSort(), info.getDescriptiveSize(), info.getIdentifier()});
 			
 			// and add to set
-			fileInfoSet.add(info);			
+			fileInfoSet.put(type, info);			
 		}
 		
 		return fileInfoSet;

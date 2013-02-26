@@ -1,7 +1,9 @@
 package com.janus.model;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -29,10 +31,10 @@ import org.tmatesoft.sqljet.core.SqlJetException;
 import org.tmatesoft.sqljet.core.table.ISqlJetCursor;
 
 import com.janus.model.adapters.BookToAuthorAntiCyclicAdapter;
-import com.janus.model.adapters.BookToFileInfoAntiCyclicAdapter;
 import com.janus.model.adapters.BookToRatingAntiCyclicAdapter;
 import com.janus.model.adapters.BookToSeriesAntiCyclicAdapter;
 import com.janus.model.adapters.BookToTagAntiCyclicAdapter;
+import com.janus.model.adapters.FileInfoKeyValuePairAdapter;
 import com.janus.model.interfaces.ISorted;
 import com.janus.util.DateUtil;
 
@@ -120,7 +122,7 @@ public class Book extends BaseEntity implements ISorted {
 	
 	// file information
 	@OneToMany(cascade={CascadeType.PERSIST, CascadeType.REMOVE}, fetch=FetchType.EAGER, targetEntity=FileInfo.class)
-	private Set<FileInfo> fileInfo;
+	private Map<FileType, FileInfo> fileInfo;
 	
 	// rating
 	@ManyToOne(cascade={CascadeType.PERSIST, CascadeType.REMOVE}, fetch=FetchType.EAGER)
@@ -133,7 +135,7 @@ public class Book extends BaseEntity implements ISorted {
 		this.series = new HashSet<Series>();
 		this.tags = new HashSet<Tag>();
 		
-		this.fileInfo = new HashSet<FileInfo>();
+		this.fileInfo = new HashMap<FileType, FileInfo>();
 	}
 	
 	public String getTitle() {
@@ -263,14 +265,12 @@ public class Book extends BaseEntity implements ISorted {
 		this.rating = rating;
 	}
 
-	@XmlJavaTypeAdapter(value=BookToFileInfoAntiCyclicAdapter.class,type=FileInfo.class)
-	@XmlElementWrapper(name="files")
-	@XmlElement(name="file")
-	public Set<FileInfo> getFileInfo() {
+	@XmlJavaTypeAdapter(value=FileInfoKeyValuePairAdapter.class)
+	public Map<FileType, FileInfo> getFileInfo() {
 		return fileInfo;
 	}
 
-	public void setFileInfo(Set<FileInfo> fileInfo) {
+	public void setFileInfo(Map<FileType, FileInfo> fileInfo) {
 		this.fileInfo = fileInfo;
 	}
 

@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import org.slf4j.Logger;
@@ -23,6 +22,7 @@ import com.janus.model.Author;
 import com.janus.model.BaseEntity;
 import com.janus.model.Book;
 import com.janus.model.FileInfo;
+import com.janus.model.FileType;
 import com.janus.model.Rating;
 import com.janus.model.Series;
 import com.janus.model.Tag;
@@ -221,11 +221,11 @@ public class SQLiteImport {
 		int totalInfo = 0; 
 		for(Book book : result) {
 			// load file info for given book
-			Set<FileInfo> info = FileInfo.getFileInfoForBook(this.basePath, book);
+			Map<FileType, FileInfo> info = FileInfo.getFileInfoForBook(this.basePath, book);
 			totalInfo += info.size();
 			
 			// save to book
-			book.getFileInfo().addAll(info);
+			book.getFileInfo().putAll(info);
 		}
 		this.logger.info("Scanned {} files for metadata in {}ms", totalInfo, System.currentTimeMillis() - before);
 		total += totalInfo;

@@ -102,9 +102,12 @@ public class FileService {
 		if("yes".equalsIgnoreCase(encodeInBase64)) {
 			fromFile = Base64.encodeBase64(fromFile);
 		}
-		
+
+		// ensure that file name is set in response header
+		builder.header("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+
 		// put bytes in response
-		builder.entity(fromFile);
+		builder.entity(fromFile);		
 		
 		// create response
 		response = builder.build();
