@@ -3,6 +3,7 @@ package com.janus.server.providers;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -17,18 +18,31 @@ import com.janus.model.BaseEntity;
 
 public class AbstractProvider {
 
+	@Inject
+	private Logger logger;
+	
+	@Inject
+	private EntityManager manager;
+	
+	protected <I> I get(Object identifier, Class<I> type) {
+		try {
+			I object = this.manager.find(type, identifier);
+			return object;
+		} catch (NoResultException nre) {
+			this.logger.warn("No object of type {} found for id:{}, an error occurred: {}", new Object[]{type.getClass().getSimpleName(), identifier, nre.getMessage()});
+			return null;
+		}
+	}
+	
 	/**
 	 * Get a list of items of type I that start with given characters
 	 * 
-	 * @param manager
 	 * @param inputClass
 	 * @param field
-	 * @param logger
 	 * @param start
 	 * @return
 	 */
-	public <I extends BaseEntity> List<I> getStartsWith(EntityManager manager,
-			Class<I> inputClass, String field, Logger logger, char start, int pageSize, int page) {
+	public <I> List<I> getStartsWith(Class<I> inputClass, String field, char start, int pageSize, int page) {
 
 		char upperStart = Character.toUpperCase(start);
 
@@ -51,7 +65,7 @@ public class AbstractProvider {
 			query.where(builder.equal(root.get(field), upperStart));
 		}
 		
-		List<I> results = this.executeRangeQuery(manager, query, page, pageSize);
+		List<I> results = this.executeRangeQuery(query, page, pageSize);
 
 		return results;
 	}
@@ -66,13 +80,11 @@ public class AbstractProvider {
 	 * @param start
 	 * @return
 	 */
-	public <I extends BaseEntity> long getStartsWithCount(
-			EntityManager manager, Class<I> inputClass, String field,
-			Logger logger, char start) {
+	public <I> long getStartsWithCount(Class<I> inputClass, String field, char start) {
 
 		char upperStart = Character.toUpperCase(start);
 
-		CriteriaBuilder builder = manager.getCriteriaBuilder();
+		CriteriaBuilder builder = this.manager.getCriteriaBuilder();
 
 		CriteriaQuery<Long> query = builder.createQuery(Long.class);
 
@@ -92,33 +104,33 @@ public class AbstractProvider {
 
 		Long result;
 		try {
-			result = manager.createQuery(query).getSingleResult();
+			result = this.manager.createQuery(query).getSingleResult();
 		} catch (NoResultException nre) {
 			result = 0l;
 		}
 
-		logger.info("Found {} items of type {} that start with '{}'",
+		this.logger.info("Found {} items of type {} that start with '{}'",
 				new Object[] { result, inputClass.getSimpleName(), upperStart });
 
 		return result;
 	}
 	
-	protected <I> List<I> list(EntityManager manager, Class<I> typeToList, int page, int pageSize) {
+	protected <I> List<I> list(Class<I> typeToList, int page, int pageSize) {
 
-		CriteriaBuilder builder = manager.getCriteriaBuilder();
+		CriteriaBuilder builder = this.manager.getCriteriaBuilder();
 
 		CriteriaQuery<I> query = builder.createQuery(typeToList);
 
 		Root<I> root = query.from(typeToList);
 		query.select(root);
 
-		return this.executeRangeQuery(manager, query, page, pageSize);
+		return this.executeRangeQuery(query, page, pageSize);
 	}
 
-	protected <I> List<I> executeQuery(EntityManager manager, CriteriaQuery<I> query) {
+	protected <I> List<I> executeQuery(CriteriaQuery<I> query) {
 
 		// create typed query
-		TypedQuery<I> tQuery = manager.createQuery(query);
+		TypedQuery<I> tQuery = this.manager.createQuery(query);
 	
 		List<I> results;
 		try {
@@ -130,9 +142,9 @@ public class AbstractProvider {
 		return results;
 	}
 	
-	protected <I> List<I> executeRangeQuery(EntityManager manager, CriteriaQuery<I> query, int page, int pageSize) {
+	protected <I> List<I> executeRangeQuery(CriteriaQuery<I> query, int page, int pageSize) {
 		// create typed query
-		TypedQuery<I> tQuery = manager.createQuery(query);
+		TypedQuery<I> tQuery = this.manager.createQuery(query);
 		
 		int upperLimit = (page + 1) * pageSize;
 		if(upperLimit > 0) {

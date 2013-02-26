@@ -1,4 +1,4 @@
-package com.janus.server.provider;
+package com.janus.server.services;
 
 import java.util.List;
 

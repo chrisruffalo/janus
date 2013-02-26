@@ -59,23 +59,18 @@ public class BookProvider extends AbstractProvider {
 	}
 	
 	public Book get(Long id) {
-		try {
-			Book book = this.manager.find(Book.class, id);
-			
-			// if the book is null return an empty item
-			if(book == null) {
-				return new Book();
-			}
-			
-			return book;
-		} catch (NoResultException nre) {
-			this.logger.warn("No book found for id:{}, an error occurred: {}", id, nre.getMessage());
+		Book book = this.get(id, Book.class);
+		
+		// if the book is null return an empty item
+		if(book == null) {
 			return new Book();
 		}
+		
+		return book;
 	}
 	
 	public long countStartsWith(char start) {
-		return this.getStartsWithCount(this.manager, Book.class, Book.SORT_FIRST_CHARACTER, this.logger, start);
+		return this.getStartsWithCount(Book.class, Book.SORT_FIRST_CHARACTER, start);
 	}
 	
 	/**
@@ -85,11 +80,11 @@ public class BookProvider extends AbstractProvider {
 	 * @return
 	 */
 	public List<Book> getStartsWith(char start, int pageSize, int size) {
-		return this.getStartsWith(this.manager, Book.class, Book.SORT_FIRST_CHARACTER, this.logger, start, pageSize, size);
+		return this.getStartsWith(Book.class, Book.SORT_FIRST_CHARACTER, start, pageSize, size);
 	}
 	
 	public List<Book> list(int page, int pageSize) {
-		return this.list(this.manager, Book.class, page, pageSize);
+		return this.list(Book.class, page, pageSize);
 	}
 
 	/**
