@@ -104,11 +104,11 @@ public class FileInfo implements IDepthOneCloneable<FileInfo> {
 		return info;
 	}
 	
-	public static Map<FileType, FileInfo> getFileInfoForBook(String basePath, Book book) {
+	public static Map<FileType, FileInfo> getFileInfoForBook(Book book) {
 		
 		Logger logger = LoggerFactory.getLogger(FileInfo.class);
 		
-		String bookBaseString = basePath + File.separator + book.getRelativePath();
+		String bookBaseString = book.getPath();
 		logger.debug("Looking for book files at: {}", bookBaseString);
 		
 		// given the path of book

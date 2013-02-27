@@ -220,8 +220,11 @@ public class SQLiteImport {
 		before = System.currentTimeMillis();
 		int totalInfo = 0; 
 		for(Book book : result) {
+			// update path for book
+			book.setPath(this.basePath + File.separator + book.getPath());
+			
 			// load file info for given book
-			Map<FileType, FileInfo> info = FileInfo.getFileInfoForBook(this.basePath, book);
+			Map<FileType, FileInfo> info = FileInfo.getFileInfoForBook(book);
 			totalInfo += info.size();
 			
 			// save to book

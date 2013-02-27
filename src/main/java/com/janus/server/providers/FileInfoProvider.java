@@ -10,5 +10,5 @@ public class FileInfoProvider extends AbstractProvider {
 	public FileInfo get(String identifier) {
 		return this.get(identifier, FileInfo.class);
 	}
-	
+
 }

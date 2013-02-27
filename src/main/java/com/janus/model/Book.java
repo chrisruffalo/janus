@@ -70,7 +70,7 @@ public class Book extends BaseEntity implements ISorted {
 	public static final String MODEL_PUBLICATIONDATE = "publicationDate";
 	public static final String MODEL_SERIESINDEX = "seriesIndex";
 	public static final String MODEL_AUTHORSORT = "authorSort";
-	public static final String MODEL_RELATIVEPATH = "relativePath";
+	public static final String MODEL_PATH = "path";
 	public static final String MODEL_HASCOVER = "hasCover";
 	public static final String MODEL_LASTMODIFIED = "lastModified";
 	
@@ -98,7 +98,7 @@ public class Book extends BaseEntity implements ISorted {
 	private String authorSort;
 
 	// column: path
-	private String relativePath;
+	private String path;
 
 	// column: has_cover
 	private Boolean hasCover;
@@ -191,12 +191,12 @@ public class Book extends BaseEntity implements ISorted {
 	}
 
 	@XmlTransient
-	public String getRelativePath() {
-		return relativePath;
+	public String getPath() {
+		return path;
 	}
 
-	public void setRelativePath(String relativePath) {
-		this.relativePath = relativePath;
+	public void setPath(String relativePath) {
+		this.path = relativePath;
 	}
 
 	public Boolean getHasCover() {
@@ -302,7 +302,7 @@ public class Book extends BaseEntity implements ISorted {
 		// other data
 		this.seriesIndex = cursor.getFloat(Book.SQLITE_SERIES_INDEX);
 		this.authorSort = cursor.getString(Book.SQLITE_AUTHOR_SORT);
-		this.relativePath = cursor.getString(Book.SQLITE_PATH);
+		this.path = cursor.getString(Book.SQLITE_PATH);
 		this.hasCover = cursor.getBoolean(Book.SQLITE_HAS_COVER);
 	}
 
