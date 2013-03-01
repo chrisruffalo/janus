@@ -1,8 +1,8 @@
 package com.janus.model.adapters;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.janus.model.FileInfo;
 import com.janus.model.FileType;
@@ -14,7 +14,7 @@ public class FileInfoKeyValue {
 
 	private FileInfo value;
 
-	@XmlAttribute
+	@XmlAttribute(name="type")
 	public FileType getKey() {
 		return key;
 	}
@@ -23,7 +23,7 @@ public class FileInfoKeyValue {
 		this.key = key;
 	}
 	
-	@XmlJavaTypeAdapter(value=BookToFileInfoAntiCyclicAdapter.class, type=FileInfo.class)
+	@XmlElement(name="info")
 	public FileInfo getValue() {
 		return value;
 	}

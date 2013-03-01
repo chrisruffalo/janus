@@ -4,8 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -19,7 +18,9 @@ import com.janus.model.interfaces.IDepthOneCloneable;
 @Indexed
 public class Tag extends NamedEntity implements IDepthOneCloneable<Tag> {
 
-	@ManyToMany(mappedBy="tags", targetEntity=Book.class, fetch=FetchType.EAGER)
+	@Transient
+	//@ManyToMany(mappedBy="tags", targetEntity=Book.class, fetch=FetchType.LAZY)
+	//@Fetch(FetchMode.JOIN)
 	private Set<Book> books;
 	
 	public Tag() {
@@ -28,14 +29,6 @@ public class Tag extends NamedEntity implements IDepthOneCloneable<Tag> {
 		this.books = new HashSet<Book>();
 	}
 
-	public Set<Book> getBooks() {
-		return books;
-	}
-
-	public void setBooks(Set<Book> books) {
-		this.books = books;
-	}
-	
 	@Override
 	public String toString() {
 		return String.format("%s:%s:%s", this.getClass().getSimpleName(), this.getId(), this.getName());

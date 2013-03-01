@@ -118,12 +118,20 @@
 			<version>2.2.7</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- image scaling -->
 		<dependency>
 			<groupId>org.imgscalr</groupId>
 			<artifactId>imgscalr-lib</artifactId>
 			<version>4.2</version>
+		</dependency>
+
+		<!-- hibernate specific stuff -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>${hibernate.version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- text searching -->

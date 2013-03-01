@@ -1,11 +1,6 @@
 package com.janus.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -18,22 +13,9 @@ import com.janus.model.interfaces.IDepthOneCloneable;
 @Entity
 @Indexed
 public class Series extends NamedSortedEntity implements IDepthOneCloneable<Series> {	
-	
-	@ManyToMany(mappedBy="series", targetEntity=Book.class, fetch=FetchType.EAGER)
-	private Set<Book> books;
 
 	public Series() {
 		super();
-		
-		this.books = new HashSet<Book>();
-	}
-	
-	public Set<Book> getBooks() {
-		return books;
-	}
-
-	public void setBooks(Set<Book> books) {
-		this.books = books;
 	}
 	
 	@Override

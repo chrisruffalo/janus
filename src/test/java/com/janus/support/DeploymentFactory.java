@@ -3,7 +3,6 @@ package com.janus.support;
 import java.util.UUID;
 
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
@@ -56,7 +55,7 @@ public final class DeploymentFactory {
 		
 		// web resources
 		archive.addAsWebInfResource("web.xml");
-		archive.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+		archive.addAsWebInfResource("beans.xml");
 		archive.addAsWebInfResource("jboss-deployment-structure.xml");
 		
 		return archive;		

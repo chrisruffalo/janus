@@ -21,6 +21,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Index;
@@ -30,10 +32,6 @@ import org.hibernate.search.annotations.Store;
 import org.tmatesoft.sqljet.core.SqlJetException;
 import org.tmatesoft.sqljet.core.table.ISqlJetCursor;
 
-import com.janus.model.adapters.BookToAuthorAntiCyclicAdapter;
-import com.janus.model.adapters.BookToRatingAntiCyclicAdapter;
-import com.janus.model.adapters.BookToSeriesAntiCyclicAdapter;
-import com.janus.model.adapters.BookToTagAntiCyclicAdapter;
 import com.janus.model.adapters.FileInfoKeyValuePairAdapter;
 import com.janus.model.interfaces.ISorted;
 import com.janus.util.DateUtil;
@@ -77,8 +75,6 @@ public class Book extends BaseEntity implements ISorted {
 	@Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
 	private String title;
 
-	// column: sort
-	@Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
 	private String sortTitle;
 	
 	// calculated sort title from name
@@ -95,6 +91,7 @@ public class Book extends BaseEntity implements ISorted {
 	private Double seriesIndex;
 
 	// column: author_sort
+	@Field(index = Index.YES, analyze = Analyze.NO, store = Store.NO)
 	private String authorSort;
 
 	// column: path
@@ -108,24 +105,28 @@ public class Book extends BaseEntity implements ISorted {
 	private Date lastModified;
 	
 	// collections
-	@IndexedEmbedded(depth = 1)
-	@ManyToMany(cascade={CascadeType.PERSIST, CascadeType.REMOVE}, fetch=FetchType.EAGER, targetEntity=Author.class)
+	@ManyToMany(cascade={CascadeType.PERSIST, CascadeType.REMOVE}, fetch=FetchType.EAGER)
+	@Fetch(FetchMode.JOIN)
 	private Set<Author> authors;
 	
 	@IndexedEmbedded(depth = 1)
-	@ManyToMany(cascade={CascadeType.PERSIST, CascadeType.REMOVE}, fetch=FetchType.EAGER, targetEntity=Tag.class)
+	@ManyToMany(cascade={CascadeType.PERSIST, CascadeType.REMOVE}, fetch=FetchType.EAGER)
+	@Fetch(FetchMode.JOIN)
 	private Set<Tag> tags;
 	
 	@IndexedEmbedded(depth = 1)
-	@ManyToMany(cascade={CascadeType.PERSIST, CascadeType.REMOVE}, fetch=FetchType.EAGER, targetEntity=Series.class)
+	@ManyToMany(cascade={CascadeType.PERSIST, CascadeType.REMOVE}, fetch=FetchType.EAGER)
+	@Fetch(FetchMode.JOIN)
 	private Set<Series> series;
 	
 	// file information
-	@OneToMany(cascade={CascadeType.PERSIST, CascadeType.REMOVE}, fetch=FetchType.EAGER, targetEntity=FileInfo.class)
+	@OneToMany(cascade={CascadeType.PERSIST, CascadeType.REMOVE}, fetch=FetchType.EAGER)
+	@Fetch(FetchMode.JOIN)
 	private Map<FileType, FileInfo> fileInfo;
 	
 	// rating
 	@ManyToOne(cascade={CascadeType.PERSIST, CascadeType.REMOVE}, fetch=FetchType.EAGER)
+	@Fetch(FetchMode.JOIN)
 	private Rating rating;
 
 	public Book() {
@@ -215,7 +216,6 @@ public class Book extends BaseEntity implements ISorted {
 		this.lastModified = lastModified;
 	}
 	
-	@XmlJavaTypeAdapter(value=BookToAuthorAntiCyclicAdapter.class,type=Author.class)
 	@XmlElementWrapper(name="authors")
 	@XmlElement(name="author")
 	public Set<Author> getAuthors() {
@@ -226,7 +226,6 @@ public class Book extends BaseEntity implements ISorted {
 		this.authors = authors;
 	}
 
-	@XmlJavaTypeAdapter(value=BookToTagAntiCyclicAdapter.class,type=Tag.class)
 	@XmlElementWrapper(name="tags")
 	@XmlElement(name="tag")
 	public Set<Tag> getTags() {
@@ -237,11 +236,18 @@ public class Book extends BaseEntity implements ISorted {
 		this.tags = tags;
 	}
 
-	@XmlJavaTypeAdapter(value=BookToSeriesAntiCyclicAdapter.class,type=Series.class)
 	@XmlElementWrapper(name="inSeries")
 	@XmlElement(name="series")
 	public Set<Series> getSeries() {
 		return series;
+	}
+	
+	public Rating getRating() {
+		return rating;
+	}
+
+	public void setRating(Rating rating) {
+		this.rating = rating;
 	}
 
 	public void setSeries(Set<Series> series) {
@@ -255,16 +261,7 @@ public class Book extends BaseEntity implements ISorted {
 	public void setSortFirstCharacter(Character sortFirstCharacter) {
 		this.sortFirstCharacter = sortFirstCharacter;
 	}
-
-	@XmlJavaTypeAdapter(value=BookToRatingAntiCyclicAdapter.class,type=Rating.class)
-	public Rating getRating() {
-		return rating;
-	}
-
-	public void setRating(Rating rating) {
-		this.rating = rating;
-	}
-
+	
 	@XmlJavaTypeAdapter(value=FileInfoKeyValuePairAdapter.class)
 	public Map<FileType, FileInfo> getFileInfo() {
 		return fileInfo;

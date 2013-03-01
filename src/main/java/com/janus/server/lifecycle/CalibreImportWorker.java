@@ -15,7 +15,7 @@ import org.tmatesoft.sqljet.core.SqlJetException;
 
 import com.janus.importer.SQLiteImport;
 import com.janus.model.Book;
-import com.janus.model.DatabaseStatus;
+import com.janus.model.configuration.DatabaseStatus;
 import com.janus.server.configuration.ConfigurationProperties;
 import com.janus.server.providers.BookProvider;
 import com.janus.server.providers.SearchProvider;

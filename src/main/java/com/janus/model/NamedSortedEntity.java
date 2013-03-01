@@ -2,10 +2,6 @@ package com.janus.model;
 
 import javax.persistence.MappedSuperclass;
 
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Index;
-import org.hibernate.search.annotations.Store;
 import org.tmatesoft.sqljet.core.SqlJetException;
 import org.tmatesoft.sqljet.core.table.ISqlJetCursor;
 
@@ -17,7 +13,6 @@ public abstract class NamedSortedEntity extends NamedEntity implements ISorted {
 	public static final String SORT = "sort";
 	public static final String SORT_FIRST_CHARACTER = "sortFirstCharacter";
 
-	@Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
 	private String sort;
 
 	private Character sortFirstCharacter;

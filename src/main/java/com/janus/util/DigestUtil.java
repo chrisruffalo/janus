@@ -5,11 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
-import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,37 +26,36 @@ public final class DigestUtil {
 	 */
 	public static String fileDigest(File file) {
 		
-		MessageDigest md;
-		try {
-			md = MessageDigest.getInstance("MD5");
-		} catch (NoSuchAlgorithmException e1) {
-			DigestUtil.LOGGER.error("An error occurred while performing digest: {}", e1.getMessage());
-			return "NO-DIGEST";
-		}
-		
 		InputStream is;
 		try {
 			is = new FileInputStream(file);
-		} catch (FileNotFoundException e1) {
-			DigestUtil.LOGGER.error("An error occurred while performing digest: {}", e1.getMessage());
+		} catch (FileNotFoundException e) {
+			DigestUtil.LOGGER.error("An error occurred while performing digest: {}", e.getMessage());
 			return "NO-DIGEST";
 		}		
-		
+				
+		// get digest
+		String digest;
 		try {
-		  is = new DigestInputStream(is, md);
-		} finally {
-			try {
-				is.close();
-			} catch (IOException e) {
-				DigestUtil.LOGGER.error("An error occurred while closing the file after performing digest: {}", e.getMessage());
-			}
+			digest = DigestUtils.md5Hex(is);
+		} catch (IOException e) {
+			DigestUtil.LOGGER.error("An error occurred while performing digest: {}", e.getMessage());
+			return "NO-DIGEST";
 		}
 		
-		// get digest
-		byte[] digest = md.digest();
-		
-		// do better at producing string
-		return Hex.encodeHexString(digest);
+		// produce hex string from byte array
+		return digest;
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @param password
+	 * @return
+	 */
+	public static String passwordDigest(String salt, String password) {
+		// return hex encoded digest
+		return DigestUtils.sha512Hex(salt + password);
 	}
 	
 }

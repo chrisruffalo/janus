@@ -8,9 +8,7 @@ import java.util.Map;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
@@ -26,6 +24,9 @@ import com.janus.util.FileSizeUtil;
 @XmlRootElement
 public class FileInfo implements IDepthOneCloneable<FileInfo> {
 
+	public static final String IDENTIFIER = "identifier";
+	public static final String FULL_PATH = "fullPath";
+	
 	@Id
 	private String identifier;
 
@@ -35,9 +36,6 @@ public class FileInfo implements IDepthOneCloneable<FileInfo> {
 	private String descriptiveSize;
 
 	private Long size;
-
-	@ManyToOne(fetch=FetchType.EAGER)
-	private Book parent;
 
 	private String fullPath;
 
@@ -71,14 +69,6 @@ public class FileInfo implements IDepthOneCloneable<FileInfo> {
 
 	public void setSize(Long size) {
 		this.size = size;
-	}
-
-	public Book getParent() {
-		return parent;
-	}
-
-	public void setParent(Book parent) {
-		this.parent = parent;
 	}
 
 	@XmlTransient
@@ -156,7 +146,6 @@ public class FileInfo implements IDepthOneCloneable<FileInfo> {
 			info.setType(type);
 			info.setSize(candidateBook.length());
 			info.setFullPath(candidateBook.getAbsolutePath());
-			info.setParent(book);
 			info.setDescriptiveSize(FileSizeUtil.humanReadableByteCount(candidateBook.length()));
 			
 			// trace

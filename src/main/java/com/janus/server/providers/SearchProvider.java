@@ -7,6 +7,8 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.hibernate.CacheMode;
+import org.hibernate.search.MassIndexer;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
@@ -18,8 +20,11 @@ import com.janus.model.Book;
 import com.janus.model.Series;
 import com.janus.model.Tag;
 import com.janus.model.response.MultiEntityResponse;
+import com.janus.server.search.JanusIndexingProgressMonitor;
+import com.janus.server.statistics.LogMetrics;
 
 @RequestScoped
+@LogMetrics
 public class SearchProvider {
 
 	@Inject
@@ -40,17 +45,17 @@ public class SearchProvider {
 	}
 	
 	public List<Author> authorSearch(String searchPhrase) {
-		List<Author> results = this.query(Author.class, searchPhrase, "name", "sort");
+		List<Author> results = this.query(Author.class, searchPhrase, Author.NAME);
 		return results;
 	}
 
 	public List<Series> seriesSearch(String searchPhrase) {
-		List<Series> results = this.query(Series.class, searchPhrase, "name", "sort");
+		List<Series> results = this.query(Series.class, searchPhrase, Series.NAME);
 		return results;
 	}
 	
 	public List<Tag> tagSearch(String searchPhrase) {
-		List<Tag> results = this.query(Tag.class, searchPhrase, "name");
+		List<Tag> results = this.query(Tag.class, searchPhrase, Tag.NAME);
 		return results;
 	}
 	
@@ -59,12 +64,9 @@ public class SearchProvider {
 		List<Book> results = this.query(
 			Book.class, 
 			searchPhrase, 
-			"title", 
-			"sortTitle",
-			"authors.sort",
-			"authors.name",
+			Book.TITLE, 
+			Book.MODEL_AUTHORSORT,
 			"series.name",
-			"series.sort",
 			"tags.name"
 		);
 
@@ -112,13 +114,32 @@ public class SearchProvider {
 	}
 	
 	public void forceReindex() {
+	
+		this.getIndexer(Book.class).start();
+		this.getIndexer(Author.class).start();
+		this.getIndexer(Series.class).start();
+		this.getIndexer(Tag.class).start();
+		
+	}
+	
+	/**
+	 * Does repeatable configuration on the mass indexer
+	 * 
+	 * @param indexer
+	 */
+	private MassIndexer getIndexer(Class<?> classToIndex) {
 		// get full text entity manager
 		FullTextEntityManager fullTextEntityManager = Search
 				.getFullTextEntityManager(this.manager);
+
+		MassIndexer indexer = fullTextEntityManager.createIndexer(classToIndex);
 		
-		fullTextEntityManager.createIndexer(Book.class).start();
-		fullTextEntityManager.createIndexer(Author.class).start();
-		fullTextEntityManager.createIndexer(Series.class).start();
-		fullTextEntityManager.createIndexer(Tag.class).start();
+		indexer.purgeAllOnStart(true);
+		indexer.optimizeOnFinish(true);
+		indexer.batchSizeToLoadObjects(500);
+		indexer.cacheMode(CacheMode.NORMAL);
+		indexer.progressMonitor(new JanusIndexingProgressMonitor());
+		
+		return indexer;
 	}
 }

@@ -18,7 +18,7 @@
 		<class>com.janus.model.FileInfo</class>	
 		
 		<!-- support -->
-		<class>com.janus.model.DatabaseStatus</class>
+		<class>com.janus.model.configuration.DatabaseStatus</class>
 		
 		<!-- exclude other classes -->
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
@@ -30,6 +30,15 @@
 			<!-- enable hibernate caching -->
             <property name="hibernate.cache.use_second_level_cache" value="true" />
             <property name="hibernate.cache.use_query_cache" value="true" />
+            
+            <!-- peformance tuning -->
+            <property name="hibernate.jdbc.fetch_size" value ="50" />
+            <property name="hibernate.max_fetch_depth" value="4" />
+            
+            <!-- batching inserts -->
+			<property name="hibernate.order_updates" value="true" />
+			<property name="hibernate.order_inserts" value="true" />
+			<property name="hibernate.jdbc.batch_size" value="100" />            
             
             <!-- hibernate infinispan caching support -->			
 			<property name="hibernate.cache.region.factory_class" value="org.jboss.as.jpa.hibernate4.infinispan.InfinispanRegionFactory"/>

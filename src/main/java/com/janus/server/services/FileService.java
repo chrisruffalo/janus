@@ -36,7 +36,7 @@ import com.janus.server.providers.FileInfoProvider;
 @Stateless
 public class FileService {
 	
-	private static final double MAGIC_COVER_RATIO = 1.333333333333333333333333333;
+	//private static final double MAGIC_COVER_RATIO = 1.333333333333333333333333333;
 	private static final int DEFAULT_HEIGHT = 800;
 	private static final int DEFAULT_WIDTH = 600;
 
@@ -80,7 +80,7 @@ public class FileService {
 		
 		if(info == null) {
 			// if the file is not found, 404 out
-			return Response.status(Status.NOT_FOUND).build();
+			return Response.status(Status.NOT_FOUND).entity("no file found with id " + identifier).build();
 		}
 		
 		// get file on disk
@@ -120,21 +120,22 @@ public class FileService {
 	
 	@GET
 	@Path("/cover/{bookId}")
-	public Response book(@PathParam("bookId") Long id, 
+	public Response cover(@PathParam("bookId") Long id, 
 					     @QueryParam("base64") @DefaultValue("no") String encodeInBase64, 
 					     @QueryParam("w") @DefaultValue("0") int width, 
 					     @QueryParam("h") @DefaultValue("0") int height) 
 	{
 		
-		Book book = this.bookProvider.get(id);
+		// lookup book path
+		String bookPath = this.fileInfoProvider.getBookPath(id);
 		
 		// not found
-		if(book == null || book.getId() == null || book.getId() < 1) {
-			return Response.status(Status.NOT_FOUND).entity("no book with id " + id).build();
+		if(bookPath == null || bookPath.isEmpty()) {
+			return Response.status(Status.NOT_FOUND).entity("no book found with id " + id).build();
 		}
 		
 		// create file path
-		String coverFilePathString = book.getPath() + File.separator + "cover.jpg";
+		String coverFilePathString = bookPath + File.separator + "cover.jpg";
 		this.logger.debug("Looking for cover: '{}'", coverFilePathString);
 		
 		// look up file
@@ -153,11 +154,6 @@ public class FileService {
 		// set default width if height is unsatisfiable
 		if(width <= 0) {
 			width = FileService.DEFAULT_WIDTH;
-		}
-		
-		// do math: height should be (MAGIC_COVER_RATIO * width)
-		if(height != (int)(FileService.MAGIC_COVER_RATIO * width)) {
-			width = (int)((height * 1.0) / FileService.MAGIC_COVER_RATIO);
 		}
 		
 		byte[] fromFile = new byte[0];

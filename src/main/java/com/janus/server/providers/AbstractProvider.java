@@ -26,7 +26,7 @@ public class AbstractProvider {
 	
 	protected <I> I get(Object identifier, Class<I> type) {
 		try {
-			I object = this.manager.find(type, identifier);
+			I object = 	this.manager.find(type, identifier);
 			return object;
 		} catch (NoResultException nre) {
 			this.logger.warn("No object of type {} found for id:{}, an error occurred: {}", new Object[]{type.getClass().getSimpleName(), identifier, nre.getMessage()});
@@ -102,12 +102,7 @@ public class AbstractProvider {
 			query.where(builder.equal(root.get(field), upperStart));
 		}
 
-		Long result;
-		try {
-			result = this.manager.createQuery(query).getSingleResult();
-		} catch (NoResultException nre) {
-			result = 0l;
-		}
+		Long result = this.getSingleResult(query, 0l);
 
 		this.logger.info("Found {} items of type {} that start with '{}'",
 				new Object[] { result, inputClass.getSimpleName(), upperStart });
@@ -164,5 +159,17 @@ public class AbstractProvider {
 		}
 
 		return results;
+	}
+	
+	protected <I> I getSingleResult(CriteriaQuery<I> query, I defaultValue) {
+		
+		I result;
+		try {
+			result = this.manager.createQuery(query).getSingleResult();
+		} catch (NoResultException nre) {
+			result = defaultValue;
+		}
+		
+		return result;
 	}
 }

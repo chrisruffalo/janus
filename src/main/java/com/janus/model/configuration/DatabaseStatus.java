@@ -1,4 +1,4 @@
-package com.janus.model;
+package com.janus.model.configuration;
 
 import java.util.Date;
 
