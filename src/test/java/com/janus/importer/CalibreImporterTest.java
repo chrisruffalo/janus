@@ -11,11 +11,11 @@ import org.tmatesoft.sqljet.core.SqlJetException;
  * @author cruffalo
  *
  */
-public class SQLiteImportTest {
+public class CalibreImporterTest {
 
 	@Test
 	public void testOpenDatabase() {
-		SQLiteImport importer = new SQLiteImport("books", "metadata.db");
+		CalibreImporter importer = new CalibreImporter("books", "metadata.db");
 		
 		Assert.assertNotNull(importer);
 		
@@ -24,7 +24,7 @@ public class SQLiteImportTest {
 	
 	@Test
 	public void testImportDatabase() throws SqlJetException {
-		SQLiteImport importer = new SQLiteImport("books", "metadata.db");
+		CalibreImporter importer = new CalibreImporter("books", "metadata.db");
 		
 		Assert.assertNotNull(importer);
 		

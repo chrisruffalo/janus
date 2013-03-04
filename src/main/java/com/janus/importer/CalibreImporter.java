@@ -34,7 +34,7 @@ import com.janus.model.meta.Correlation;
  * @author cruffalo
  *
  */
-public class SQLiteImport {
+public class CalibreImporter {
 
 	private String basePath;
 	
@@ -48,7 +48,7 @@ public class SQLiteImport {
 	 * Private empty importer
 	 * 
 	 */
-	private SQLiteImport() {
+	private CalibreImporter() {
 		this.logger = LoggerFactory.getLogger(this.getClass());
 	}
 	
@@ -57,7 +57,7 @@ public class SQLiteImport {
 	 * 
 	 * @param fileName
 	 */
-	public SQLiteImport(String basePath, String fileName) {
+	public CalibreImporter(String basePath, String fileName) {
 		this();
 		
 		if(basePath == null || basePath.isEmpty()) {

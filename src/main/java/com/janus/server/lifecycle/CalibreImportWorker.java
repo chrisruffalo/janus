@@ -13,7 +13,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.tmatesoft.sqljet.core.SqlJetException;
 
-import com.janus.importer.SQLiteImport;
+import com.janus.importer.CalibreImporter;
 import com.janus.model.Book;
 import com.janus.model.configuration.DatabaseStatus;
 import com.janus.server.configuration.ConfigurationProperties;
@@ -94,7 +94,7 @@ public class CalibreImportWorker {
 		}
 		
 		// now that the meta handle is certainly available, import it!
-		SQLiteImport importer = new SQLiteImport(base.getAbsolutePath(), meta.getName());
+		CalibreImporter importer = new CalibreImporter(base.getAbsolutePath(), meta.getName());
 		
 		// import books, if an exception occurs then print error and return
 		List<Book> books;
