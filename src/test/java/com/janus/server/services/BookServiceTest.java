@@ -40,7 +40,7 @@ public class BookServiceTest {
 			Assert.fail("this should not throw an exception");
 		}
 		
-		// load a non-existant book, should throw a web exception
+		// load a non-existent book, should throw a web exception
 		this.bookService.get(-200l);
 	}
 	
@@ -65,27 +65,23 @@ public class BookServiceTest {
 	@Test
 	public void testBasicBookPaging() {
 		// page size 0 gives whole set
-		List<Book> books = this.bookService.list("default", 0, 99);
+		List<Book> books = this.bookService.list("default", 0, 0);
 		Assert.assertEquals(10, books.size());
 		
-		// page size 1 on large page gives 0
-		books = this.bookService.list("default", 1, 99);
+		// start at index 99, page size 1 gives nothing
+		books = this.bookService.list("default", 99, 1);
 		Assert.assertEquals(0, books.size());
 
-		// page size 100 on page 0 gives full result
-		books = this.bookService.list("default", 100, 0);
+		// page size 10 on index 0 gives 10 items
+		books = this.bookService.list("default", 0, 10);
 		Assert.assertEquals(10, books.size());
 
-		// page size 5 on page 1 gives 5 responses
-		books = this.bookService.list("default", 5, 1);
+		// page size 5 on index 5 gives 5 responses
+		books = this.bookService.list("default", 5, 5);
 		Assert.assertEquals(5, books.size());
 
-		// page size 5 on page 2 gives 0
-		books = this.bookService.list("default", 5, 2);
-		Assert.assertEquals(0, books.size());
-		
-		// page size 4 on page 2 (2+1 * 4 = 12 - 4 = 8) gives two responses
-		books = this.bookService.list("default", 4, 2);
+		// page size 5 on index 9 gives two responses
+		books = this.bookService.list("default", 8, 5);
 		Assert.assertEquals(2, books.size());
 		
 		// one and one gives one response

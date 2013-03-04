@@ -29,5 +29,6 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 	@Override
 	protected BookProvider getProvider() {
 		return this.provider;
-	}	
+	}
+
 }

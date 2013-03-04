@@ -36,27 +36,26 @@ public abstract class AbstractBaseEntityService<E extends BaseEntity, P extends 
 		
 		if(found == null) {
 			ResponseBuilder builder = Response.status(Status.NOT_FOUND);
-			builder.entity(this.getProvider().getEntityType().getSimpleName().toLowerCase() + " with id " + id + " could not be found");
+			builder.entity(this.getProvider().getEntityType().getSimpleName().toLowerCase() + " with id '" + id + "' could not be found");
 			throw new WebApplicationException(builder.build());
 		}
 		
 		return found;
 	}
-	
+
 	@GET
 	@Path("/startsWith/{start}")
 	public List<E> startsWith(@PathParam("start") String start,
-			@QueryParam("pageSize") @DefaultValue("-1") int pageSize,
-			@DefaultValue("0") @QueryParam("page") int page) {
-		return this.getProvider().getStartsWith(ISorted.SORT_FIRST_CHARACTER, start, pageSize, page);
+			@DefaultValue("0") @QueryParam("index") int index,
+			@QueryParam("size") @DefaultValue("-1") int size) {
+		return this.getProvider().getStartsWith(ISorted.SORT_FIRST_CHARACTER, start, index, size);
 	}
 
 	@GET
 	@Path("/list")
-	public List<E> list(@QueryParam("sort") String sortTypeString,
-			@QueryParam("pageSize") @DefaultValue("-1") int pageSize,
-			@DefaultValue("0") @QueryParam("page") int page) {
-		return this.getProvider().list(page, pageSize);
+	public List<E> list(@QueryParam("sort") @DefaultValue("default") String sortTypeString,
+			@DefaultValue("0") @QueryParam("index") int index,
+			@QueryParam("size") @DefaultValue("-1") int size) {
+		return this.getProvider().list(sortTypeString, index, size);
 	}
-
 }

@@ -2,6 +2,7 @@ package com.janus.model;
 
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 import org.tmatesoft.sqljet.core.SqlJetException;
@@ -16,7 +17,7 @@ import com.janus.model.interfaces.ICanLoadFromSqlCursorRow;
  * 
  */
 @MappedSuperclass
-@XmlType
+@XmlType(propOrder=BaseEntity.ID)
 public abstract class BaseEntity implements ICanLoadFromSqlCursorRow {
 	
 	// shared properties
@@ -33,6 +34,7 @@ public abstract class BaseEntity implements ICanLoadFromSqlCursorRow {
 
 	}
 
+	@XmlAttribute(name="id")
 	public Long getId() {
 		return id;
 	}

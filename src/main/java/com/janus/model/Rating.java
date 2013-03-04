@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
@@ -37,6 +38,7 @@ public class Rating extends BaseEntity implements IDepthOneCloneable<Rating> {
 		this.rating = 0l;
 	}
 
+	@XmlAttribute(name="value")
 	public Long getRating() {
 		return rating;
 	}

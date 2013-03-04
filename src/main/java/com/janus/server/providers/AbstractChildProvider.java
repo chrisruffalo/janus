@@ -42,4 +42,20 @@ public abstract class AbstractChildProvider<E extends BaseEntity> extends Abstra
 		return this.executeQuery(query);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean setUpSort(Root<E> root, CriteriaBuilder builder, CriteriaQuery<E> query, String sortString) {
+		boolean result = super.setUpSort(root, builder, query, sortString);
+		
+		// if already sorted, leave
+		if(result) {
+			return true;
+		}
+
+		// implement specific book count strategies here 
+		
+		return false;
+	}
 }

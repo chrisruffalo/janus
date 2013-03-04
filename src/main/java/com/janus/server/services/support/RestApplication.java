@@ -1,4 +1,4 @@
-package com.janus.server.services;
+package com.janus.server.services.support;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;

@@ -38,42 +38,28 @@ public abstract class AbstractProvider<E> {
 	}
 
 	protected <I> List<I> executeQuery(CriteriaQuery<I> query) {
-
 		// create typed query
 		TypedQuery<I> tQuery = this.manager.createQuery(query);
 	
-		List<I> results;
-		try {
-			results = tQuery.getResultList();
-		} catch (NoResultException nre) {
-			results = Collections.emptyList();
-		}
-		
-		return results;
+		return this.executeTypedQuery(tQuery);				
 	}
 	
-	protected <I> List<I> executeRangeQuery(CriteriaQuery<I> query, int page, int pageSize) {
+	protected <I> List<I> executeRangeQuery(CriteriaQuery<I> query, int index, int size) {
+		
+		// if the start index or page size doesn't make sense
+		if(index < 0 || size <= 0) {
+			// then execute a normal query
+			return this.executeQuery(query);
+		}
+		
 		// create typed query
 		TypedQuery<I> tQuery = this.manager.createQuery(query);
 		
-		int upperLimit = (page + 1) * pageSize;
-		if(upperLimit > 0) {
-			int lowerLimit = upperLimit - pageSize;
-			if(lowerLimit < 0) {
-				lowerLimit = 0;
-			}
-			tQuery.setFirstResult(lowerLimit);
-			tQuery.setMaxResults(upperLimit-lowerLimit);
-		}	
+		// create limitations on query
+		tQuery.setFirstResult(index);
+		tQuery.setMaxResults(size);
 
-		List<I> results;
-		try {
-			results = tQuery.getResultList();
-		} catch (NoResultException nre) {
-			results = Collections.emptyList();
-		}
-
-		return results;
+		return this.executeTypedQuery(tQuery);
 	}
 	
 	protected <I> I getSingleResult(CriteriaQuery<I> query, I defaultValue) {
@@ -86,6 +72,17 @@ public abstract class AbstractProvider<E> {
 		}
 		
 		return result;
+	}
+	
+	private <I> List<I> executeTypedQuery(TypedQuery<I> typedQuery) {
+		List<I> results;
+		try {
+			results = typedQuery.getResultList();
+		} catch (NoResultException nre) {
+			results = Collections.emptyList();
+		}
+
+		return results;
 	}
 	
 }

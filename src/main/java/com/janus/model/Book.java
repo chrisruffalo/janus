@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
@@ -43,21 +44,37 @@ import com.janus.util.DateUtil;
  * 
  */
 @XmlRootElement
-@XmlType
+@XmlType(
+	propOrder = {
+		Book.TITLE,
+		Book.SORT,
+		Book.MODEL_AUTHORSORT,
+		Book.MODEL_SERIESINDEX,
+		Book.MODEL_HASCOVER,
+		Book.MODEL_LASTMODIFIED,
+		Book.AUTHORS,
+		Book.SERIES,
+		Book.TAGS,
+		Book.FILE_INFO,
+		Book.RATING,
+		Book.MODEL_PUBLICATIONDATE,
+		Book.TIMESTAMP
+	}
+)
 @Entity
 @Indexed
 public class Book extends BaseEntity implements ISorted {
 
 	// shared properties
 	public static final String TITLE = "title";
-	public static final String SORT = "sort";
 	public static final String TIMESTAMP = "timestamp";
-	
+		
 	// children
 	public static final String AUTHORS = "authors";
 	public static final String SERIES = "series";
 	public static final String TAGS = "tags";
 	public static final String RATING = "rating";
+	public static final String FILE_INFO = "fileInfo";
 	
 	// sql database properties
 	public static final String SQLITE_SORT_TITLE = "sort_title";
@@ -69,7 +86,6 @@ public class Book extends BaseEntity implements ISorted {
 	public static final String SQLITE_LAST_MODIFIED = "last_modified";
 	
 	// model properties
-	public static final String MODEL_SORTTITLE = "sortTitle";
 	public static final String MODEL_PUBLICATIONDATE = "publicationDate";
 	public static final String MODEL_SERIESINDEX = "seriesIndex";
 	public static final String MODEL_AUTHORSORT = "authorSort";
@@ -80,7 +96,8 @@ public class Book extends BaseEntity implements ISorted {
 	@Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
 	private String title;
 
-	private String sortTitle;
+	@Column(name="sort")
+	private String sort;
 	
 	// calculated sort title from name
 	private Character sortFirstCharacter;
@@ -153,17 +170,18 @@ public class Book extends BaseEntity implements ISorted {
 	}
 
 	public String getSort() {
-		return this.sortTitle;
-	}
-	
-	public String getSortTitle() {
-		return sortTitle;
+		return this.sort;
 	}
 
-	public void setSortTitle(String sortTitle) {
-		this.sortTitle = sortTitle;
+	public void setSort(String sort) {
+		this.sort = sort;
 	}
 
+	/**
+	 * Do not know what this does in calibre
+	 * 
+	 * @return
+	 */
 	public Date getTimestamp() {
 		return timestamp;
 	}
@@ -213,6 +231,11 @@ public class Book extends BaseEntity implements ISorted {
 		this.hasCover = hasCover;
 	}
 
+	/**
+	 * Added/modified in Calibre
+	 * 
+	 * @return
+	 */
 	public Date getLastModified() {
 		return lastModified;
 	}
@@ -259,6 +282,7 @@ public class Book extends BaseEntity implements ISorted {
 		this.series = series;
 	}
 	
+	@XmlTransient
 	public Character getSortFirstCharacter() {
 		return sortFirstCharacter;
 	}
@@ -286,11 +310,11 @@ public class Book extends BaseEntity implements ISorted {
 
 		// title/sort data
 		this.title = cursor.getString(Book.TITLE);
-		this.sortTitle = cursor.getString(Book.SORT);
+		this.sort = cursor.getString(Book.SORT);
 		
 		// calculate sort 
-		if(this.sortTitle != null && !this.sortTitle.isEmpty()) {
-			this.sortFirstCharacter = this.sortTitle.substring(0, 1).toUpperCase().charAt(0);
+		if(this.sort != null && !this.sort.isEmpty()) {
+			this.sortFirstCharacter = this.sort.substring(0, 1).toUpperCase().charAt(0);
 		}
 
 		// dates

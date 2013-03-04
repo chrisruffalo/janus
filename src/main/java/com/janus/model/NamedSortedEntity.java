@@ -1,6 +1,7 @@
 package com.janus.model;
 
 import javax.persistence.MappedSuperclass;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.tmatesoft.sqljet.core.SqlJetException;
@@ -11,8 +12,6 @@ import com.janus.model.interfaces.ISorted;
 @XmlType
 @MappedSuperclass
 public abstract class NamedSortedEntity extends NamedEntity implements ISorted {
-
-	public static final String SORT = "sort";
 
 	private String sort;
 
@@ -26,6 +25,7 @@ public abstract class NamedSortedEntity extends NamedEntity implements ISorted {
 		this.sort = sort;
 	}	
 	
+	@XmlTransient
 	public Character getSortFirstCharacter() {
 		return sortFirstCharacter;
 	}
@@ -50,8 +50,12 @@ public abstract class NamedSortedEntity extends NamedEntity implements ISorted {
 
 		super.loadFromRow(cursor);
 		
-		// load properties
-		this.sort = cursor.getString(NamedSortedEntity.SORT);
+		try {
+			// load properties
+			this.sort = cursor.getString(NamedSortedEntity.SORT);
+		} catch (SqlJetException exception) {
+			this.sort = this.getName();
+		}
 		
 		// calculate property from sort name
 		if(this.sort != null && !this.sort.isEmpty()) {
