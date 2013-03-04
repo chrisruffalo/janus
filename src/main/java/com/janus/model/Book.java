@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.annotations.Analyze;
@@ -215,6 +216,7 @@ public class Book extends BaseEntity implements ISorted {
 	}
 
 	@XmlTransient
+	@JsonIgnore
 	public String getPath() {
 		return path;
 	}
@@ -283,6 +285,7 @@ public class Book extends BaseEntity implements ISorted {
 	}
 	
 	@XmlTransient
+	@JsonIgnore
 	public Character getSortFirstCharacter() {
 		return sortFirstCharacter;
 	}

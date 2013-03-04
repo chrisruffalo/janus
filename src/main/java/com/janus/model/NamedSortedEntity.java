@@ -4,6 +4,7 @@ import javax.persistence.MappedSuperclass;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.tmatesoft.sqljet.core.SqlJetException;
 import org.tmatesoft.sqljet.core.table.ISqlJetCursor;
 
@@ -26,6 +27,7 @@ public abstract class NamedSortedEntity extends NamedEntity implements ISorted {
 	}	
 	
 	@XmlTransient
+	@JsonIgnore
 	public Character getSortFirstCharacter() {
 		return sortFirstCharacter;
 	}

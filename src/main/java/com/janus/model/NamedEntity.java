@@ -25,8 +25,6 @@ public abstract class NamedEntity extends BaseEntity implements IHasBooks {
 	public static final String NAME = "name";
 
 	@Transient
-	//@ManyToMany(mappedBy="authors", targetEntity=Book.class, fetch=FetchType.LAZY)
-	//@Fetch(FetchMode.JOIN)
 	private Set<Book> books;
 	
 	@Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)

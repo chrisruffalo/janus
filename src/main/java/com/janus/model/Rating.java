@@ -6,8 +6,9 @@ import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.tmatesoft.sqljet.core.SqlJetException;
@@ -25,8 +26,6 @@ public class Rating extends BaseEntity implements IDepthOneCloneable<Rating> {
 	private Long rating;
 
 	@Transient
-	//@OneToMany(mappedBy = "rating", fetch=FetchType.LAZY)
-	//@Fetch(FetchMode.JOIN)
 	private Set<Book> books;
 
 	/**
@@ -47,9 +46,8 @@ public class Rating extends BaseEntity implements IDepthOneCloneable<Rating> {
 		this.rating = rating;
 	}
 
-	@XmlTransient
-	//@XmlElementWrapper(name="books")
-	//@XmlElement(name="book")
+	@XmlElementWrapper(name="books")
+	@XmlElement(name="book")
 	public Set<Book> getBooks() {
 		return books;
 	}
