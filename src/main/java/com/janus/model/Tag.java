@@ -26,14 +26,12 @@ public class Tag extends NamedSortedEntity implements IDepthOneCloneable<Tag>, I
 	@JsonIgnore
 	@Override
 	public String getSort() {
-		// TODO Auto-generated method stub
 		return super.getSort();
 	}
 
 	@XmlAttribute
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return super.getName();
 	}
 
