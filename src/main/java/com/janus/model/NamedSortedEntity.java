@@ -1,17 +1,18 @@
 package com.janus.model;
 
 import javax.persistence.MappedSuperclass;
+import javax.xml.bind.annotation.XmlType;
 
 import org.tmatesoft.sqljet.core.SqlJetException;
 import org.tmatesoft.sqljet.core.table.ISqlJetCursor;
 
 import com.janus.model.interfaces.ISorted;
 
+@XmlType
 @MappedSuperclass
 public abstract class NamedSortedEntity extends NamedEntity implements ISorted {
 
 	public static final String SORT = "sort";
-	public static final String SORT_FIRST_CHARACTER = "sortFirstCharacter";
 
 	private String sort;
 
@@ -34,6 +35,14 @@ public abstract class NamedSortedEntity extends NamedEntity implements ISorted {
 	}
 
 	/**
+	 * {@inheritDoc} 
+	 */
+	@Override
+	public String toString() {
+		return String.format("%s:%s:%s", this.getClass().getSimpleName(), this.getId(), this.getSort());
+	}
+	
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -49,6 +58,5 @@ public abstract class NamedSortedEntity extends NamedEntity implements ISorted {
 			this.sortFirstCharacter = this.sort.substring(0, 1).toUpperCase().charAt(0);
 		}
 	}
-
 
 }

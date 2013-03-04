@@ -3,9 +3,12 @@ package com.janus.server.providers;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+
+import org.slf4j.Logger;
 
 import com.janus.model.Book;
 import com.janus.model.FileInfo;
@@ -13,14 +16,34 @@ import com.janus.server.statistics.LogMetrics;
 
 @RequestScoped
 @LogMetrics
-public class FileInfoProvider extends AbstractProvider {
+public class FileInfoProvider extends AbstractProvider<FileInfo> {
 
 	@Inject
 	private EntityManager manager;
 	
-	public FileInfo get(String identifier) {
-		return this.get(identifier, FileInfo.class);
+	@Inject
+	private Logger logger;
+	
+	@Override
+	public Class<FileInfo> getEntityType() {
+		return FileInfo.class;
 	}
+	
+	public FileInfo get(Object identifier) {
+		try {
+			FileInfo object = 	this.manager.find(FileInfo.class, identifier);
+			return object;
+		} catch (NoResultException nre) {
+			this.logger.warn("No object of type {} found for id:{}, an error occurred: {}", 
+				new Object[] {
+					FileInfo.class.getSimpleName(), 
+					identifier, 
+					nre.getMessage()
+				}
+			);
+			return null;
+		}
+	}	
 
 	/**
 	 * Optimized method to grab book's base path by id

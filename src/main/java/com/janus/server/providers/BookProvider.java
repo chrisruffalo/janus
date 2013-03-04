@@ -19,13 +19,18 @@ import com.janus.server.statistics.LogMetrics;
 
 @RequestScoped
 @LogMetrics
-public class BookProvider extends AbstractProvider {
+public class BookProvider extends AbstractBaseEntityProvider<Book> {
 
 	@Inject
 	private Logger logger;
 	
 	@Inject
 	private EntityManager manager;
+
+	@Override
+	public Class<Book> getEntityType() {
+		return Book.class;
+	}
 	
 	public int save(Collection<Book> books) {
 		int count = 0;
@@ -60,35 +65,6 @@ public class BookProvider extends AbstractProvider {
 		return false;
 	}
 	
-	public Book get(Long id) {
-		Book book = this.get(id, Book.class);
-		
-		// if the book is null return an empty item
-		if(book == null) {
-			return new Book();
-		}
-		
-		return book;
-	}
-	
-	public long countStartsWith(char start) {
-		return this.getStartsWithCount(Book.class, Book.SORT_FIRST_CHARACTER, start);
-	}
-	
-	/**
-	 * Get a list of books that start with given characters
-	 * 
-	 * @param start
-	 * @return
-	 */
-	public List<Book> getStartsWith(char start, int pageSize, int size) {
-		return this.getStartsWith(Book.class, Book.SORT_FIRST_CHARACTER, start, pageSize, size);
-	}
-	
-	public List<Book> list(int page, int pageSize) {
-		return this.list(Book.class, page, pageSize);
-	}
-
 	/**
 	 * Drops all items 
 	 */

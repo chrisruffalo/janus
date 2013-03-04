@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import com.janus.model.configuration.DatabaseStatus;
 
 @RequestScoped
-public class SettingsProvider extends AbstractProvider {
+public class SettingsProvider extends AbstractProvider<DatabaseStatus> {
 
 	@Inject
 	private Logger logger;
@@ -17,8 +17,13 @@ public class SettingsProvider extends AbstractProvider {
 	@Inject
 	private EntityManager manager;
 
+	@Override
+	public Class<DatabaseStatus> getEntityType() {
+		return DatabaseStatus.class;
+	}
+
 	public DatabaseStatus getStatus() {
-		DatabaseStatus status = this.get(0, DatabaseStatus.class);
+		DatabaseStatus status = this.get(0);
 		
 		if(status == null) {
 			this.logger.info("Initializing database status");

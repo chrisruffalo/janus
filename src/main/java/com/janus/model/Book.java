@@ -52,7 +52,12 @@ public class Book extends BaseEntity implements ISorted {
 	public static final String TITLE = "title";
 	public static final String SORT = "sort";
 	public static final String TIMESTAMP = "timestamp";
-	public static final String SORT_FIRST_CHARACTER = "sortFirstCharacter";
+	
+	// children
+	public static final String AUTHORS = "authors";
+	public static final String SERIES = "series";
+	public static final String TAGS = "tags";
+	public static final String RATING = "rating";
 	
 	// sql database properties
 	public static final String SQLITE_SORT_TITLE = "sort_title";

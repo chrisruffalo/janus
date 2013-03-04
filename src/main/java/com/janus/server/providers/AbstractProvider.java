@@ -7,119 +7,34 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 import org.slf4j.Logger;
 
-import com.janus.model.BaseEntity;
-
-public class AbstractProvider {
+public abstract class AbstractProvider<E> {
 
 	@Inject
 	private Logger logger;
 	
 	@Inject
 	private EntityManager manager;
+
+	public abstract Class<E> getEntityType();
 	
-	protected <I> I get(Object identifier, Class<I> type) {
+	public E get(Object identifier) {
 		try {
-			I object = 	this.manager.find(type, identifier);
+			E object = 	this.manager.find(this.getEntityType(), identifier);
 			return object;
 		} catch (NoResultException nre) {
-			this.logger.warn("No object of type {} found for id:{}, an error occurred: {}", new Object[]{type.getClass().getSimpleName(), identifier, nre.getMessage()});
+			this.logger.warn("No object of type {} found for id:{}, an error occurred: {}", 
+				new Object[] {
+					this.getEntityType().getClass().getSimpleName(), 
+					identifier, 
+					nre.getMessage()
+				}
+			);
 			return null;
 		}
-	}
-	
-	/**
-	 * Get a list of items of type I that start with given characters
-	 * 
-	 * @param inputClass
-	 * @param field
-	 * @param start
-	 * @return
-	 */
-	public <I> List<I> getStartsWith(Class<I> inputClass, String field, char start, int pageSize, int page) {
-
-		char upperStart = Character.toUpperCase(start);
-
-		CriteriaBuilder builder = manager.getCriteriaBuilder();
-
-		CriteriaQuery<I> query = builder.createQuery(inputClass);
-
-		Root<I> root = query.from(inputClass);
-		query.select(root);
-
-		// ! is the marker for 'symbols and numbers'
-		if (start == '!') {
-			Predicate predicate = builder.disjunction();
-			for (char alphabet = 'A'; alphabet <= 'Z'; alphabet++) {
-				predicate = builder.and(predicate,
-						builder.notEqual(root.get(field), alphabet));
-			}
-			query.where(predicate);
-		} else {
-			query.where(builder.equal(root.get(field), upperStart));
-		}
-		
-		List<I> results = this.executeRangeQuery(query, page, pageSize);
-
-		return results;
-	}
-
-	/**
-	 * Get a list of items of type I that start with given characters
-	 * 
-	 * @param manager
-	 * @param inputClass
-	 * @param field
-	 * @param logger
-	 * @param start
-	 * @return
-	 */
-	public <I> long getStartsWithCount(Class<I> inputClass, String field, char start) {
-
-		char upperStart = Character.toUpperCase(start);
-
-		CriteriaBuilder builder = this.manager.getCriteriaBuilder();
-
-		CriteriaQuery<Long> query = builder.createQuery(Long.class);
-
-		Root<I> root = query.from(inputClass);
-		query.select(root.get(BaseEntity.ID).as(Long.class));
-
-		// ! is the marker for 'symbols and numbers'
-		if (start == '!') {
-			Predicate predicate = builder.disjunction();
-			for (char alphabet = 'A'; alphabet <= 'Z'; alphabet++) {
-				predicate = builder.and(predicate,
-						builder.notEqual(root.get(field), alphabet));
-			}
-		} else {
-			query.where(builder.equal(root.get(field), upperStart));
-		}
-
-		Long result = this.getSingleResult(query, 0l);
-
-		this.logger.info("Found {} items of type {} that start with '{}'",
-				new Object[] { result, inputClass.getSimpleName(), upperStart });
-
-		return result;
-	}
-	
-	protected <I> List<I> list(Class<I> typeToList, int page, int pageSize) {
-
-		CriteriaBuilder builder = this.manager.getCriteriaBuilder();
-
-		CriteriaQuery<I> query = builder.createQuery(typeToList);
-
-		Root<I> root = query.from(typeToList);
-		query.select(root);
-
-		return this.executeRangeQuery(query, page, pageSize);
 	}
 
 	protected <I> List<I> executeQuery(CriteriaQuery<I> query) {
@@ -172,4 +87,5 @@ public class AbstractProvider {
 		
 		return result;
 	}
+	
 }

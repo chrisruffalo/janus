@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import org.tmatesoft.sqljet.core.SqlJetException;
 
 import com.janus.model.Book;
-import com.janus.server.services.BookService;
 import com.janus.support.DeploymentFactory;
 
 @RunWith(Arquillian.class)
@@ -27,25 +26,22 @@ public class BookServiceTest {
 		return DeploymentFactory.createDeployment();
 	}
 
-	@Test
+	@Test(expected=Exception.class)
 	public void testPersist() throws SqlJetException {
 		// load book
-		Book book = this.bookService.get(2l);
+		try {
+			Book book = this.bookService.get(2l);
+			
+			// make assertions about book
+			Assert.assertNotNull("Book 1 should not be null", book);
+			Assert.assertNotNull("Book 1 should have a non-null id", book.getId());
+			Assert.assertNotNull("Book 1 should have a non-null title", book.getTitle());
+		} catch (Exception ex) {
+			Assert.fail("this should not throw an exception");
+		}
 		
-		// make assertions about book
-		Assert.assertNotNull("Book 1 should not be null", book);
-		Assert.assertNotNull("Book 1 should have a non-null id", book.getId());
-		Assert.assertNotNull("Book 1 should have a non-null title", book.getTitle());
-		
-		// load a non-existant book
-		Book noBook = this.bookService.get(-200l);
-		
-		// it's not null, but it is devoid of information
-		Assert.assertNotNull("Unfound book should not be null", noBook);
-		Assert.assertNull("Unfound book should have a null id", noBook.getId());
-		Assert.assertNull("Unfound book should have a null title", noBook.getTitle());
-		Assert.assertNull("Unfound book should have a null sort", noBook.getSort());	
-		
+		// load a non-existant book, should throw a web exception
+		this.bookService.get(-200l);
 	}
 	
 	@Test

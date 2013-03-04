@@ -17,12 +17,7 @@ public class Series extends NamedSortedEntity implements IDepthOneCloneable<Seri
 	public Series() {
 		super();
 	}
-	
-	@Override
-	public String toString() {
-		return String.format("%s:%s:%s", this.getClass().getSimpleName(), this.getId(), this.getSort());
-	}
-	
+
 	@Override
 	public Series depthOneClone() {
 
@@ -30,7 +25,6 @@ public class Series extends NamedSortedEntity implements IDepthOneCloneable<Seri
 		series.setId(this.getId());
 		series.setName(this.getName());
 		series.setSort(this.getSort());
-		series.setNameFirstCharacter(this.getNameFirstCharacter());
 		series.setSortFirstCharacter(this.getSortFirstCharacter());
 		
 		return series;

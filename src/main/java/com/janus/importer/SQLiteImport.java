@@ -213,6 +213,18 @@ public class SQLiteImport {
 		int correlationTotal = bookToAuthors.size() + bookToSeries.size() + bookToTags.size();
 		this.logger.info("Performed {} correlations in {}ms", correlationTotal, System.currentTimeMillis() - before);
 		
+		// calculate series for each author
+		for(Author author : authors.values()) {
+			for(Book authorsBook : author.getBooks()) {
+				if(!author.getSeries().contains(authorsBook.getSeries())) {
+					author.getSeries().addAll(authorsBook.getSeries());
+				}
+			}
+			
+			// then calculate all stats
+			author.calculateStats();
+		}
+		
 		// create list of books to be inserted
 		final List<Book> result = Collections.unmodifiableList(new ArrayList<Book>(books.values()));
 		

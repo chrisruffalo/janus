@@ -11,12 +11,13 @@ import javax.xml.bind.annotation.XmlType;
 import org.hibernate.search.annotations.Indexed;
 
 import com.janus.model.interfaces.IDepthOneCloneable;
+import com.janus.model.interfaces.IHasBooks;
 
 @XmlRootElement
 @XmlType
 @Entity
 @Indexed
-public class Tag extends NamedEntity implements IDepthOneCloneable<Tag> {
+public class Tag extends NamedEntity implements IDepthOneCloneable<Tag>, IHasBooks {
 
 	@Transient
 	//@ManyToMany(mappedBy="tags", targetEntity=Book.class, fetch=FetchType.LAZY)
@@ -40,8 +41,7 @@ public class Tag extends NamedEntity implements IDepthOneCloneable<Tag> {
 		Tag tag = new Tag();
 		tag.setId(this.getId());
 		tag.setName(this.getName());
-		tag.setNameFirstCharacter(this.getNameFirstCharacter());
-		
+	
 		return tag;
 	}	
 }
