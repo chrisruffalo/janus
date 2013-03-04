@@ -82,6 +82,9 @@ public class Author extends NamedSortedEntity implements IDepthOneCloneable<Auth
 		if(this.getSeries() != null) {
 			stats.setSeriesCount(this.getSeries().size());
 		}
+		
+		// set stats
+		this.stats = stats;
 	}
 	
 	@Override
