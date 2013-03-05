@@ -29,6 +29,9 @@
 		<guava.version>11.0.2</guava.version> <!-- bundled with jboss as 7.1 and eap 6.0x -->
 		<commons.configuration.version>1.6</commons.configuration.version> <!-- bundled with jboss as 7.1 and eap 6.0x -->
 
+		<!-- javascript handling form within maven -->
+		<wro4j.version>1.6.2</wro4j.version>
+
 		<!-- sqljet, not provided, provided locally -->
 		<sqljet.version>1.1.1-JANUS</sqljet.version>
 
@@ -274,6 +277,27 @@
 		<!-- manage default plugin behavior -->
 		<pluginManagement>
 			<plugins>
+				<!-- web resource processing -->
+				<plugin>
+					<groupId>ro.isdc.wro4j</groupId>
+					<artifactId>wro4j-maven-plugin</artifactId>
+					<version>${wro4j.version}</version>
+					<configuration>
+						<wroFile>${basedir}/src/main/webresources/wro.xml</wroFile>
+						<extraConfigFile>${basedir}/src/main/webresources/wro.properties</extraConfigFile>
+						<wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
+					</configuration>
+					<!-- execute during compile phase -->
+					<executions>
+						<execution>
+							<phase>compile</phase>
+							<goals>
+								<goal>run</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
 				<!-- use java 6 through maven compiler 2.5 -->
 				<plugin>
 					<artifactId>maven-compiler-plugin</artifactId>
@@ -286,7 +310,6 @@
 						<compilerVersion>1.6</compilerVersion>
 					</configuration>
 				</plugin>
-
 				<!-- sync with eclipse (download code, etc) -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>

@@ -21,7 +21,11 @@ import javax.xml.bind.Marshaller;
 
 import org.slf4j.Logger;
 
+import com.janus.model.Author;
 import com.janus.model.BaseEntity;
+import com.janus.model.Book;
+import com.janus.model.Series;
+import com.janus.model.Tag;
 
 @Produces(value = { 
 		MediaType.APPLICATION_XML,
@@ -64,7 +68,16 @@ public class CustomListMarshaller implements MessageBodyWriter<List<BaseEntity>>
 			return;
 		}
 		
+		// otherwise grab the marshaller
+		Marshaller m = this.createMarshaller();
+
+		if(m == null) {
+			entityStream.write("<items/>".getBytes());
+			return;
+		}
+		
 		entityStream.write("<items>".getBytes());
+		
 		for(BaseEntity e : t) {
 			// if the entity is null, go to next
 			if(e == null) {
@@ -73,33 +86,32 @@ public class CustomListMarshaller implements MessageBodyWriter<List<BaseEntity>>
 			
 			this.logger.debug("Preparing to marshall '{}'...", e);
 			
-			// otherwise grab the marshaller
-			Marshaller m = this.createMarshaller(e.getClass());
-			
-			// if the marshaller is non-null, use it
-			if(m != null) {
-				try {
-					m.marshal(e, entityStream);
-					this.logger.debug("Marshalled '{}'", e);
-				} catch (JAXBException ex) {
-					this.logger.error("Error marshalling '{}' : {}", e, ex.getMessage());
-					ex.printStackTrace();
-				}
+			try {
+				m.marshal(e, entityStream);
+				this.logger.debug("Marshalled '{}'", e);
+			} catch (JAXBException ex) {
+				this.logger.error("Error marshalling '{}' : {}", e, ex.getMessage());
+				ex.printStackTrace();
 			}
 		}
 		entityStream.write("</items>".getBytes());
 	}
 
-	private Marshaller createMarshaller(Class<? extends BaseEntity> type) {
+	private Marshaller createMarshaller() {
 		Marshaller marshaller;
 		try {
-			JAXBContext context = JAXBContext.newInstance(type);			
+			JAXBContext context = JAXBContext.newInstance(
+				Book.class,
+				Author.class,
+				Tag.class,
+				Series.class
+			);			
 			marshaller = context.createMarshaller();
 			
 			// configure marshaller
 			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
 		} catch (JAXBException ex) {
-			this.logger.error("An error occured while getting marshaller for '{}' : {}", type.getSimpleName(), ex.getMessage());
+			this.logger.error("An error occured while getting marshaller: {}", ex.getMessage());
 			marshaller = null;
 			ex.printStackTrace();
 		}

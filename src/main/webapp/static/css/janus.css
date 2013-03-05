@@ -1,0 +1,36 @@
+.entry {
+    background-color: #fafafa;
+    border: solid;
+    border-width: 1px;
+    border-color: #cccccc;
+    margin-bottom: 5px;
+    
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+}
+
+.entryThumb {
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.entryItem {
+    float: left !important;
+    overflow: visible;
+}
+
+.entryCellThumb {
+    width: 100px;
+}
+
+.entryCellMain {
+    margin-left: 35px;
+    width: 250px;
+}
+
+.entryCellAdditionalAuthor {
+    margin-top: 15px;
+    width: 200px;
+}

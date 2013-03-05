@@ -1,6 +1,8 @@
 package com.janus.model;
 
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +52,19 @@ public enum FileType {
 		}		
 		
 		return type;
+	}
+	
+	/**
+	 * Gets a list of all extensions (for file filtering)
+	 * 
+	 * @return
+	 */
+	public static String[] getExtensions() {
+		List<String> exts = new LinkedList<String>();
+		for(FileType type : FileType.values()) {
+			exts.add(type.getExtension());
+		}		
+		return exts.toArray(new String[exts.size()]);
 	}
 	
 }

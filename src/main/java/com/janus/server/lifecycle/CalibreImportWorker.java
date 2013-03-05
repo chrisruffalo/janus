@@ -10,11 +10,13 @@ import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.tmatesoft.sqljet.core.SqlJetException;
 
 import com.janus.importer.CalibreImporter;
 import com.janus.model.Book;
+import com.janus.model.FileType;
 import com.janus.model.configuration.DatabaseStatus;
 import com.janus.server.configuration.ConfigurationProperties;
 import com.janus.server.providers.BookProvider;
@@ -73,6 +75,8 @@ public class CalibreImportWorker {
 		
 		// check against previous status
 		DatabaseStatus status = this.settingsProvider.getStatus();
+
+		boolean doUpdate = false;
 		
 		// if status has a hash of calibre, bring it in
 		if(status.getHash() != null && !status.getHash().isEmpty()) {
@@ -83,14 +87,31 @@ public class CalibreImportWorker {
 			this.logger.info("Current digetst: '{}'", currentDigest);
 			
 			if(currentDigest.equals(oldDigest)) {
-				this.logger.info("The current Calibre database hash matches the previous import's hash.  Skipping import.");
-				return new AsyncResult<Boolean>(false); // nothing was imported
+				this.logger.info("The current Calibre database hash matches the previous import's hash.");
 			} else {
-				this.logger.info("The current Calibre database hash does not match the previous hash. Importing!");
+				this.logger.info("The current Calibre database hash does not match the previous hash. Requesting import!");
+				doUpdate = true;
 				status.setHash(currentDigest);
 			}
 		} else {
 			status.setHash(currentDigest);
+		}
+		
+		// lookup ebook files
+		int currentCount = FileUtils.listFiles(base, FileType.getExtensions(), true).size();
+		this.logger.info("Found {} compatible ebook files", currentCount);
+
+		// if file counts don't match, rescan too
+		if(currentCount != status.getFileCount()) {
+			this.logger.info("Old file count {} does not match current count", status.getFileCount());
+			status.setFileCount(currentCount);
+			doUpdate = true;
+		}
+		
+		// if no update was signaled, return false
+		if(!doUpdate) {
+			this.logger.info("No import requested.");
+			return new AsyncResult<Boolean>(false);
 		}
 		
 		// now that the meta handle is certainly available, import it!

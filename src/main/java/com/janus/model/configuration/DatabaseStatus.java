@@ -17,13 +17,19 @@ public class DatabaseStatus {
 	// previously observed calibre database hash
 	private String hash;
 	
+	// count of books in database
 	private long bookCount;
+	
+	// if the file count or has is different
+	// it will trigger a full rescan
+	private long fileCount;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedTime;
 
 	public DatabaseStatus() {
 		this.id = 0;
+		this.fileCount = 0;
 		this.hash = "";
 	}
 
@@ -57,6 +63,14 @@ public class DatabaseStatus {
 
 	public void setUpdatedTime(Date updatedTime) {
 		this.updatedTime = updatedTime;
+	}
+
+	public long getFileCount() {
+		return fileCount;
+	}
+
+	public void setFileCount(long fileCount) {
+		this.fileCount = fileCount;
 	}
 	
 }
