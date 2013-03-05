@@ -11,9 +11,7 @@ import org.slf4j.Logger;
 
 import com.janus.model.Author;
 import com.janus.model.Book;
-import com.janus.server.statistics.LogMetrics;
 
-@LogMetrics
 @RequestScoped
 public class AuthorProvider extends AbstractChildProvider<Author> {
 

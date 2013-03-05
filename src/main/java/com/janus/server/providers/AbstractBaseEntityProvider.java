@@ -1,6 +1,7 @@
 package com.janus.server.providers;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -37,7 +38,7 @@ public abstract class AbstractBaseEntityProvider<E extends BaseEntity> extends A
 			return Collections.emptyList();
 		}
 		
-		char upperStart = Character.toUpperCase(start.charAt(0));
+		char upperStart = start.toUpperCase().charAt(0);
 
 		CriteriaBuilder builder = manager.getCriteriaBuilder();
 
@@ -46,19 +47,22 @@ public abstract class AbstractBaseEntityProvider<E extends BaseEntity> extends A
 		Root<E> root = query.from(this.getEntityType());
 		query.select(root);
 
-		// ! is the marker for 'symbols and numbers'
-		if (upperStart == '!') {
-			Predicate predicate = builder.disjunction();
+		// '!', 1, and '~' are the marker for 'symbols and numbers'
+		if ('!' == upperStart || '~' == upperStart || '1' == upperStart) {
+			List<Predicate> predicates = new LinkedList<Predicate>();
 			for (char alphabet = 'A'; alphabet <= 'Z'; alphabet++) {
-				predicate = builder.and(predicate,
-						builder.notEqual(root.get(field), alphabet));
+				Predicate predicate = builder.notEqual(root.get(field), alphabet);
+				predicates.add(predicate);
 			}
-			query.where(predicate);
+			query.where(predicates.toArray(new Predicate[predicates.size()]));
 		} else {
 			query.where(builder.equal(root.get(field), upperStart));
 		}
 		
 		List<E> results = this.executeRangeQuery(query, index, size);
+		
+		this.logger.info("Found {} items of type {} that start with '{}'",
+				new Object[] { results.size(), this.getEntityType().getSimpleName(), upperStart });
 
 		return results;
 	}
@@ -73,9 +77,13 @@ public abstract class AbstractBaseEntityProvider<E extends BaseEntity> extends A
 	 * @param start
 	 * @return
 	 */
-	public long getStartsWithCount(String field, char start) {
+	public long getStartsWithCount(String field, String start) {
 
-		char upperStart = Character.toUpperCase(start);
+		if(start == null || start.isEmpty()) {
+			return 0;
+		}
+		
+		char upperStart = start.toUpperCase().charAt(0);
 
 		CriteriaBuilder builder = this.manager.getCriteriaBuilder();
 
@@ -84,8 +92,8 @@ public abstract class AbstractBaseEntityProvider<E extends BaseEntity> extends A
 		Root<E> root = query.from(this.getEntityType());
 		query.select(root.get(BaseEntity.ID).as(Long.class));
 
-		// ! is the marker for 'symbols and numbers'
-		if (start == '!') {
+		// '!', 1, and '~' are the marker for 'symbols and numbers'
+		if ('!' == upperStart || '~' == upperStart || '1' == upperStart) {
 			Predicate predicate = builder.disjunction();
 			for (char alphabet = 'A'; alphabet <= 'Z'; alphabet++) {
 				predicate = builder.and(predicate,

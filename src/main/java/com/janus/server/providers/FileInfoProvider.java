@@ -12,10 +12,8 @@ import org.slf4j.Logger;
 
 import com.janus.model.Book;
 import com.janus.model.FileInfo;
-import com.janus.server.statistics.LogMetrics;
 
 @RequestScoped
-@LogMetrics
 public class FileInfoProvider extends AbstractProvider<FileInfo> {
 
 	@Inject

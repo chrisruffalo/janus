@@ -4,9 +4,7 @@ import javax.enterprise.context.RequestScoped;
 
 import com.janus.model.Book;
 import com.janus.model.Tag;
-import com.janus.server.statistics.LogMetrics;
 
-@LogMetrics
 @RequestScoped
 public class TagProvider extends AbstractChildProvider<Tag> {
 

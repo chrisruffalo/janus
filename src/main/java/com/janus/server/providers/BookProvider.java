@@ -15,10 +15,8 @@ import javax.persistence.criteria.Root;
 import org.slf4j.Logger;
 
 import com.janus.model.Book;
-import com.janus.server.statistics.LogMetrics;
 
 @RequestScoped
-@LogMetrics
 public class BookProvider extends AbstractBaseEntityProvider<Book> {
 
 	@Inject

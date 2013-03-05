@@ -4,9 +4,7 @@ import javax.enterprise.context.RequestScoped;
 
 import com.janus.model.Book;
 import com.janus.model.Series;
-import com.janus.server.statistics.LogMetrics;
 
-@LogMetrics
 @RequestScoped
 public class SeriesProvider extends AbstractChildProvider<Series> {
 

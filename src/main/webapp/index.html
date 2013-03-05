@@ -1,22 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Janus</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Bootstrap -->
-    <link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <link href="static/css/font-awesome.min.css" rel="stylesheet" >
-    
-    <!-- janus -->
-    <link href="static/css/janus.css" rel="stylesheet" media="screen">
-      
-    <!-- templates -->
-    <script id="book-template" type="text/x-handlebars-template">
+<head>
+<title>Janus</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Bootstrap -->
+<link href="static/css/bootstrap.min.css" rel="stylesheet"
+	media="screen">
+<link href="static/css/font-awesome.min.css" rel="stylesheet">
+
+<!-- janus -->
+<link href="static/css/janus.css" rel="stylesheet" media="screen">
+
+<!-- templates -->
+<script id="book-template" type="text/x-handlebars-template">
       {{! sample expanded book row template }}
       <div class="row entry">
         <div class="entryItem entryCellThumb">
-          <img src="http://localhost:8080/janus/s/file/cover/{{id}}" class="thumbnail entryThumb"/>
+          <img src="s/file/cover/{{id}}" class="thumbnail entryThumb"/>
         </div>
         <div class="entryItem entryCellMain">
           <h4><em>{{title}}</em></h3>
@@ -44,43 +45,62 @@
         </div>
       </div> <!-- /row -->      
     </script>
-  </head>
-  <body>
-    
-    <div id="mainBox" class="container">
-    </div> <!-- /container -->
-    
-    <!-- scripts -->
-    <script src="static/js/jquery.js"></script>
-    <script src="static/js/bootstrap.min.js"></script>
-    <script src="static/js/handlebars.js"></script>
-    
-    <!-- handlebars template stuff -->
-    <script>
-      $(document).ready(function() {
-        var source   = $("#book-template").html();
-        var template = Handlebars.compile(source);
-        
+</head>
+<body>
+
+	<div id="mainBox" class="container">
+		<em>http://localhost:8080/janus/s/</em><input id="go"></input> <a
+			class="btn">go!</a>
+	</div>
+	<!-- /container -->
+
+	<div id="mainBox" class="container"></div>
+	<!-- /container -->
+
+	<!-- scripts -->
+	<script src="static/js/jquery.js"></script>
+	<script src="static/js/bootstrap.min.js"></script>
+	<script src="static/js/handlebars.js"></script>
+
+	<!-- handlebars template stuff -->
+	<script>
+    	var source   = $("#book-template").html();
+    	var template = Handlebars.compile(source);
+
         //register helpers
         Handlebars.registerHelper('series_helper', function(seriesList) {
           return new Handlebars.SafeString(
             seriesList[0].name
           );
         });
+
+    
+      $(document).ready(function() {
+
+    		$.ajax("s/book/list?index=0&size=20").success(
+    				function(context) {
+    			        for(var i = 0; i < context.length; i++) {
+    			            var html = template(context[i]);
+    			            $('#mainBox').append(html);
+    					}        
+    				}
+    	    	);    	
+    	        
         
         //var context = {"id":1,"title":"First Lord's Fury","sort":"First Lord's Fury","timestamp":1263718800000,"publicationDate":1231923600000,"seriesIndex":6.0,"authorSort":"Butcher, Jim","hasCover":true,"lastModified":1296025251000,"authors":[{"id":1,"books":[],"name":"Jim Butcher","sort":"Butcher, Jim","bookCount":16,"seriesCount":2,"latestBookTimestamp":1263718800000,"series":[]}],"tags":[{"id":1,"books":[],"name":"Fantasy"}],"series":[{"id":1,"books":[],"name":"Codex Alera","sort":"Codex Alera"}],"fileInfo":{"MOBI":{"identifier":"1.MOBI","type":"MOBI","descriptiveSize":"1.1MB","size":1135443},"EPUB":{"identifier":"1.EPUB","type":"EPUB","descriptiveSize":"880.2kB","size":880159}},"rating":{"id":4,"rating":0,"books":[]}};
         //var context = {"id":1832,"title":"The Handmaid's Tale","sort":"Handmaid's Tale, The","timestamp":1359421570000,"publicationDate":506340000000,"seriesIndex":1.0,"authorSort":"Atwood, Margaret","hasCover":true,"lastModified":1359422185000,"authors":[{"id":737,"books":[],"name":"Margaret Atwood","sort":"Atwood, Margaret","bookCount":1,"seriesCount":0,"latestBookTimestamp":1359421570000,"series":[]}],"tags":[{"id":12,"books":[],"name":"Fiction"},{"id":313,"books":[],"name":"Dystopian"}],"series":[],"fileInfo":{"MOBI":{"identifier":"1832.MOBI","type":"MOBI","descriptiveSize":"531.6kB","size":531582},"EPUB":{"identifier":"1832.EPUB","type":"EPUB","descriptiveSize":"366.5kB","size":366499}},"rating":null};
         
         //var context = [{"id":900,"title":"1632","sort":"1632","timestamp":1263275873000,"publicationDate":946720800000,"seriesIndex":1.0,"authorSort":"Flint, Eric","hasCover":true,"lastModified":1296025251000,"authors":[{"id":219,"books":[],"name":"Eric Flint","sort":"Flint, Eric","bookCount":11,"seriesCount":1,"latestBookTimestamp":1263275882000,"series":[]}],"tags":[{"id":4,"books":[],"name":"Science Fiction"},{"id":81,"books":[],"name":"Alternate History"},{"id":100,"books":[],"name":"Grantville"}],"series":[{"id":200,"books":[],"name":"Ring of Fire","sort":"Ring of Fire"}],"fileInfo":{"MOBI":{"identifier":"900.MOBI","type":"MOBI","descriptiveSize":"1.0MB","size":1035185},"EPUB":{"identifier":"900.EPUB","type":"EPUB","descriptiveSize":"831.9kB","size":831882}},"rating":{"id":4,"rating":0,"books":[]}},{"id":901,"title":"1633","sort":"1633","timestamp":1263275882000,"publicationDate":1009875600000,"seriesIndex":2.0,"authorSort":"Weber, David & Flint, Eric","hasCover":true,"lastModified":1296025251000,"authors":[{"id":219,"books":[],"name":"Eric Flint","sort":"Flint, Eric","bookCount":11,"seriesCount":1,"latestBookTimestamp":1263275882000,"series":[]},{"id":48,"books":[],"name":"David Weber","sort":"Weber, David","bookCount":17,"seriesCount":3,"latestBookTimestamp":1263689301000,"series":[]}],"tags":[{"id":4,"books":[],"name":"Science Fiction"},{"id":81,"books":[],"name":"Alternate History"},{"id":100,"books":[],"name":"Grantville"}],"series":[{"id":200,"books":[],"name":"Ring of Fire","sort":"Ring of Fire"}],"fileInfo":{"MOBI":{"identifier":"901.MOBI","type":"MOBI","descriptiveSize":"1.4MB","size":1382884},"EPUB":{"identifier":"901.EPUB","type":"EPUB","descriptiveSize":"1.1MB","size":1111327}},"rating":{"id":4,"rating":0,"books":[]}},{"id":1007,"title":"1634: The Baltic War","sort":"1634: The Baltic War","timestamp":1263249741000,"publicationDate":1167652800000,"seriesIndex":7.0,"authorSort":"Flint, Eric & Weber, David","hasCover":true,"lastModified":1296025251000,"authors":[{"id":219,"books":[],"name":"Eric Flint","sort":"Flint, Eric","bookCount":11,"seriesCount":1,"latestBookTimestamp":1263275882000,"series":[]},{"id":48,"books":[],"name":"David Weber","sort":"Weber, David","bookCount":17,"seriesCount":3,"latestBookTimestamp":1263689301000,"series":[]}],"tags":[{"id":4,"books":[],"name":"Science Fiction"},{"id":81,"books":[],"name":"Alternate History"},{"id":100,"books":[],"name":"Grantville"}],"series":[{"id":200,"books":[],"name":"Ring of Fire","sort":"Ring of Fire"}],"fileInfo":{"MOBI":{"identifier":"1007.MOBI","type":"MOBI","descriptiveSize":"1.7MB","size":1674601},"EPUB":{"identifier":"1007.EPUB","type":"EPUB","descriptiveSize":"1.3MB","size":1275375}},"rating":{"id":4,"rating":0,"books":[]}},{"id":1008,"title":"1634: The Bavarian Crisis","sort":"1634: The Bavarian Crisis","timestamp":1263249743000,"publicationDate":1167652800000,"seriesIndex":8.0,"authorSort":"Flint, Eric & DeMarce, Virginia","hasCover":true,"lastModified":1296025251000,"authors":[{"id":219,"books":[],"name":"Eric Flint","sort":"Flint, Eric","bookCount":11,"seriesCount":1,"latestBookTimestamp":1263275882000,"series":[]},{"id":268,"books":[],"name":"Virginia DeMarce","sort":"DeMarce, Virginia","bookCount":4,"seriesCount":1,"latestBookTimestamp":1263249752000,"series":[]}],"tags":[{"id":4,"books":[],"name":"Science Fiction"},{"id":81,"books":[],"name":"Alternate History"},{"id":100,"books":[],"name":"Grantville"}],"series":[{"id":200,"books":[],"name":"Ring of Fire","sort":"Ring of Fire"}],"fileInfo":{"MOBI":{"identifier":"1008.MOBI","type":"MOBI","descriptiveSize":"1.3MB","size":1332002},"EPUB":{"identifier":"1008.EPUB","type":"EPUB","descriptiveSize":"975.6kB","size":975594}},"rating":{"id":4,"rating":0,"books":[]}},{"id":1009,"title":"1634: The Galileo Affair","sort":"1634: The Galileo Affair","timestamp":1263249745000,"publicationDate":1072958400000,"seriesIndex":4.0,"authorSort":"Flint, Eric & Dennis, Andrew","hasCover":true,"lastModified":1296025251000,"authors":[{"id":219,"books":[],"name":"Eric Flint","sort":"Flint, Eric","bookCount":11,"seriesCount":1,"latestBookTimestamp":1263275882000,"series":[]},{"id":269,"books":[],"name":"Andrew Dennis","sort":"Dennis, Andrew","bookCount":2,"seriesCount":1,"latestBookTimestamp":1263249748000,"series":[]}],"tags":[{"id":4,"books":[],"name":"Science Fiction"},{"id":81,"books":[],"name":"Alternate History"},{"id":100,"books":[],"name":"Grantville"}],"series":[{"id":200,"books":[],"name":"Ring of Fire","sort":"Ring of Fire"}],"fileInfo":{"MOBI":{"identifier":"1009.MOBI","type":"MOBI","descriptiveSize":"1.1MB","size":1126386},"EPUB":{"identifier":"1009.EPUB","type":"EPUB","descriptiveSize":"797.2kB","size":797198}},"rating":{"id":4,"rating":0,"books":[]}},{"id":1010,"title":"1635: The Cannon Law","sort":"1635: The Cannon Law","timestamp":1263249748000,"publicationDate":1136116800000,"seriesIndex":6.0,"authorSort":"Flint, Eric & Dennis, Andrew","hasCover":true,"lastModified":1296025251000,"authors":[{"id":219,"books":[],"name":"Eric Flint","sort":"Flint, Eric","bookCount":11,"seriesCount":1,"latestBookTimestamp":1263275882000,"series":[]},{"id":269,"books":[],"name":"Andrew Dennis","sort":"Dennis, Andrew","bookCount":2,"seriesCount":1,"latestBookTimestamp":1263249748000,"series":[]}],"tags":[{"id":4,"books":[],"name":"Science Fiction"},{"id":81,"books":[],"name":"Alternate History"},{"id":100,"books":[],"name":"Grantville"}],"series":[{"id":200,"books":[],"name":"Ring of Fire","sort":"Ring of Fire"}],"fileInfo":{"MOBI":{"identifier":"1010.MOBI","type":"MOBI","descriptiveSize":"826.0kB","size":825977},"EPUB":{"identifier":"1010.EPUB","type":"EPUB","descriptiveSize":"610.5kB","size":610522}},"rating":{"id":4,"rating":0,"books":[]}},{"id":1011,"title":"1635: The Dreeson Incident","sort":"1635: The Dreeson Incident","timestamp":1263249751000,"publicationDate":1199188800000,"seriesIndex":10.0,"authorSort":"Flint, Eric & DeMarce, Virginia","hasCover":true,"lastModified":1296402240000,"authors":[{"id":219,"books":[],"name":"Eric Flint","sort":"Flint, Eric","bookCount":11,"seriesCount":1,"latestBookTimestamp":1263275882000,"series":[]},{"id":268,"books":[],"name":"Virginia DeMarce","sort":"DeMarce, Virginia","bookCount":4,"seriesCount":1,"latestBookTimestamp":1263249752000,"series":[]}],"tags":[{"id":4,"books":[],"name":"Science Fiction"},{"id":81,"books":[],"name":"Alternate History"},{"id":100,"books":[],"name":"Grantville"}],"series":[{"id":200,"books":[],"name":"Ring of Fire","sort":"Ring of Fire"}],"fileInfo":{"MOBI":{"identifier":"1011.MOBI","type":"MOBI","descriptiveSize":"1.2MB","size":1158216},"EPUB":{"identifier":"1011.EPUB","type":"EPUB","descriptiveSize":"867.1kB","size":867101}},"rating":{"id":4,"rating":0,"books":[]}},{"id":1013,"title":"Ring of Fire","sort":"Ring of Fire","timestamp":1263249794000,"publicationDate":1072962000000,"seriesIndex":3.0,"authorSort":"Flint, Eric","hasCover":true,"lastModified":1296025251000,"authors":[{"id":219,"books":[],"name":"Eric Flint","sort":"Flint, Eric","bookCount":11,"seriesCount":1,"latestBookTimestamp":1263275882000,"series":[]}],"tags":[{"id":4,"books":[],"name":"Science Fiction"},{"id":81,"books":[],"name":"Alternate History"},{"id":100,"books":[],"name":"Grantville"}],"series":[{"id":200,"books":[],"name":"Ring of Fire","sort":"Ring of Fire"}],"fileInfo":{"MOBI":{"identifier":"1013.MOBI","type":"MOBI","descriptiveSize":"932.5kB","size":932517},"EPUB":{"identifier":"1013.EPUB","type":"EPUB","descriptiveSize":"601.8kB","size":601794}},"rating":{"id":4,"rating":0,"books":[]}},{"id":1014,"title":"Ring of Fire II","sort":"Ring of Fire II","timestamp":1263249796000,"publicationDate":1199192400000,"seriesIndex":9.0,"authorSort":"Flint, Eric","hasCover":true,"lastModified":1296025251000,"authors":[{"id":219,"books":[],"name":"Eric Flint","sort":"Flint, Eric","bookCount":11,"seriesCount":1,"latestBookTimestamp":1263275882000,"series":[]}],"tags":[{"id":4,"books":[],"name":"Science Fiction"},{"id":81,"books":[],"name":"Alternate History"},{"id":100,"books":[],"name":"Grantville"}],"series":[{"id":200,"books":[],"name":"Ring of Fire","sort":"Ring of Fire"}],"fileInfo":{"MOBI":{"identifier":"1014.MOBI","type":"MOBI","descriptiveSize":"1.1MB","size":1136064},"EPUB":{"identifier":"1014.EPUB","type":"EPUB","descriptiveSize":"781.7kB","size":781744}},"rating":{"id":4,"rating":0,"books":[]}},{"id":1015,"title":"Time Spike","sort":"Time Spike","timestamp":1263249799000,"publicationDate":1199188800000,"seriesIndex":0.01,"authorSort":"Flint, Eric & Kosmatka, Marilyn","hasCover":true,"lastModified":1296025251000,"authors":[{"id":219,"books":[],"name":"Eric Flint","sort":"Flint, Eric","bookCount":11,"seriesCount":1,"latestBookTimestamp":1263275882000,"series":[]},{"id":270,"books":[],"name":"Marilyn Kosmatka","sort":"Kosmatka, Marilyn","bookCount":1,"seriesCount":1,"latestBookTimestamp":1263249799000,"series":[]}],"tags":[{"id":4,"books":[],"name":"Science Fiction"},{"id":81,"books":[],"name":"Alternate History"},{"id":100,"books":[],"name":"Grantville"}],"series":[{"id":200,"books":[],"name":"Ring of Fire","sort":"Ring of Fire"}],"fileInfo":{"MOBI":{"identifier":"1015.MOBI","type":"MOBI","descriptiveSize":"736.3kB","size":736348},"EPUB":{"identifier":"1015.EPUB","type":"EPUB","descriptiveSize":"508.2kB","size":508160}},"rating":{"id":4,"rating":0,"books":[]}},{"id":1016,"title":"1634: The Ram Rebellion","sort":"1634: The Ram Rebellion","timestamp":1263249747000,"publicationDate":1136116800000,"seriesIndex":5.0,"authorSort":"Flint, Eric & DeMarce, Virginia","hasCover":true,"lastModified":1296025251000,"authors":[{"id":219,"books":[],"name":"Eric Flint","sort":"Flint, Eric","bookCount":11,"seriesCount":1,"latestBookTimestamp":1263275882000,"series":[]},{"id":268,"books":[],"name":"Virginia DeMarce","sort":"DeMarce, Virginia","bookCount":4,"seriesCount":1,"latestBookTimestamp":1263249752000,"series":[]}],"tags":[{"id":4,"books":[],"name":"Science Fiction"},{"id":81,"books":[],"name":"Alternate History"},{"id":100,"books":[],"name":"Grantville"}],"series":[{"id":200,"books":[],"name":"Ring of Fire","sort":"Ring of Fire"}],"fileInfo":{"MOBI":{"identifier":"1016.MOBI","type":"MOBI","descriptiveSize":"1.1MB","size":1053306},"EPUB":{"identifier":"1016.EPUB","type":"EPUB","descriptiveSize":"727.8kB","size":727778}},"rating":{"id":4,"rating":0,"books":[]}}]
-        
+       
+       	/* 
         var context = [{"id":1839,"title":"How to Archer: The Ultimate Guide to Espionage, Style, Women, and Cocktails Ever Written","sort":"How to Archer: The Ultimate Guide to Espionage, Style, Women, and Cocktails Ever Written","timestamp":1358567388000,"publicationDate":1483264800000,"seriesIndex":1.0,"authorSort":"Archer, Sterling","hasCover":true,"lastModified":1358567815000,"authors":[{"id":744,"books":[],"name":"Sterling Archer","sort":"Archer, Sterling","bookCount":1,"seriesCount":0,"latestBookTimestamp":1358567388000,"series":[]}],"tags":[{"id":12,"books":[],"name":"Fiction"},{"id":15,"books":[],"name":"Spy"}],"series":[],"fileInfo":{"MOBI":{"identifier":"1839.MOBI","type":"MOBI","descriptiveSize":"1.5MB","size":1507619},"EPUB":{"identifier":"1839.EPUB","type":"EPUB","descriptiveSize":"1.5MB","size":1535282}},"rating":null}];
         
         for(var i = 0; i < context.length; i++) {
           var html = template(context[i]);
           $('#mainBox').append(html);
         }        
-        
+        */
       });
     </script>
-  </body>
+</body>
 </html>

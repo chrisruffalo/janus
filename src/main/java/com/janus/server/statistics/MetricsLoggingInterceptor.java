@@ -44,7 +44,7 @@ public class MetricsLoggingInterceptor {
 		outputLog.add(methodPoint);
 		outputLog.add(time);
 
-		String outputLine = "Calling '{}' took {}ms";
+		String outputLine = "'{}' in {}ms";
 		
 		// if debugging is enabled print additional metrics information
 		if(this.logger.isDebugEnabled()) {

@@ -11,6 +11,9 @@ import javax.persistence.criteria.CriteriaQuery;
 
 import org.slf4j.Logger;
 
+import com.janus.server.statistics.LogMetrics;
+
+@LogMetrics
 public abstract class AbstractProvider<E> {
 
 	@Inject
