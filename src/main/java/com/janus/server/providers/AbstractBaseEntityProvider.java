@@ -16,7 +16,9 @@ import org.slf4j.Logger;
 
 import com.janus.model.BaseEntity;
 import com.janus.model.interfaces.ISorted;
+import com.janus.server.statistics.LogMetrics;
 
+@LogMetrics
 public abstract class AbstractBaseEntityProvider<E extends BaseEntity> extends AbstractProvider<E> {
 
 	@Inject

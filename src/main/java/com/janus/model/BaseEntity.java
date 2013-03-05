@@ -33,6 +33,11 @@ public abstract class BaseEntity implements ICanLoadFromSqlCursorRow {
 	public BaseEntity() {
 
 	}
+	
+	@XmlAttribute(name="type")
+	public String getType() {
+		return this.getClass().getSimpleName().toLowerCase();
+	}
 
 	@XmlAttribute(name="id")
 	public Long getId() {
