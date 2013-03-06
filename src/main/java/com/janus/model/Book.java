@@ -138,9 +138,9 @@ public class Book extends BaseEntity implements ISorted {
 	private Set<Tag> tags;
 	
 	@IndexedEmbedded(depth = 1)
-	@ManyToMany(cascade={CascadeType.PERSIST, CascadeType.REMOVE}, fetch=FetchType.EAGER)
+	@ManyToOne(cascade={CascadeType.PERSIST, CascadeType.REMOVE}, fetch=FetchType.EAGER)
 	@Fetch(FetchMode.JOIN)
-	private Set<Series> series;
+	private Series series;
 	
 	// file information
 	@OneToMany(cascade={CascadeType.PERSIST, CascadeType.REMOVE}, fetch=FetchType.EAGER)
@@ -156,7 +156,6 @@ public class Book extends BaseEntity implements ISorted {
 		super();
 		
 		this.authors = new HashSet<Author>();
-		this.series = new HashSet<Series>();
 		this.tags = new HashSet<Tag>();
 		
 		this.fileInfo = new HashMap<FileType, FileInfo>();
@@ -266,9 +265,7 @@ public class Book extends BaseEntity implements ISorted {
 		this.tags = tags;
 	}
 
-	@XmlElementWrapper(name="inSeries")
-	@XmlElement(name="series")
-	public Set<Series> getSeries() {
+	public Series getSeries() {
 		return series;
 	}
 	
@@ -280,7 +277,7 @@ public class Book extends BaseEntity implements ISorted {
 		this.rating = rating;
 	}
 
-	public void setSeries(Set<Series> series) {
+	public void setSeries(Series series) {
 		this.series = series;
 	}
 	
@@ -349,7 +346,10 @@ public class Book extends BaseEntity implements ISorted {
 		} else if(item instanceof Series) {
 			Series series = (Series)item;
 			series.getBooks().add(this);
-			this.series.add(series);
+			
+			if(this.series != null) {
+				this.series = series;
+			}
 		} else if(item instanceof Tag) {
 			Tag tag = (Tag)item;
 			tag.getBooks().add(this);

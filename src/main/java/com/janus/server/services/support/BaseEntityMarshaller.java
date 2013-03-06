@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -29,29 +27,28 @@ import com.janus.model.BaseEntity;
 )
 @Provider
 @Singleton
-public class CustomListMarshaller implements MessageBodyWriter<List<BaseEntity>>{
+public class BaseEntityMarshaller implements MessageBodyWriter<BaseEntity>{
 
 	@Inject
 	private Logger logger;
 	
 	@Inject
-	@FragmentMarshaller
-	private Marshaller fragmentMarshaller;
+	private Marshaller marshaller;
 	
 	@Override
 	public boolean isWriteable(Class<?> type, Type genericType,
 			Annotation[] annotations, MediaType mediaType) {
-		return ArrayList.class.isAssignableFrom(type);
+		return BaseEntity.class.isAssignableFrom(type);
 	}
 
 	@Override
-	public long getSize(List<BaseEntity> t, Class<?> type,
+	public long getSize(BaseEntity t, Class<?> type,
 			Type genericType, Annotation[] annotations, MediaType mediaType) {
 		return -1;
 	}
 
 	@Override
-	public void writeTo(List<BaseEntity> t, Class<?> type,
+	public void writeTo(BaseEntity t, Class<?> type,
 			Type genericType, Annotation[] annotations, MediaType mediaType,
 			MultivaluedMap<String, Object> httpHeaders,
 			OutputStream entityStream) throws IOException,
@@ -59,38 +56,19 @@ public class CustomListMarshaller implements MessageBodyWriter<List<BaseEntity>>
 	
 		this.logger.debug("Writing!");
 		
-		// xml header
-		entityStream.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>".getBytes());
-		
-		if(t == null || t.isEmpty()) {
-			entityStream.write("<items/>".getBytes());
+		if(t == null || this.marshaller == null) {
 			return;
 		}
 		
-		if(this.fragmentMarshaller == null) {
-			entityStream.write("<items/>".getBytes());
-			return;
+		this.logger.debug("Preparing to marshall '{}'...", t);
+		
+		try {
+			this.marshaller.marshal(t, entityStream);
+			this.logger.debug("Marshalled '{}'", t);
+		} catch (JAXBException ex) {
+			this.logger.error("Error marshalling '{}' : {}", t, ex.getMessage());
+			ex.printStackTrace();
 		}
 		
-		entityStream.write("<items>".getBytes());
-		
-		for(BaseEntity e : t) {
-			// if the entity is null, go to next
-			if(e == null) {
-				continue;
-			}
-			
-			this.logger.debug("Preparing to marshall '{}'...", e);
-			
-			try {
-				this.fragmentMarshaller.marshal(e, entityStream);
-				this.logger.debug("Marshalled '{}'", e);
-			} catch (JAXBException ex) {
-				this.logger.error("Error marshalling '{}' : {}", e, ex.getMessage());
-				ex.printStackTrace();
-			}
-		}
-		entityStream.write("</items>".getBytes());
 	}
-
 }

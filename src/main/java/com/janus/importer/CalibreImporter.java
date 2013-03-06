@@ -217,7 +217,7 @@ public class CalibreImporter {
 		for(Author author : authors.values()) {
 			for(Book authorsBook : author.getBooks()) {
 				if(!author.getSeries().contains(authorsBook.getSeries())) {
-					author.getSeries().addAll(authorsBook.getSeries());
+					author.getSeries().add(authorsBook.getSeries());
 				}
 			}
 			
