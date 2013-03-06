@@ -97,4 +97,24 @@ public class BookProvider extends AbstractBaseEntityProvider<Book> {
 		// flush drop
 		this.manager.flush();
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean setUpSort(Root<Book> root, CriteriaBuilder builder, CriteriaQuery<Book> query, String sortString) {
+		boolean result = super.setUpSort(root, builder, query, sortString);
+		
+		// if already sorted, leave
+		if(result) {
+			return true;
+		}
+		
+		if("latest".equalsIgnoreCase(sortString)) {
+			query.orderBy(builder.desc(root.get(Book.MODEL_LASTMODIFIED)));
+			return true;
+		}
+		
+		return false;
+	}
 }

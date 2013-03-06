@@ -17,20 +17,4 @@
 }
 
 .entryItem {
-    float: left !important;
-    overflow: visible;
-}
-
-.entryCellThumb {
-    width: 100px;
-}
-
-.entryCellMain {
-    margin-left: 35px;
-    width: 250px;
-}
-
-.entryCellAdditionalAuthor {
-    margin-top: 15px;
-    width: 200px;
 }

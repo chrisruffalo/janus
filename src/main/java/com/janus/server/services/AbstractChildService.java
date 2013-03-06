@@ -7,6 +7,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
 
 import com.janus.model.Author;
 import com.janus.model.Book;
@@ -56,4 +59,32 @@ public abstract class AbstractChildService<E extends NamedSortedEntity, P extend
 	) {
 		return this.getProvider().getAuthorsForChild(id, index, size);
 	}
+	
+	@GET
+	@Path("/{id}/cover")
+	public Response cover(@PathParam("id") Long id, 
+					     @QueryParam("base64") @DefaultValue("no") String encodeInBase64, 
+					     @QueryParam("w") @DefaultValue("0") int width, 
+					     @QueryParam("h") @DefaultValue("0") int height) 
+	{
+		boolean encode = "yes".equalsIgnoreCase(encodeInBase64);
+		byte[] fromFile = this.getProvider().getRandomCover(id, encode, width, height);
+		
+		if(fromFile == null) {
+			return Response.status(Status.NOT_FOUND).entity("no cover image found for book " + id).build();
+		}
+		
+		// build response
+		ResponseBuilder builder = Response.ok();
+		
+		// set response
+		builder.entity(fromFile);
+		
+		// set mime-type
+		builder.type("image/jpeg");
+				
+		return builder.build();
+	}
+
+	
 }

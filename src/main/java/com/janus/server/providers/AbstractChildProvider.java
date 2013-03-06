@@ -1,6 +1,7 @@
 package com.janus.server.providers;
 
 import java.util.List;
+import java.util.Random;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -24,6 +25,9 @@ import com.janus.model.interfaces.ISorted;
 public abstract class AbstractChildProvider<E extends BaseEntity> extends AbstractBaseEntityProvider<E> {
 	
 	@Inject
+	private FileInfoProvider fileInfoProvider;
+	
+	@Inject
 	private Logger logger;
 	
 	@Inject
@@ -31,8 +35,7 @@ public abstract class AbstractChildProvider<E extends BaseEntity> extends Abstra
 	
 	protected abstract String getJoinField();
 	
-	public List<Book> getBooksForChild(Object childId, int index, int size) {
-		
+	public List<Book> getBooksForChild(Long childId, int index, int size) {
 		CriteriaBuilder builder = this.manager.getCriteriaBuilder();
 		CriteriaQuery<Book> query = builder.createQuery(Book.class);
 		
@@ -138,7 +141,45 @@ public abstract class AbstractChildProvider<E extends BaseEntity> extends Abstra
 		// execute query
 		return this.executeRangeQuery(query, index, size);
 	}
-
+	
+	public Long getRandomParentBookId(Long childId) {
+		CriteriaBuilder builder = this.manager.getCriteriaBuilder();
+		CriteriaQuery<Long> query = builder.createQuery(Long.class);
+		
+		Root<Book> bookRoot = query.from(Book.class);
+		query.select(bookRoot.get(Book.ID).as(Long.class));
+		
+		// join onto target input type
+		Join<Book, E> joinToInput = bookRoot.join(this.getJoinField());
+		
+		// identifier on the join type has to match what was passed in
+		query.where(builder.equal(joinToInput.get(BaseEntity.ID), childId));
+		
+		// exceute id-only query
+		List<Long> bookIdList = this.executeQuery(query);
+		
+		// return null value
+		if(bookIdList == null || bookIdList.isEmpty()) {
+			return null;
+		}
+		
+		// if only one, return one
+		if(bookIdList.size() == 1) {
+			return bookIdList.get(0);
+		}
+		
+		// otherwise, choose random
+		Random random = new Random(System.nanoTime());
+		int randomElementNumber = random.nextInt(bookIdList.size() - 1);
+		
+		// return random (or near enough) element
+		return bookIdList.get(randomElementNumber);
+	}
+	
+	public byte[] getRandomCover(Long childId, boolean encodeInBase64, int width, int height) {
+		Long randomId = this.getRandomParentBookId(childId);
+		return this.fileInfoProvider.getCoverDataForBook(randomId, encodeInBase64, width, height);
+	}
 	
 	/**
 	 * {@inheritDoc}
