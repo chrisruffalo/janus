@@ -344,6 +344,7 @@ public class Book extends BaseEntity implements ISorted {
 			author.getBooks().add(this);
 			this.authors.add(author);			
 		} else if(item instanceof Series) {
+			/// get series
 			Series series = (Series)item;
 			series.getBooks().add(this);
 			

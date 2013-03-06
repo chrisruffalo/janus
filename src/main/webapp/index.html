@@ -23,7 +23,7 @@
           <h4><em>{{title}}</em></h3>
           <h5>{{subtitle}}</h4>
           {{#if series}}
-          <h6>Book {{seriesIndex}} in <em>{{series_helper series}}</em></h5>
+          <h6>Book {{seriesIndex}} in <em>{{series.name}}</em></h5>
           {{/if}}
           {{#if fileInfo}}
             <select id="download_box_{{../id}}">
@@ -31,7 +31,7 @@
               <option value="{{identifier}}">{{type}} ({{descriptiveSize}})</option>
             {{/each}}
             </select>
-            <a class="btn" onclick="download('{{../id}}')"><i class="icon-download-alt"></i></a>
+            <a class="btn" onclick="downloadFile('{{../id}}')"><i class="icon-download-alt"></i></a>
           {{/if}}
         </div>
         <div class="entryItem entryCellAdditionalAuthor">
@@ -81,13 +81,6 @@
 		var author_source = $("#author-template").html();
     	var author_template = Handlebars.compile(author_source);
     	
-        //register helpers
-        Handlebars.registerHelper('series_helper', function(seriesList) {
-          return new Handlebars.SafeString(
-            seriesList[0].name
-          );
-        });
-
       function request() {
         var url = $('#go').val();
           
@@ -124,15 +117,10 @@
 		}
 	  }
 
-	  function download(id) {
-		  var identifier = $('#download_box_' + id).val();
+	  function downloadFile(id) {
+		  var identifier = $('#download_box_'+id).val();
 		  var url = "s/file/book/" + identifier;
-		  $.get(url)
-		  .success(
-		    function() {
-			  alert('got!');
-			}
-		  );
+		  window.location.assign(url);
 	  }
         
       $(document).ready(function() {

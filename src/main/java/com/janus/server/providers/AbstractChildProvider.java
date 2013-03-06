@@ -14,9 +14,12 @@ import javax.persistence.criteria.Root;
 
 import org.slf4j.Logger;
 
+import com.janus.model.Author;
 import com.janus.model.BaseEntity;
 import com.janus.model.Book;
 import com.janus.model.Series;
+import com.janus.model.Tag;
+import com.janus.model.interfaces.ISorted;
 
 public abstract class AbstractChildProvider<E extends BaseEntity> extends AbstractBaseEntityProvider<E> {
 	
@@ -28,7 +31,7 @@ public abstract class AbstractChildProvider<E extends BaseEntity> extends Abstra
 	
 	protected abstract String getJoinField();
 	
-	public List<Book> getBooksForChild(Object childId) {
+	public List<Book> getBooksForChild(Object childId, int index, int size) {
 		
 		CriteriaBuilder builder = this.manager.getCriteriaBuilder();
 		CriteriaQuery<Book> query = builder.createQuery(Book.class);
@@ -61,8 +64,81 @@ public abstract class AbstractChildProvider<E extends BaseEntity> extends Abstra
 		);
 		
 		// now that the query is ready...
-		return this.executeQuery(query);
+		return this.executeRangeQuery(query, index, size);
 	}
+	
+	public List<Series> getSeriesForChild(Long authorId, int index, int size) {
+		
+		CriteriaBuilder builder = this.manager.getCriteriaBuilder();
+		CriteriaQuery<Series> query = builder.createQuery(Series.class);
+		
+		// roots
+		Root<Book> bookRoot = query.from(Book.class);
+		Join<Book, Series> seriesJoin = bookRoot.join(Book.SERIES);
+		Join<Book, E> authorJoin = bookRoot.join(this.getJoinField());
+		
+		// author id equals incoming id
+		query.where(builder.equal(authorJoin.get(BaseEntity.ID), authorId));
+
+		// order
+		query.orderBy(builder.asc(seriesJoin.get(ISorted.SORT)));
+		
+		// select only series
+		query.distinct(true);
+		query.select(seriesJoin);
+		
+		// execute query
+		return this.executeRangeQuery(query, index, size);
+	}
+	
+	public List<Tag> getTagsForChild(Long authorId, int index, int size) {
+		
+		CriteriaBuilder builder = this.manager.getCriteriaBuilder();
+		CriteriaQuery<Tag> query = builder.createQuery(Tag.class);
+		
+		// roots
+		Root<Book> bookRoot = query.from(Book.class);
+		Join<Book, Tag> tagsJoin = bookRoot.join(Book.TAGS);
+		Join<Book, E> authorJoin = bookRoot.join(this.getJoinField());
+		
+		// author id equals incoming id
+		query.where(builder.equal(authorJoin.get(BaseEntity.ID), authorId));
+
+		// order
+		query.orderBy(builder.asc(tagsJoin.get(ISorted.SORT)));
+		
+		// select only series
+		query.distinct(true);
+		query.select(tagsJoin);
+		
+		// execute query
+		return this.executeRangeQuery(query, index, size);
+	}
+	
+	public List<Author> getAuthorsForChild(Long authorId, int index, int size) {
+		
+		CriteriaBuilder builder = this.manager.getCriteriaBuilder();
+		CriteriaQuery<Author> query = builder.createQuery(Author.class);
+		
+		// roots
+		Root<Book> bookRoot = query.from(Book.class);
+		Join<Book, Author> authorsJoin = bookRoot.join(Book.AUTHORS);
+		Join<Book, E> authorJoin = bookRoot.join(this.getJoinField());
+		
+		// author id equals incoming id
+		query.where(builder.equal(authorJoin.get(BaseEntity.ID), authorId));
+
+		// order
+		query.orderBy(builder.asc(authorsJoin.get(ISorted.SORT)));
+		
+		// select only series
+		query.distinct(true);
+		query.select(authorsJoin);
+		
+		// execute query
+		return this.executeRangeQuery(query, index, size);
+	}
+
 	
 	/**
 	 * {@inheritDoc}
