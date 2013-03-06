@@ -42,14 +42,23 @@ public abstract class AbstractChildProvider<E extends BaseEntity> extends Abstra
 		// identifier on the join type has to match what was passed in
 		query.where(builder.equal(joinToInput.get(BaseEntity.ID), childId));
 
-		// join to series owner
-		Expression<String> seriesName = bookRoot.join(Book.SERIES, JoinType.LEFT).get(Series.SORT).as(String.class);
-		
+		// get the name of the series, "aaaa" if null to put it at the 
+		// top of the list.  this mimicks earlier behavior
+		Expression<String> seriesName = builder.coalesce(
+			bookRoot.join(Book.SERIES, JoinType.LEFT).get(Series.SORT).as(String.class), 
+			"aaaa"
+		);
+
 		// order by series, series id, and sort name
 		Order orderBySeriesName = builder.asc(seriesName);
 		Order orderBySeriesId = builder.asc(bookRoot.get(Book.MODEL_SERIESINDEX));
 		Order orderBySortName = builder.asc(bookRoot.get(Book.SORT));
-		query.orderBy(orderBySeriesName, orderBySeriesId, orderBySortName);
+				
+		query.orderBy(
+			orderBySeriesName,
+			orderBySeriesId, 
+			orderBySortName
+		);
 		
 		// now that the query is ready...
 		return this.executeQuery(query);
