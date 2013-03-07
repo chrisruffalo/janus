@@ -44,92 +44,171 @@
             </div> <!-- /entry row --> 
         </div> <!-- /inner span -->
         <div class="span5">
-        
+          <!-- additional information goes here -->
         </div>
       </div> <!-- /row -->      
     </script>
     
     <script id="author-template" type="text/x-handlebars-template">
-      <div class="row entry">
-        <div class="entryItem span3">
-          <h4>{{name}}</h4>
-          <img src="s/author/{{id}}/cover?w=67&h=90" class="thumbnail entryThumb"/>
-          <h5>Author of <a href="#/author/get/{{id}}/books">{{bookCount}} books</a>{{#if wroteSeries}} and <a href="#/author/{{id}}/series">{{wroteSeries}} series</a>{{/if}}.</h5>
+      <div class="row">
+        <div class="span7">
+          <div class="row entry">
+            <div class="entryItem span3">
+              <h4>{{name}}</h4>
+              <img src="s/author/{{id}}/cover?w=67&h=90" class="thumbnail entryThumb"/>
+              <h5>Author of <a href="#/author/get/{{id}}/books">{{bookCount}} books</a>{{#if wroteSeries}} and <a href="#/author/{{id}}/series">{{wroteSeries}} series</a>{{/if}}.</h5>
+            </div>
+            <div class="entryItem span3"> <!-- misc data, more info -->
+              <p>
+                <a href="#/{{type}}/get/{{id}}/books">books</a>
+                <a href="#/{{type}}/get/{{id}}/series">series</a>
+                <a href="#/{{type}}/get/{{id}}/tags">tags</a>
+              </p>
+            </div>        
+          </div> <!-- /row -->
         </div>
-        <div class="entryItem span3"> <!-- misc data, more info -->
-          <p>
-            <a href="#/{{type}}/get/{{id}}/books">books</a>
-            <a href="#/{{type}}/get/{{id}}/series">series</a>
-            <a href="#/{{type}}/get/{{id}}/tags">tags</a>
-          </p>
-        </div>        
-      </div> <!-- /row -->      
+      </div>
     </script>
     
     <script id="series-template" type="text/x-handlebars-template">
-      <div class="row entry">
-        <div class="entryItem span3">
-          <h4>{{name}}</h4>
-          <img src="s/series/{{id}}/cover?w=67&h=90" class="thumbnail entryThumb"/>
+      <div class="row">
+        <div class="span7">
+          <div class="row entry">
+            <div class="entryItem span3">
+              <h4>{{name}}</h4>
+              <img src="s/series/{{id}}/cover?w=67&h=90" class="thumbnail entryThumb"/>
+            </div>
+            <div class="entryItem span3"> <!-- misc data, more info -->
+              <p>
+                <a href="#/{{type}}/get/{{id}}/books">books</a>
+                <a href="#/{{type}}/get/{{id}}/tags">tags</a>
+                <a href="#/{{type}}/get/{{id}}/authors">authors</a>
+              </p>
+            </div>
+          </div>
         </div>
-        <div class="entryItem span3"> <!-- misc data, more info -->
-          <p>
-            <a href="#/{{type}}/get/{{id}}/books">books</a>
-            <a href="#/{{type}}/get/{{id}}/tags">tags</a>
-            <a href="#/{{type}}/get/{{id}}/authors">authors</a>
-          </p>
-        </div>        
       </div> <!-- /row -->      
     </script>
    
     <script id="tag-template" type="text/x-handlebars-template">
-      <div class="row entry">
-        <div class="entryItem span3">
-          <h4>{{name}}</h4>
-          <img src="s/tag/{{id}}/cover?w=67&h=90" class="thumbnail entryThumb"/>
-        </div>
-        <div class="entryItem span3"> <!-- misc data, more info -->
-          <p>
-            <a href="#/{{type}}/get/{{id}}/books">books</a>
-            <a href="#/{{type}}/get/{{id}}/series">series</a>
-            <a href="#/{{type}}/get/{{id}}/authors">authors</a>
-          </p>
+      <div class="row">
+        <div class="span7">
+          <div class="row entry">
+            <div class="entryItem span3">
+              <h4>{{name}}</h4>
+              <img src="s/tag/{{id}}/cover?w=67&h=90" class="thumbnail entryThumb"/>
+            </div>
+            <div class="entryItem span3"> <!-- misc data, more info -->
+              <p>
+                <a href="#/{{type}}/get/{{id}}/books">books</a>
+                <a href="#/{{type}}/get/{{id}}/series">series</a>
+                <a href="#/{{type}}/get/{{id}}/authors">authors</a>
+              </p>
+            </div>
+          </div>
         </div>
       </div> <!-- /row -->      
     </script>
+    
+    <script id="multi-response-header-template" type="text/x-handlebars-template">
+      <div class="row">
+        <div class="span7">
+          <div class="row">
+            <ul class="nav nav-tabs">
+              {{#if books}}
+              <li class="book_tab">
+                <a href="#"><strong>Books</strong> ({{books.length}})</a>
+              </li>
+              {{/if}}
+              {{#if authors}}
+              <li class="author_tab">
+                <a href="#"><strong>Authors</strong> ({{authors.length}})</a>
+              </li>
+              {{/if}}
+              {{#if series}}
+              <li class="series_tab">
+                <a href="#"><strong>Series</strong> ({{series.length}})</a>
+              </li>
+              {{/if}}
+              {{#if tags}}
+              <li class="tag_tab">
+                <a href="#"><strong>Tags</strong> ({{tags.length}})</a>
+              </li>
+              {{/if}}        
+            </ul>
+          </div>
+        </div>
+      </div>      
+    </script>
    
 </head>
-<body>
+      <body>
+  
+        <!-- navigation bar -->
+        <div class="navbar">
+          <div class="navbar-inner">
+            <div class="container">
+         
+              <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+              <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </a>
+         
+              <!-- Be sure to leave the brand out there if you want it shown -->
+              <a class="brand" href="#">Janus</a>
 
-        <div id="mainOptions" class="container">
-          <div class="row">
-            <div class="span5 entry">
-              <h3>Books</h1>
-              <h6><a href="#/book/list?sort=latest">Sorted by newest</a></h6>
-              <h6><a href="#/book/list?sort=name">Sorted by name</a></h6>
+              <form class="navbar-search pull-left" action="#/search/all" method="get">
+                <input id="term" name="term" type="text" class="search-query" placeholder="Search">
+              </form>
+
+              <!-- Everything you want hidden at 940px or less, place within here -->
+              <div class="nav-collapse collapse">
+              </div>
+         
             </div>
-            <div class="span5 entry">
-              <h3>Authors</h3>
-              <h6><a href="#/author/list?sort=latest">Sorted by newest book</a></h6>
-              <h6><a href="#/author/list?sort=books">Sorted by most books</a></h6>
-              <h6><a href="#/author/list?sort=series">Sorted by most series</a></h6>
-              <h6><a href="#/author/list?sort=name">Sorted by name</a></h6>
-            </div>
-            <div class="span5 entry">
-              <h3>Series</h3>
-              <h6><a href="#/series/list?sort=latest">Sorted by newest book</a></h6>
-              <h6><a href="#/series/list?sort=books">Sorted by most books</a></h6>
-              <h6><a href="#/series/list?sort=name">Sorted by name</a></h6>
-            </div>
-            <div class="span5 entry">
-              <h3>Tags</h3>
-              <h6><a href="#/tag/list?sort=latest">Sorted by newest book</a></h6>
-              <h6><a href="#/tag/list?sort=books">Sorted by most books</a></h6>
-              <h6><a href="#/tag/list?sort=name">Sorted by name</a></h6>
-            </div>            
-          </div>          
+          </div>
         </div>
 
+        <!-- sample navigation options -->
+        <div id="mainOptions" class="container" style="display: none;">
+          <div class="row">
+            <div class="span7">
+              <div class="row entry">
+                <div class="span2">
+                  <h3>Books</h1>
+                  <h6><a href="#/book/list?sort=latest">Sorted by newest</a></h6>
+                  <h6><a href="#/book/list?sort=name">Sorted by name</a></h6>
+                </div>
+                <div class="span2">
+                  <h3>Authors</h3>
+                  <h6><a href="#/author/list?sort=latest">Sorted by newest book</a></h6>
+                  <h6><a href="#/author/list?sort=books">Sorted by most books</a></h6>
+                  <h6><a href="#/author/list?sort=series">Sorted by most series</a></h6>
+                  <h6><a href="#/author/list?sort=name">Sorted by name</a></h6>
+                </div>
+                <div class="span2">
+                  <h3>Series</h3>
+                  <h6><a href="#/series/list?sort=latest">Sorted by newest book</a></h6>
+                  <h6><a href="#/series/list?sort=books">Sorted by most books</a></h6>
+                  <h6><a href="#/series/list?sort=name">Sorted by name</a></h6>
+                </div>
+                <div class="span2">
+                  <h3>Tags</h3>
+                  <h6><a href="#/tag/list?sort=latest">Sorted by newest book</a></h6>
+                  <h6><a href="#/tag/list?sort=books">Sorted by most books</a></h6>
+                  <h6><a href="#/tag/list?sort=name">Sorted by name</a></h6>
+                </div>            
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="multi-header-target" class="container">
+          <!-- this is where the search tab thing goes -->          
+        </div>
+        
         <div id="target">
           <!-- target div for new render items -->
         </div>
@@ -142,7 +221,7 @@
 
         <!-- handlebars template stuff -->
         <script>
-                var defaultPageSize = 10;
+        var defaultPageSize = 10;
         
         var book_source   = $("#book-template").html();
         var book_template = Handlebars.compile(book_source);
@@ -156,13 +235,16 @@
         var tag_source = $('#tag-template').html();
         var tag_template = Handlebars.compile(tag_source);
         
+        var multi_source = $('#multi-response-header-template').html();
+        var multi_template = Handlebars.compile(multi_source);
+        
         function logger(logString) {
           if(console && console.log) {
             console.log(logString);
           }
         }
         
-      function request(url, animate, addToCurrent) {
+      function request(url, addToCurrent) {
         if(!url) {
           logger("[error] called request with bad url");
           return;
@@ -173,54 +255,104 @@
         $.ajax(url)
         .success(
           function(context) {
-            renderResponse(context, animate, addToCurrent);
+            renderResponse(context, addToCurrent);
           }
         );          
       }
 
-      function renderResponse(itemList, animate, addToCurrent) {
+      function renderResponse(itemList, addToCurrent) {
         if(!itemList) {
-                return;
+          return;
+        }
+
+        $('#mainOptions').hide(); // ensure main navigation is hidden
+        
+        if(!addToCurrent) {
+          $('.renderTarget').remove();
         }
         
-        if(animate && !addToCurrent) {  
-                // animate out old targets
-                $('.renderTarget')
-                .css('position','absolute')
-                .animate({'left':'-=100%'},
-                function(){$(this).remove()})
-                ; // remove when done
-        } else if(!addToCurrent) {
-                $('.renderTarget').remove();
-        }
-        
-        // create new and use some hackery to position offscreen
+        // create new target for data
         var newRenderTarget = $("<div class='container renderTarget'></div>")
         newRenderTarget.hide();
         $('#target').append(newRenderTarget);
 
-        if(animate && !addToCurrent) {
-                newRenderTarget.css('position','relative');
-                newRenderTarget.animate({'left':'+=100%'},1);
-        }               
-          
         // if item list isn't actually an item
         if(!itemList.length && itemList.type) {
-          renderSingleItem(itemList, newRenderTarget);
+          if("multientityresponse" == itemList.type) {
+            renderMultiResponse(itemList, newRenderTarget);
+          } else {
+            renderSingleItem(itemList, newRenderTarget);
+            // clear multi-header when any response comes in
+            $('#multi-header-target').empty();
+          }          
+        } else {
+          for(var i = 0; i < itemList.length; i++) {
+            var item = itemList[i];
+            renderSingleItem(item, newRenderTarget);
+          }
+          // clear multi-header when any response comes in
+          $('#multi-header-target').empty();
         }
-                          
-      for(var i = 0; i < itemList.length; i++) {
-          var item = itemList[i];
-          renderSingleItem(item, newRenderTarget);
-        }
-
+        
         // make visibile
         newRenderTarget.show();
-
-        // animate offscreen div to onscreen
-        if(animate) {
-          newRenderTarget.animate({'left':'-=100%'},function(){$(this).css('position','static')});
+        
+        // log
+        if(itemList.length) {
+          logger("[info] rendered " + itemList.length + " items");
         }
+      }
+      
+      function renderMultiResponse(multiResponse, intoTarget) {
+        // clear multi-header when any response comes in
+        $('#multi-header-target').empty();
+
+        // leave if no items
+        if(!multiResponse.books && !multiResponse.authors && !multiResponse.series && !multiResponse.tags) {
+          return;
+        }        
+
+        // create new targets
+        var bookTarget = $("<div class='container renderTarget bookTarget'></div>")
+        bookTarget.hide();
+        $('#target').append(bookTarget);
+        
+        var authorTarget = $("<div class='container renderTarget authorTarget'></div>")
+        authorTarget.hide();
+        $('#target').append(authorTarget);
+
+        var seriesTarget = $("<div class='container renderTarget seriesTarget'></div>")
+        seriesTarget.hide();
+        $('#target').append(seriesTarget);
+        
+        var tagTarget = $("<div class='container renderTarget tagTarget'></div>")
+        tagTarget.hide();
+        $('#target').append(tagTarget);
+        
+        // render portions
+        renderResponse(multiResponse.books, bookTarget);
+        renderResponse(multiResponse.authors, authorTarget);
+        renderResponse(multiResponse.series, seriesTarget);
+        renderResponse(multiResponse.tags, tagTarget);
+
+        // add header 
+        var header = multi_template(multiResponse);
+        $('#multi-header-target').append(header);
+        
+        // decide which should be shown first
+        if(bookTarget && bookTarget.length) {
+          bookTarget.show();
+          $('.book_tab').addClass('active');
+        } else if(authorTarget && authorTarget.length) {
+          authorTarget.show();
+          $('.author_tab').addClass('active');
+        } else if(seriesTarget && seriesTarget.length) {
+          seriesTarget.show();
+          $('.series_tab').addClass('active');
+        } else if(tagTarget && tagTarget.length) {
+          tagTarget.show();
+          $('.tag_tab').addClass('active');
+        }       
       }
 
       function renderSingleItem(item, intoTarget) {
@@ -247,7 +379,7 @@
         window.location.assign(url);
       }
   
-      function requestTypeList(type, sort, index, size, animate, addToCurrent) {
+      function requestTypeList(type, sort, index, size, addToCurrent) {
         if(!sort) {
           sort = "default";
         }
@@ -265,80 +397,81 @@
         }
         
         var url = "s/" + type + "/list?sort=" + sort + "&index=" + index + "&size=" + size;
-        request(url, animate, addToCurrent);  
+        request(url, addToCurrent);  
       }
   
       function requestBaseType(type, id, animate, addToCurrent) {
         var url = "s/" + type + "/" + id;
-        request(url, animate, addToCurrent);
+        request(url, addToCurrent);
       }
   
       function requestChildForType(type, id, child, animate, addToCurrent) {
         var url = "s/" + type + "/" + id + "/" + child;
-        request(url, animate, addToCurrent);
+        request(url, addToCurrent);
       }
-        
-      // handles if a load should be animated or not
-      var animateFirst = false;
-      function doAnimateOnFirstLoad() {
-        var animate = animateFirst;
-        animateFirst = true;
-        return animate;
+      
+      function searchAll(searchString, addToCurrent) {
+        var url = "s/search/all/" + searchString;
+        request(url, addToCurrent);        
       }
       
       $(document).ready(function() {
-
           // create 'rest-like' routes for application
           // and kick off #main route when complete
           (function($) {              
-                var app = $.sammy( 
-                  function() {
-                    
-                    // main
-                    this.get('#main', function(context) {
-                      //requestTypeList("book", "latest", 0, defaultPageSize, doAnimateOnFirstLoad(), false);
-                      //animateMain = true;
-                      $('#mainOptions').show(); // ensure main navigation options are visible
-                    });
-  
-                    // get individual template item of core type
-                    this.get('#/:type/get/:id', function(context) {
-                      var id = this.params['id'];
-                      var type = this.params['type'];
-                      requestBaseType(type, id, doAnimateOnFirstLoad());
-                    });
-  
-                    // get books for core item
-                    this.get('#/:type/get/:id/:child', function(context) {
-                      var id = context.params['id'];
-                      var type = context.params['type'];
-                      var child = context.params['child'];
-                      requestChildForType(type, id, child, doAnimateOnFirstLoad());
-                    });                                 
-                    
-                    // list items
-                    this.get('#/:type/list', function(context) {
-                      var type = context.params['type'];
-                      var index = context.params['index'];
-                      var size = context.params['size'];
-                      var sort = context.params['sort'];
-                      
-                      // request list of given type
-                      requestTypeList(type, sort, index, size);
-                    });
-                  }
-                );
+            var app = $.sammy( 
+              function() {
                 
-                $(function() {
-                  app.run('#main');
+                // main
+                this.get('#main', function(context) {
+                  $('#target').empty(); // main screen doesn't need this
+                  $('#multi-header-target').empty(); // main screen doesn't need this
+                  $('#mainOptions').show(); // ensure main navigation options are visible                  
                 });
-              
-              })(jQuery);
 
-        // toggle for back events          
-        window.addEventListener("beforeunload", function() {
-          logger("[info] toggle now!");
-        }, true);
+                // get individual template item of core type
+                this.get('#/:type/get/:id', function(context) {
+                  var id = this.params['id'];
+                  var type = this.params['type'];
+                  requestBaseType(type, id);
+                });
+
+                // get books for core item
+                this.get('#/:type/get/:id/:child', function(context) {
+                  var id = context.params['id'];
+                  var type = context.params['type'];
+                  var child = context.params['child'];
+                  requestChildForType(type, id, child);
+                });                                 
+                
+                // list items
+                this.get('#/:type/list', function(context) {
+                  var type = context.params['type'];
+                  var index = context.params['index'];
+                  var size = context.params['size'];
+                  var sort = context.params['sort'];
+                  
+                  // request list of given type
+                  requestTypeList(type, sort, index, size);
+                });
+                
+                // searching
+                this.get('#/search/all', function(context) {
+                  var term = context.params['term'];
+                  
+                  // request list of given type
+                  searchAll(term);
+                });
+
+              }
+            );
+            
+            $(function() {
+              app.run('#main');
+            });
+          
+          })(jQuery);
+          
       });
     </script>
 </body>

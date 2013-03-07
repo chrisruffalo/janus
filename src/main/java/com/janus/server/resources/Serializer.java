@@ -15,6 +15,7 @@ import com.janus.model.Author;
 import com.janus.model.Book;
 import com.janus.model.Series;
 import com.janus.model.Tag;
+import com.janus.model.response.MultiEntityResponse;
 import com.janus.server.services.support.FragmentMarshaller;
 
 @ApplicationScoped
@@ -64,7 +65,8 @@ public class Serializer {
 				Book.class,
 				Author.class,
 				Tag.class,
-				Series.class
+				Series.class,
+				MultiEntityResponse.class
 			);			
 			marshaller = context.createMarshaller();
 		} catch (JAXBException ex) {
