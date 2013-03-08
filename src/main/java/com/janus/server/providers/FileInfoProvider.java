@@ -1,7 +1,6 @@
 package com.janus.server.providers;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -14,7 +13,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.apache.commons.codec.binary.Base64;
 import org.imgscalr.Scalr;
 import org.slf4j.Logger;
 
@@ -103,7 +101,7 @@ public class FileInfoProvider extends AbstractProvider<FileInfo> {
 	 * @param height
 	 * @return
 	 */
-	public byte[] getCoverDataForBook(Long id, boolean encodeInBase64, int width, int height) {
+	public BufferedImage getCoverDataForBook(Long id, int width, int height) {
 		// lookup book path
 		String bookPath = this.getBookPath(id);
 		
@@ -134,8 +132,6 @@ public class FileInfoProvider extends AbstractProvider<FileInfo> {
 			width = FileInfoProvider.DEFAULT_WIDTH;
 		}
 		
-		byte[] fromFile = new byte[0];
-		
 		// try and resize/open image
 		try {
 			// get current image
@@ -145,27 +141,12 @@ public class FileInfoProvider extends AbstractProvider<FileInfo> {
 			if(image.getHeight() != height || image.getWidth() != width) {
 				image = Scalr.resize(image, Scalr.Method.SPEED, Scalr.Mode.FIT_EXACT, width, height);
 			}
-			
-			// final output array
-			ByteArrayOutputStream output = new ByteArrayOutputStream((int)coverFile.length());
-			
-			// save image to byte array
-			ImageIO.write(image, "jpg", output);
-			fromFile = output.toByteArray();
 
-			// close output stream
-			output.close();			
+			return image;
 		} catch (IOException e) {
 			this.logger.error("Error while reading image file for book:{} to image: {}", id, e.getMessage());
 			return null;
 		}
-		
-		// determine if encoding is needed
-		if(encodeInBase64) {
-			fromFile = Base64.encodeBase64(fromFile);
-		}
-		
-		return fromFile;
 	}
 	
 }

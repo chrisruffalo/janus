@@ -1,5 +1,6 @@
 package com.janus.server.providers;
 
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Random;
 
@@ -177,9 +178,9 @@ public abstract class AbstractChildProvider<E extends BaseEntity> extends Abstra
 		return bookIdList.get(randomElementNumber);
 	}
 	
-	public byte[] getRandomCover(Long childId, boolean encodeInBase64, int width, int height) {
+	public BufferedImage getRandomCover(Long childId, int width, int height) {
 		Long randomId = this.getRandomParentBookId(childId);
-		return this.fileInfoProvider.getCoverDataForBook(randomId, encodeInBase64, width, height);
+		return this.fileInfoProvider.getCoverDataForBook(randomId, width, height);
 	}
 	
 	/**

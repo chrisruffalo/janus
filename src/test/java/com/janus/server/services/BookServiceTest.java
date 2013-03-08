@@ -1,11 +1,15 @@
 package com.janus.server.services;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -15,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.tmatesoft.sqljet.core.SqlJetException;
 
 import com.janus.model.Book;
+import com.janus.server.services.support.JanusStreamingOutput;
 import com.janus.support.DeploymentFactory;
 
 @RunWith(Arquillian.class)
@@ -100,7 +105,7 @@ public class BookServiceTest {
 	}
 	
 	@Test
-	public void testGetFile() {
+	public void testGetFile() throws WebApplicationException, IOException {
 		// look for file that will be there
 		Response response = this.bookService.file("2", "EPUB", "no");
 		
@@ -111,19 +116,19 @@ public class BookServiceTest {
 		Assert.assertNotNull("Returned entity should not be null", entity);
 		
 		// if not a byte array, fail
-		if(!(entity instanceof byte[])) {
-			Assert.fail("Expected byte[] but got " + entity.getClass());
+		if(!(entity instanceof JanusStreamingOutput)) {
+			Assert.fail("Expected JanusStreamingOutput but got " + entity.getClass());
 		}
 		
 		// get object
-		byte[] bookContents = (byte[])entity;
+		byte[] bookContents = this.streamToByteArray((JanusStreamingOutput)entity);
 		
 		// check byte count
 		Assert.assertTrue(bookContents.length > 1);
 	}
 	
 	@Test
-	public void testBase64Encoding() {		
+	public void testBase64Encoding() throws WebApplicationException, IOException {		
 		// look for file that will be there
 		Response response = this.bookService.file("2", "EPUB", "no");
 		
@@ -134,21 +139,42 @@ public class BookServiceTest {
 		Object entity = response.getEntity();
 		Object entity64 = response64.getEntity();
 		
-		if(!(entity instanceof byte[])) {
-			Assert.fail("Expected byte[] but got " + entity.getClass());
+		if(!(entity instanceof JanusStreamingOutput)) {
+			Assert.fail("Expected JanusStreamingOutput but got " + entity.getClass());
 		}
 		
-		if(!(entity64 instanceof byte[])) {
-			Assert.fail("Expected byte[] but got " + entity64.getClass());
+		if(!(entity64 instanceof JanusStreamingOutput)) {
+			Assert.fail("Expected JanusStreamingOutput but got " + entity64.getClass());
 		}
 		
 		// compare time
-		byte[] bookContents = (byte[])entity;
-		byte[] bookContents64 = (byte[])entity64;
+		byte[] bookContents = this.streamToByteArray((JanusStreamingOutput)entity);
+		byte[] bookContents64 = this.streamToByteArray((JanusStreamingOutput)entity64);
 		byte[] bookContentsConverted = Base64.decodeBase64(bookContents64);
 		
-		// length of original and reconverted is the same
+		// expect lengths > 0
+		Assert.assertTrue("Book contents result has no data", bookContents.length > 1);
+		Assert.assertTrue("Book contents base64 result has no data", bookContents64.length > 1);
+		Assert.assertTrue("Book contents base64 decoded result no has data", bookContentsConverted.length > 1);
+		
+		// length of original and converted is the same
 		Assert.assertEquals(bookContents.length, bookContentsConverted.length);
+		// and the contents are the same
+		Assert.assertEquals(Hex.encodeHexString(bookContents), Hex.encodeHexString(bookContentsConverted));
 	}
 
+	/**
+	 * Helper method for taking a janus streaming output object and converting
+	 * it to a byte stream
+	 * 
+	 * @param outputStreamer
+	 * @return
+	 * @throws WebApplicationException
+	 * @throws IOException
+	 */
+	private byte[] streamToByteArray(JanusStreamingOutput outputStreamer) throws WebApplicationException, IOException {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		outputStreamer.write(outputStream);
+		return outputStream.toByteArray();
+	}
 }

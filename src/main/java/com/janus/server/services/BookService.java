@@ -1,10 +1,11 @@
 package com.janus.server.services;
 
-import java.io.ByteArrayOutputStream;
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,15 +22,14 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 
-import com.google.common.io.ByteStreams;
 import com.janus.model.Book;
 import com.janus.model.FileInfo;
 import com.janus.server.providers.BookProvider;
 import com.janus.server.providers.FileInfoProvider;
-import com.janus.server.services.support.ByteArrayStreamingOutput;
+import com.janus.server.services.support.JanusImageStreamingOutput;
+import com.janus.server.services.support.JanusStreamingOutput;
 
 @Path("/book")
 @Stateless
@@ -97,19 +97,16 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 		
 		// if the file doesn't exist, or is not an actual file, 404 as well
 		if(!file.exists() || !file.isFile()) {
-			return Response.status(Status.NOT_FOUND).build();
+			return Response.status(Status.NOT_FOUND).entity("file for " + identifier + " not found").build();
 		}
 		
 		// get bytes from file
-		byte[] fromFile;
+		InputStream fromFile;
 		try {
-			fromFile = this.getFileAsBytes(file, "yes".equalsIgnoreCase(encodeInBase64));
+			fromFile = new BufferedInputStream(new FileInputStream(file));
 		} catch (FileNotFoundException e) {
 			this.logger.error("Could not find file at '{}' with message: {}", file.getAbsolutePath(), e.getMessage());
-			return Response.status(Status.NOT_FOUND).build();
-		} catch (IOException e) {
-			this.logger.error("Could not copy file with id:{} to byte stream: {}", identifier, e.getMessage());
-			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+			return Response.status(Status.NOT_FOUND).entity("file for " + identifier + " not found").build();
 		}
 		
 		// create "ok" (200) response builder
@@ -121,8 +118,8 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 		// set mime type
 		builder.type(info.getType().getMimeType());
 
-		// put bytes in response
-		builder.entity(new ByteArrayStreamingOutput(fromFile));
+		// put streamer in response
+		builder.entity(new JanusStreamingOutput(fromFile, "yes".equalsIgnoreCase(encodeInBase64)));
 		
 		return builder.build();
 	}
@@ -135,7 +132,7 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 					     @QueryParam("h") @DefaultValue("0") int height) 
 	{
 		boolean encode = "yes".equalsIgnoreCase(encodeInBase64);
-		byte[] fromFile = this.fileInfoProvider.getCoverDataForBook(id, encode, width, height);
+		BufferedImage fromFile = this.fileInfoProvider.getCoverDataForBook(id, width, height);
 		
 		if(fromFile == null) {
 			return Response.status(Status.NOT_FOUND).entity("no cover image found for book " + id).build();
@@ -145,47 +142,12 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 		ResponseBuilder builder = Response.ok();
 		
 		// set response
-		builder.entity(fromFile);
+		builder.entity(new JanusImageStreamingOutput(fromFile, encode));
 		
 		// set mime-type
 		builder.type("image/jpeg");
 				
 		return builder.build();
-	}
-
-	private byte[] getFileAsBytes(File file, boolean base64) throws FileNotFoundException, IOException {
-		// open file.  if it cannot be found then 404
-		FileInputStream inputStream = new FileInputStream(file);
-		
-		// bytes array output size should match file size for maximum efficiency
-		ByteArrayOutputStream byteOutputFromFile = new ByteArrayOutputStream((int)file.length());
-
-		// copy file input into output bytes
-		ByteStreams.copy(inputStream, byteOutputFromFile);
-		
-		// get bytes from file
-		byte[] fromFile = byteOutputFromFile.toByteArray();
-	
-		// close
-		try {
-			byteOutputFromFile.close();
-		} catch (IOException e) {
-			this.logger.warn("Failed to close byte output stream: {}", e.getMessage());
-		}		
-		
-		// close file on disk
-		try {
-			inputStream.close();
-		} catch (IOException e) {
-			this.logger.warn("Failed to close file input stream file: {}", e.getMessage());
-		}
-			
-		// if the consumer requests base64 encoding, then support that
-		if(base64) {
-			fromFile = Base64.encodeBase64(fromFile);
-		}
-
-		return fromFile;
 	}
 
 	@Override

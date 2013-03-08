@@ -20,7 +20,7 @@
               <div class="entryItem span3"> <!-- main info -->
                 <h4><em>{{title}}</em></h4>
                 <h5>{{subtitle}}</h5>
-                <img src="s/book/{{id}}/cover?w=67&h=90" class="thumbnail entryThumb"/>
+                <img src="static/img/thumbnail.jpg" data-src="s/book/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
                 {{#if series}}
                 <h6>Book {{seriesIndex}} in <em><a href="#/series/get/{{series.id}}">{{series.name}}</a></em></h5>
                 {{/if}}
@@ -55,7 +55,7 @@
           <div class="row entry">
             <div class="entryItem span3">
               <h4>{{name}}</h4>
-              <img src="s/author/{{id}}/cover?w=67&h=90" class="thumbnail entryThumb"/>
+              <img src="static/img/thumbnail.jpg" data-src="s/author/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
               <h5>Author of <a href="#/author/get/{{id}}/books">{{bookCount}} books</a>{{#if wroteSeries}} and <a href="#/author/{{id}}/series">{{wroteSeries}} series</a>{{/if}}.</h5>
             </div>
             <div class="entryItem span3"> <!-- misc data, more info -->
@@ -76,7 +76,7 @@
           <div class="row entry">
             <div class="entryItem span3">
               <h4>{{name}}</h4>
-              <img src="s/series/{{id}}/cover?w=67&h=90" class="thumbnail entryThumb"/>
+              <img src="static/img/thumbnail.jpg" data-src="s/series/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
             </div>
             <div class="entryItem span3"> <!-- misc data, more info -->
               <p>
@@ -96,7 +96,7 @@
           <div class="row entry">
             <div class="entryItem span3">
               <h4>{{name}}</h4>
-              <img src="s/tag/{{id}}/cover?w=67&h=90" class="thumbnail entryThumb"/>
+              <img src="static/img/thumbnail.jpg" data-src="s/tag/{{id}}/cover?w=67&h=90" class="thumbnail lazy entryThumb"/>
             </div>
             <div class="entryItem span3"> <!-- misc data, more info -->
               <p>
@@ -143,7 +143,6 @@
    
 </head>
       <body>
-  
         <!-- navigation bar -->
         <div class="navbar navbar-fixed-top">
           <div class="navbar-inner">
@@ -218,6 +217,7 @@
         <script src="static/js/bootstrap.min.js"></script>
         <script src="static/js/handlebars.js"></script>
         <script src="static/js/sammy.js"></script>
+        <script src="static/js/jail.min.js"></script>
 
         <!-- handlebars template stuff -->
         <script>
@@ -298,6 +298,11 @@
         // log
         if(itemList.length) {
           logger("[info] rendered " + itemList.length + " items");
+        }
+        
+        // if not additive, jump to top
+        if(!addToCurrent) {
+          jumpToTop();
         }
       }
       
@@ -389,6 +394,15 @@
         if(html) {                                  
           intoTarget.append(html);
         }
+        
+        // set up JAIL
+        intoTarget.find("img.lazy").jail({
+          offset : 600,
+          timeout: 500,
+          event: 'scroll',
+          speed: 0,
+          loadHiddenImages: true
+        });
       }
 
       function downloadFile(id, type) {
@@ -445,6 +459,12 @@
         // change look of tab
         $('.active').removeClass('active');
         $('.'+showTarget+'_tab').addClass('active');
+      }
+    
+      // jump to the top of the document  
+      function jumpToTop(){
+        $("html, body").animate({ scrollTop: 0 }, 600);
+        return false;
       }
       
       $(document).ready(function() {
