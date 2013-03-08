@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 
 import com.janus.model.Book;
 import com.janus.model.FileInfo;
+import com.janus.server.configuration.ImageConfiguration;
+import com.janus.server.configuration.SystemProperty;
 import com.janus.server.providers.BookProvider;
 import com.janus.server.providers.FileInfoProvider;
 import com.janus.server.services.support.JanusImageStreamingOutput;
@@ -40,6 +42,10 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 
 	@Inject
 	private FileInfoProvider fileInfoProvider;
+	
+	@Inject
+	@SystemProperty("jboss.server.temp.dir")
+	private String jbossServerTempDir;
 	
 	@Inject
 	private Logger logger;
@@ -142,10 +148,10 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 		ResponseBuilder builder = Response.ok();
 		
 		// set response
-		builder.entity(new JanusImageStreamingOutput(fromFile, encode));
+		builder.entity(new JanusImageStreamingOutput(fromFile, encode, new File(this.jbossServerTempDir)));
 		
 		// set mime-type
-		builder.type("image/jpeg");
+		builder.type(ImageConfiguration.IMAGE_MIME);
 				
 		return builder.build();
 	}

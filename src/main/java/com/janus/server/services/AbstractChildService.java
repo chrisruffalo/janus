@@ -1,8 +1,10 @@
 package com.janus.server.services;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -17,11 +19,17 @@ import com.janus.model.Book;
 import com.janus.model.NamedSortedEntity;
 import com.janus.model.Series;
 import com.janus.model.Tag;
+import com.janus.server.configuration.ImageConfiguration;
+import com.janus.server.configuration.SystemProperty;
 import com.janus.server.providers.AbstractChildProvider;
 import com.janus.server.services.support.JanusImageStreamingOutput;
 
 public abstract class AbstractChildService<E extends NamedSortedEntity, P extends AbstractChildProvider<E>> extends AbstractBaseEntityService<E, P> {
 
+	@Inject
+	@SystemProperty("jboss.server.temp.dir")
+	private String jbossServerTempDir;
+	
 	@GET
 	@Path("/{id}/books")
 	public List<Book> books(
@@ -73,17 +81,17 @@ public abstract class AbstractChildService<E extends NamedSortedEntity, P extend
 		BufferedImage fromFile = this.getProvider().getRandomCover(id, width, height);
 		
 		if(fromFile == null) {
-			return Response.status(Status.NOT_FOUND).entity("no cover image found for entity " + id).build();
+			return Response.status(Status.NOT_FOUND).entity("no cover image found for " + this.getProvider().getEntityType().getSimpleName().toLowerCase() + " with id " + id).build();
 		}
 		
 		// build response
 		ResponseBuilder builder = Response.ok();
 		
 		// set response
-		builder.entity(new JanusImageStreamingOutput(fromFile, encode));
+		builder.entity(new JanusImageStreamingOutput(fromFile, encode, new File(this.jbossServerTempDir)));
 		
 		// set mime-type
-		builder.type("image/jpeg");
+		builder.type(ImageConfiguration.IMAGE_MIME);
 				
 		return builder.build();
 	}

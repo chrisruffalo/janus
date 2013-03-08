@@ -12,8 +12,9 @@ import javax.inject.Qualifier;
 
 /**
  * Annotation used for Injecting System Properties
+ * https://community.jboss.org/wiki/JBossProperties
  * 
- * @author Bryan Saunders <bsaunder@redhat.com>
+ * @author cruffalo
  * 
  */
 @Qualifier

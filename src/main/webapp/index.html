@@ -255,7 +255,8 @@
         $.ajax(url)
         .success(
           function(context) {
-            renderResponse(context, addToCurrent);
+            var response = renderResponse(context, addToCurrent);
+            logger("[info] response got content: " + response);
           }
         );          
       }
@@ -269,11 +270,11 @@
         
         if(!addToCurrent) {
           $('.renderTarget').remove();
-        }
+        }        
         
-        
+        var response = false;
         if(itemList.type && "multientityresponse" == itemList.type) {
-          renderMultiResponse(itemList, $('#target'));
+          response = renderMultiResponse(itemList, $('#target'));
         } else {
           // create new target for data
           var newRenderTarget = $("<div class='container renderTarget'></div>")
@@ -283,9 +284,9 @@
           $('#multi-header-target').empty();
 
           if(itemList.type && !itemList.length) {
-            renderSingleItem(itemList, newRenderTarget, addToCurrent);
+            response = renderSingleItem(itemList, newRenderTarget, addToCurrent);
           } else {
-            renderList(itemList, newRenderTarget, addToCurrent);
+            response = renderList(itemList, newRenderTarget, addToCurrent);
           }
 
           // append render target
@@ -294,6 +295,14 @@
           // make visibile
           newRenderTarget.show();
         }
+        
+        // set up JAIL
+        $("img.lazy").jail({
+          offset : 200,
+          event: 'scroll',
+          speed: 0,
+          loadHiddenImages: true
+        });
         
         // log
         if(itemList.length) {
@@ -304,6 +313,8 @@
         if(!addToCurrent) {
           jumpToTop();
         }
+        
+        return response;
       }
       
       function renderList(list, intoTarget, addToCurrent) {
@@ -313,13 +324,17 @@
         
         if(!list || !list.length) {
           logger("[info] no items to render");
-          return;
+          return false;
         }
         
         for(var i = 0; i < list.length; i++) {
           var item = list[i];
           renderSingleItem(item, intoTarget);
         }
+        
+        logger("[info] rendered " + list.length + " items");
+        
+        return true;
       }
       
       function renderMultiResponse(multiResponse, intoTarget) {
@@ -328,7 +343,7 @@
 
         // leave if no items
         if(!multiResponse.books && !multiResponse.authors && !multiResponse.series && !multiResponse.tags) {
-          return;
+          return false;
         }        
 
         // create new targets
@@ -349,11 +364,20 @@
         intoTarget.append(tagTarget);
         
         // render portions
-        renderList(multiResponse.books, bookTarget);
-        renderList(multiResponse.authors, authorTarget);
-        renderList(multiResponse.series, seriesTarget);
-        renderList(multiResponse.tags, tagTarget);
-
+        var bookResponse = renderList(multiResponse.books, bookTarget);
+        var authorResponse = renderList(multiResponse.authors, authorTarget);
+        var seriesResponse = renderList(multiResponse.series, seriesTarget);
+        var tagResponse = renderList(multiResponse.tags, tagTarget);
+        
+        // record overall response of rendering
+        var response = bookResponse || authorResponse || seriesResponse || tagResponse;
+        
+        // leave now if no response
+        if(!response) {
+          logger("[warn] early return from mult-response with no rendering");
+          return false;
+        }
+        
         // add header 
         var header = multi_template(multiResponse);
         $('#multi-header-target').append(header);
@@ -375,7 +399,9 @@
           tagTarget.show();
           tagTarget.addClass('activeTarget');
           $('.tag_tab').addClass('active');
-        }       
+        }
+        
+        return response;
       }
 
       function renderSingleItem(item, intoTarget) {
@@ -389,20 +415,17 @@
           html = series_template(item);
         } else if ("tag" == item.type) {
           html = tag_template(item);
+        } else {
+          logger("[warn] target render item has no type, no rendering performed");
+          return false;
         }
 
+        var response = false;
         if(html) {                                  
           intoTarget.append(html);
+          response = true;
         }
-        
-        // set up JAIL
-        intoTarget.find("img.lazy").jail({
-          offset : 600,
-          timeout: 500,
-          event: 'scroll',
-          speed: 0,
-          loadHiddenImages: true
-        });
+        return response;
       }
 
       function downloadFile(id, type) {

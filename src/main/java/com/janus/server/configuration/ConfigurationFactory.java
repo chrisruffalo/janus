@@ -38,10 +38,12 @@ public class ConfigurationFactory {
 	@SystemProperty("janus.config.file.path")
 	private String configFile;
 	
+	// https://community.jboss.org/wiki/JBossProperties
 	@Inject
 	@SystemProperty("jboss.server.config.dir")
 	private String jbossServerConfigDir;
 	
+	// https://community.jboss.org/wiki/JBossProperties
 	@Inject
 	@SystemProperty("jboss.server.data.dir")
 	private String jbossServerDataDir;
