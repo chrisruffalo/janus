@@ -148,9 +148,10 @@ public abstract class AbstractChildProvider<E extends BaseEntity> extends Abstra
 		
 		Root<Book> bookRoot = query.from(Book.class);
 		query.select(bookRoot.get(Book.ID).as(Long.class));
+		query.distinct(true);
 		
 		// join onto target input type
-		Join<Book, E> joinToInput = bookRoot.join(this.getJoinField());
+		Join<Book, E> joinToInput = bookRoot.join(this.getJoinField(), JoinType.LEFT);
 		
 		// identifier on the join type has to match what was passed in
 		query.where(builder.equal(joinToInput.get(BaseEntity.ID), childId));

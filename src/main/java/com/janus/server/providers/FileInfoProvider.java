@@ -142,10 +142,11 @@ public class FileInfoProvider extends AbstractProvider<FileInfo> {
 			BufferedImage image = ImageIO.read(coverFile);
 			
 			// resize if needs be
-			if(image.getHeight() > height || image.getWidth() > width) {
-				image = Scalr.resize(image, Scalr.Method.AUTOMATIC, Scalr.Mode.FIT_EXACT, width, height);
+			if(image.getHeight() != height || image.getWidth() != width) {
+				image = Scalr.resize(image, Scalr.Method.SPEED, Scalr.Mode.FIT_EXACT, width, height);
 			}
 			
+			// final output array
 			ByteArrayOutputStream output = new ByteArrayOutputStream((int)coverFile.length());
 			
 			// save image to byte array

@@ -1,9 +1,15 @@
+body {
+    padding-top: 55px;
+}
+
 .entry {
-    background-color: #fafafa;
+    background-color: #f9f9f9;
+    
     border: solid;
     border-width: 1px;
     border-color: #cccccc;
-    margin-bottom: 5px;
+    
+    margin-bottom: 10px;
     
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;

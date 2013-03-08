@@ -74,7 +74,7 @@ public class SearchProvider {
 	}
 	
 	private <I extends BaseEntity> List<I> query(Class<I> forClass, String searchPhrase, String... fields) {
-		this.logger.info("Searching {} for {}", forClass.getSimpleName(), searchPhrase);
+		this.logger.debug("Searching {} for {}", forClass.getSimpleName(), searchPhrase);
 		
 		// get full text entity manager
 		FullTextEntityManager fullTextEntityManager = Search

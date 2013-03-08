@@ -29,6 +29,7 @@ import com.janus.model.Book;
 import com.janus.model.FileInfo;
 import com.janus.server.providers.BookProvider;
 import com.janus.server.providers.FileInfoProvider;
+import com.janus.server.services.support.ByteArrayStreamingOutput;
 
 @Path("/book")
 @Stateless
@@ -121,8 +122,8 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 		builder.type(info.getType().getMimeType());
 
 		// put bytes in response
-		builder.entity(fromFile);		
-				
+		builder.entity(new ByteArrayStreamingOutput(fromFile));
+		
 		return builder.build();
 	}
 	

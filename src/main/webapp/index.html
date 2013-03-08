@@ -37,7 +37,7 @@
                 {{#if authors}}
                   Authors:
                   {{#each authors}}
-                  <a href="#/author/get/{{id}}">{{name}}</a>
+                  <span class="label"><a href="#/author/get/{{id}}">{{name}}</a></span>
                   {{/each}}
                 {{/if}}
               </div> <!-- /end misc -->
@@ -114,25 +114,25 @@
       <div class="row">
         <div class="span7">
           <div class="row">
-            <ul class="nav nav-tabs">
+            <ul class="nav nav-pills">
               {{#if books}}
               <li class="book_tab">
-                <a href="#"><strong>Books</strong> ({{books.length}})</a>
+                <a onclick="toggleTarget('book')"><strong>Books</strong> ({{books.length}})</a>
               </li>
               {{/if}}
               {{#if authors}}
               <li class="author_tab">
-                <a href="#"><strong>Authors</strong> ({{authors.length}})</a>
+                <a onclick="toggleTarget('author')"><strong>Authors</strong> ({{authors.length}})</a>
               </li>
               {{/if}}
               {{#if series}}
               <li class="series_tab">
-                <a href="#"><strong>Series</strong> ({{series.length}})</a>
+                <a onclick="toggleTarget('series')"><strong>Series</strong> ({{series.length}})</a>
               </li>
               {{/if}}
               {{#if tags}}
               <li class="tag_tab">
-                <a href="#"><strong>Tags</strong> ({{tags.length}})</a>
+                <a onclick="toggleTarget('tag')"><strong>Tags</strong> ({{tags.length}})</a>
               </li>
               {{/if}}        
             </ul>
@@ -145,7 +145,7 @@
       <body>
   
         <!-- navigation bar -->
-        <div class="navbar">
+        <div class="navbar navbar-fixed-top">
           <div class="navbar-inner">
             <div class="container">
          
@@ -157,7 +157,7 @@
               </a>
          
               <!-- Be sure to leave the brand out there if you want it shown -->
-              <a class="brand" href="#">Janus</a>
+              <a class="brand" href="#main">Janus</a>
 
               <form class="navbar-search pull-left" action="#/search/all" method="get">
                 <input id="term" name="term" type="text" class="search-query" placeholder="Search">
@@ -271,35 +271,49 @@
           $('.renderTarget').remove();
         }
         
-        // create new target for data
-        var newRenderTarget = $("<div class='container renderTarget'></div>")
-        newRenderTarget.hide();
-        $('#target').append(newRenderTarget);
-
-        // if item list isn't actually an item
-        if(!itemList.length && itemList.type) {
-          if("multientityresponse" == itemList.type) {
-            renderMultiResponse(itemList, newRenderTarget);
-          } else {
-            renderSingleItem(itemList, newRenderTarget);
-            // clear multi-header when any response comes in
-            $('#multi-header-target').empty();
-          }          
+        
+        if(itemList.type && "multientityresponse" == itemList.type) {
+          renderMultiResponse(itemList, $('#target'));
         } else {
-          for(var i = 0; i < itemList.length; i++) {
-            var item = itemList[i];
-            renderSingleItem(item, newRenderTarget);
-          }
+          // create new target for data
+          var newRenderTarget = $("<div class='container renderTarget'></div>")
+          newRenderTarget.hide();
+
           // clear multi-header when any response comes in
           $('#multi-header-target').empty();
+
+          if(itemList.type && !itemList.length) {
+            renderSingleItem(itemList, newRenderTarget, addToCurrent);
+          } else {
+            renderList(itemList, newRenderTarget, addToCurrent);
+          }
+
+          // append render target
+          $('#target').append(newRenderTarget);
+          
+          // make visibile
+          newRenderTarget.show();
         }
-        
-        // make visibile
-        newRenderTarget.show();
         
         // log
         if(itemList.length) {
           logger("[info] rendered " + itemList.length + " items");
+        }
+      }
+      
+      function renderList(list, intoTarget, addToCurrent) {
+        if(!addToCurrent) {
+          intoTarget.empty();
+        }
+        
+        if(!list || !list.length) {
+          logger("[info] no items to render");
+          return;
+        }
+        
+        for(var i = 0; i < list.length; i++) {
+          var item = list[i];
+          renderSingleItem(item, intoTarget);
         }
       }
       
@@ -315,25 +329,25 @@
         // create new targets
         var bookTarget = $("<div class='container renderTarget bookTarget'></div>")
         bookTarget.hide();
-        $('#target').append(bookTarget);
+        intoTarget.append(bookTarget);
         
         var authorTarget = $("<div class='container renderTarget authorTarget'></div>")
         authorTarget.hide();
-        $('#target').append(authorTarget);
+        intoTarget.append(authorTarget);
 
         var seriesTarget = $("<div class='container renderTarget seriesTarget'></div>")
         seriesTarget.hide();
-        $('#target').append(seriesTarget);
+        intoTarget.append(seriesTarget);
         
         var tagTarget = $("<div class='container renderTarget tagTarget'></div>")
         tagTarget.hide();
-        $('#target').append(tagTarget);
+        intoTarget.append(tagTarget);
         
         // render portions
-        renderResponse(multiResponse.books, bookTarget);
-        renderResponse(multiResponse.authors, authorTarget);
-        renderResponse(multiResponse.series, seriesTarget);
-        renderResponse(multiResponse.tags, tagTarget);
+        renderList(multiResponse.books, bookTarget);
+        renderList(multiResponse.authors, authorTarget);
+        renderList(multiResponse.series, seriesTarget);
+        renderList(multiResponse.tags, tagTarget);
 
         // add header 
         var header = multi_template(multiResponse);
@@ -342,15 +356,19 @@
         // decide which should be shown first
         if(bookTarget && bookTarget.length) {
           bookTarget.show();
+          bookTarget.addClass('activeTarget');
           $('.book_tab').addClass('active');
         } else if(authorTarget && authorTarget.length) {
           authorTarget.show();
+          authorTarget.addClass('activeTarget');
           $('.author_tab').addClass('active');
         } else if(seriesTarget && seriesTarget.length) {
           seriesTarget.show();
+          seriesTarget.addClass('activeTarget');
           $('.series_tab').addClass('active');
         } else if(tagTarget && tagTarget.length) {
           tagTarget.show();
+          tagTarget.addClass('activeTarget');
           $('.tag_tab').addClass('active');
         }       
       }
@@ -415,6 +433,20 @@
         request(url, addToCurrent);        
       }
       
+      function toggleTarget(showTarget) {
+        // hide and deactivate active status on currently active tab
+        $('.activeTarget').hide();
+        $('.activeTarget').removeClass('.activeTarget');
+        
+        // show new target and make active
+        $('.'+showTarget+'Target').show();
+        $('.'+showTarget+'Target').addClass('activeTarget');
+        
+        // change look of tab
+        $('.active').removeClass('active');
+        $('.'+showTarget+'_tab').addClass('active');
+      }
+      
       $(document).ready(function() {
           // create 'rest-like' routes for application
           // and kick off #main route when complete
@@ -422,17 +454,30 @@
             var app = $.sammy( 
               function() {
                 
+                // no-op
+                this.get("#", function(context) {
+                  // no-op
+                  logger("[warn] reached '#' which is an empty context.");
+                });
+                
                 // main
                 this.get('#main', function(context) {
                   $('#target').empty(); // main screen doesn't need this
                   $('#multi-header-target').empty(); // main screen doesn't need this
-                  $('#mainOptions').show(); // ensure main navigation options are visible                  
+                  $('#mainOptions').show(); // ensure main navigation options are visible
+                  
+                  // clear search term
+                  $('#term').val('');
                 });
 
                 // get individual template item of core type
                 this.get('#/:type/get/:id', function(context) {
                   var id = this.params['id'];
                   var type = this.params['type'];
+
+                  // clear search term
+                  $('#term').val('');
+
                   requestBaseType(type, id);
                 });
 
@@ -441,6 +486,10 @@
                   var id = context.params['id'];
                   var type = context.params['type'];
                   var child = context.params['child'];
+                  
+                  // clear search term
+                  $('#term').val('');
+                  
                   requestChildForType(type, id, child);
                 });                                 
                 
@@ -451,6 +500,9 @@
                   var size = context.params['size'];
                   var sort = context.params['sort'];
                   
+                  // clear search term
+                  $('#term').val('');
+                  
                   // request list of given type
                   requestTypeList(type, sort, index, size);
                 });
@@ -458,6 +510,9 @@
                 // searching
                 this.get('#/search/all', function(context) {
                   var term = context.params['term'];
+
+                  // set ui component
+                  $('#term').val(term)
                   
                   // request list of given type
                   searchAll(term);
