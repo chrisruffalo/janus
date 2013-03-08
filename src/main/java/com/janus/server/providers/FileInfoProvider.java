@@ -18,6 +18,8 @@ import org.slf4j.Logger;
 
 import com.janus.model.Book;
 import com.janus.model.FileInfo;
+import com.janus.server.configuration.ImageConfiguration;
+import com.janus.server.resources.DiskCacheLocation;
 
 @RequestScoped
 public class FileInfoProvider extends AbstractProvider<FileInfo> {
@@ -31,6 +33,10 @@ public class FileInfoProvider extends AbstractProvider<FileInfo> {
 	
 	@Inject
 	private Logger logger;
+	
+	@Inject
+	@DiskCacheLocation("img")
+	private File diskCacheLocation;
 	
 	@Override
 	public Class<FileInfo> getEntityType() {
@@ -102,6 +108,35 @@ public class FileInfoProvider extends AbstractProvider<FileInfo> {
 	 * @return
 	 */
 	public BufferedImage getCoverDataForBook(Long id, int width, int height) {
+		// set default height if height is unsatisfiable
+		if(height <= 0) {
+			height = FileInfoProvider.DEFAULT_HEIGHT;
+		}
+		
+		// set default width if height is unsatisfiable
+		if(width <= 0) {
+			width = FileInfoProvider.DEFAULT_WIDTH;
+		}
+		
+		// look up book in cache
+		String key = "image." + id + ".w" + width + ".h" + height + "." + ImageConfiguration.IMAGE_TYPE;
+		String fullImagePath = this.diskCacheLocation.getAbsolutePath() + File.separator + key;
+		File existingImage = new File(fullImagePath);
+		
+		// if image exists... grab!
+		if(existingImage.exists() && existingImage.isFile()) {
+			try {
+				// read from cache and return
+				BufferedImage image = ImageIO.read(existingImage);
+				this.logger.debug("Read {} from cache", key);
+				return image;
+			} catch (IOException e) {
+				// if an error occurs, delete and proceed normally
+				this.logger.warn("Could not read exisitng image {} from cache, deleting", key);
+				existingImage.delete();
+			}
+		}
+		
 		// lookup book path
 		String bookPath = this.getBookPath(id);
 		
@@ -121,16 +156,6 @@ public class FileInfoProvider extends AbstractProvider<FileInfo> {
 		if(!coverFile.exists() || !coverFile.isFile()) {
 			return null;
 		}
-
-		// set default height if height is unsatisfiable
-		if(height <= 0) {
-			height = FileInfoProvider.DEFAULT_HEIGHT;
-		}
-		
-		// set default width if height is unsatisfiable
-		if(width <= 0) {
-			width = FileInfoProvider.DEFAULT_WIDTH;
-		}
 		
 		// try and resize/open image
 		try {
@@ -139,9 +164,15 @@ public class FileInfoProvider extends AbstractProvider<FileInfo> {
 			
 			// resize if needs be
 			if(image.getHeight() != height || image.getWidth() != width) {
-				image = Scalr.resize(image, Scalr.Method.SPEED, Scalr.Mode.FIT_EXACT, width, height);
+				image = Scalr.resize(image, Scalr.Method.AUTOMATIC, Scalr.Mode.FIT_EXACT, width, height);
+			}
+						
+			// write to file for future cache
+			if(this.diskCacheLocation.exists() && this.diskCacheLocation.isDirectory() && !existingImage.exists()) {
+				ImageIO.write(image, ImageConfiguration.IMAGE_TYPE, existingImage);
 			}
 
+			// return
 			return image;
 		} catch (IOException e) {
 			this.logger.error("Error while reading image file for book:{} to image: {}", id, e.getMessage());
@@ -149,4 +180,14 @@ public class FileInfoProvider extends AbstractProvider<FileInfo> {
 		}
 	}
 	
+	/**
+	 * Delete files in image cache
+	 * 
+	 */
+	public void purgeDiskImageCache() {
+		for(File cachedFile : this.diskCacheLocation.listFiles()) {
+			this.logger.info("Deleting image: {}", cachedFile.getName());
+			cachedFile.delete();
+		}
+	}
 }

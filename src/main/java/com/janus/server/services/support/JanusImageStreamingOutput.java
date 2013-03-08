@@ -10,6 +10,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.codec.binary.Base64OutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.janus.server.configuration.ImageConfiguration;
 
@@ -20,6 +22,8 @@ public class JanusImageStreamingOutput implements StreamingOutput {
 	private boolean base64;
 	
 	private File tempFolder;
+	
+	private Logger logger;
 	
 	public JanusImageStreamingOutput(BufferedImage image) {
 		this(image, false, null);
@@ -33,6 +37,7 @@ public class JanusImageStreamingOutput implements StreamingOutput {
 		this.image = image;
 		this.base64 = base64;
 		this.tempFolder = tempFolder;
+		this.logger = LoggerFactory.getLogger(this.getClass());
 	}
 	
 	@Override
@@ -45,11 +50,16 @@ public class JanusImageStreamingOutput implements StreamingOutput {
 		}
 		
 		// if a temporary folder for caching is available, use it
-		if(tempFolder != null && tempFolder.exists() && tempFolder.isDirectory()) {
+		if(this.tempFolder != null && this.tempFolder.exists() && this.tempFolder.isDirectory()) {
 			ImageIO.setUseCache(true);
 			ImageIO.setCacheDirectory(this.tempFolder);
+			
+			logger.debug("Using cache directory: {}", this.tempFolder.getAbsolutePath());
+		} else if(this.tempFolder != null) {
+			logger.debug("No cache available at: {}", this.tempFolder.getAbsolutePath());
 		}
 				
+		// do image write
 		ImageIO.write(this.image, ImageConfiguration.IMAGE_TYPE, localOutput);
 	}
 

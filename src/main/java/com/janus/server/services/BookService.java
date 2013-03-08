@@ -26,11 +26,8 @@ import org.slf4j.Logger;
 
 import com.janus.model.Book;
 import com.janus.model.FileInfo;
-import com.janus.server.configuration.ImageConfiguration;
-import com.janus.server.configuration.SystemProperty;
 import com.janus.server.providers.BookProvider;
 import com.janus.server.providers.FileInfoProvider;
-import com.janus.server.services.support.JanusImageStreamingOutput;
 import com.janus.server.services.support.JanusStreamingOutput;
 
 @Path("/book")
@@ -42,10 +39,6 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 
 	@Inject
 	private FileInfoProvider fileInfoProvider;
-	
-	@Inject
-	@SystemProperty("jboss.server.temp.dir")
-	private String jbossServerTempDir;
 	
 	@Inject
 	private Logger logger;
@@ -130,35 +123,14 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 		return builder.build();
 	}
 	
-	@GET
-	@Path("/{id}/cover")
-	public Response cover(@PathParam("id") Long id, 
-					     @QueryParam("base64") @DefaultValue("no") String encodeInBase64, 
-					     @QueryParam("w") @DefaultValue("0") int width, 
-					     @QueryParam("h") @DefaultValue("0") int height) 
-	{
-		boolean encode = "yes".equalsIgnoreCase(encodeInBase64);
-		BufferedImage fromFile = this.fileInfoProvider.getCoverDataForBook(id, width, height);
-		
-		if(fromFile == null) {
-			return Response.status(Status.NOT_FOUND).entity("no cover image found for book " + id).build();
-		}
-		
-		// build response
-		ResponseBuilder builder = Response.ok();
-		
-		// set response
-		builder.entity(new JanusImageStreamingOutput(fromFile, encode, new File(this.jbossServerTempDir)));
-		
-		// set mime-type
-		builder.type(ImageConfiguration.IMAGE_MIME);
-				
-		return builder.build();
-	}
-
 	@Override
 	protected BookProvider getProvider() {
 		return this.provider;
+	}
+
+	@Override
+	protected BufferedImage getCoverImage(Long id, int width, int height) {
+		return this.fileInfoProvider.getCoverDataForBook(id, width, height);
 	}
 
 }

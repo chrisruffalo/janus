@@ -20,6 +20,7 @@ import com.janus.model.FileType;
 import com.janus.model.configuration.DatabaseStatus;
 import com.janus.server.configuration.ConfigurationProperties;
 import com.janus.server.providers.BookProvider;
+import com.janus.server.providers.FileInfoProvider;
 import com.janus.server.providers.SearchProvider;
 import com.janus.server.providers.SettingsProvider;
 import com.janus.util.DigestUtil;
@@ -38,6 +39,9 @@ public class CalibreImportWorker {
 	
 	@Inject
 	private SearchProvider searchProvider;
+	
+	@Inject
+	private FileInfoProvider fileInfoProvider;
 	
 	@Inject
 	private Logger logger;
@@ -136,6 +140,9 @@ public class CalibreImportWorker {
 			
 			// clear old full text index
 			this.searchProvider.purge();
+			
+			// clear images too
+			this.fileInfoProvider.purgeDiskImageCache();
 			
 			// import new books
 			this.bookProvider.save(books);
