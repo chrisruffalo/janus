@@ -1,115 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<title>Janus</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <title>Janus</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Bootstrap -->
-<link href="static/css/bootstrap.min.css" rel="stylesheet"
-        media="screen">
-<link href="static/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="static/css/font-awesome.min.css" rel="stylesheet">
 
-<!-- janus -->
-<link href="static/css/janus.css" rel="stylesheet" media="screen">
+    <!-- janus -->
+    <link href="static/css/janus.css" rel="stylesheet" media="screen">
 
-<!-- templates -->
-<script id="book-template" type="text/x-handlebars-template">
+    <!-- templates -->
+    <script id="book-template" type="text/x-handlebars-template">
       <div class="row">
-          <div class="span7"> <!-- span 1 greater -->
-            <div class="row entry">
-              <div class="entryItem span3"> <!-- main info -->
+          <div class="span6"> <!-- span 1 greater -->
+            <div class="row-fluid entry">
+              <div class="entryItem span12"> <!-- main info -->
                 <h4><em>{{title}}</em></h4>
-                <h5>{{subtitle}}</h5>
-                <img src="static/img/thumbnail.jpg" data-src="s/book/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
-                {{#if series}}
-                <h6>Book {{seriesIndex}} in <em><a href="#/series/get/{{series.id}}">{{series.name}}</a></em></h5>
-                {{/if}}
-              </div> <!-- end main -->
-              <div class="entryItem span3"> <!-- misc data, more info -->
-                {{#if fileInfo}}
-                  <select id="download_box_{{../id}}">
-                  {{#each fileInfo}}
-                    <option value="{{type}}">{{type}} ({{descriptiveSize}})</option>
-                  {{/each}}
-                  </select>
-                  <a class="btn" onclick="downloadFile('{{../id}}', '{{type}}')"><i class="icon-download-alt"></i></a>
-                {{/if}}
-                {{#if authors}}
-                  Authors:
-                  {{#each authors}}
-                  <span class="label"><a href="#/author/get/{{id}}">{{name}}</a></span>
-                  {{/each}}
-                {{/if}}
-              </div> <!-- /end misc -->
+                <table>
+                  <tr>
+                    <td rowspan="3">
+                      <img src="static/img/thumbnail.jpg" data-src="s/book/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      {{#if authors}}
+                        Authors:
+                        {{#each authors}}
+                        <span class="label"><a href="#/author/get/{{id}}">{{name}}</a></span>
+                        {{/each}}
+                      {{/if}}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      {{#if fileInfo}}
+                        <div class="input-append">
+                          <select id="download_box_{{../id}}" class="widthOverride">
+                          {{#each fileInfo}}
+                            <option value="{{type}}">{{type}} ({{descriptiveSize}})</option>
+                          {{/each}}
+                          </select>
+                          <button class="btn" type="button" onclick="downloadFile('{{../id}}', '{{type}}')"><i class="icon-download-alt"></i></a>
+                        </div>
+                      {{/if}}                    
+                    </td>
+                  </tr>
+                </table> <!-- closes table -->
+                <h6>
+                  {{#if series}}
+                    Book {{seriesIndex}} in <em><a href="#/series/get/{{series.id}}">{{series.name}}</a></em>
+                  {{/if}}
+                </h6>                
+              </div> <!-- /end span12 entry item row -->
             </div> <!-- /entry row --> 
         </div> <!-- /inner span -->
-        <div class="span5">
-          <!-- additional information goes here -->
-        </div>
       </div> <!-- /row -->      
     </script>
     
     <script id="author-template" type="text/x-handlebars-template">
       <div class="row">
-        <div class="span7">
-          <div class="row entry">
-            <div class="entryItem span3">
-              <h4>{{name}}</h4>
-              <img src="static/img/thumbnail.jpg" data-src="s/author/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
-              <h5>Author of <a href="#/author/get/{{id}}/books">{{bookCount}} books</a>{{#if wroteSeries}} and <a href="#/author/{{id}}/series">{{wroteSeries}} series</a>{{/if}}.</h5>
-            </div>
-            <div class="entryItem span3"> <!-- misc data, more info -->
-              <p>
-                <a href="#/{{type}}/get/{{id}}/books">books</a>
-                <a href="#/{{type}}/get/{{id}}/series">series</a>
-                <a href="#/{{type}}/get/{{id}}/tags">tags</a>
-              </p>
-            </div>        
-          </div> <!-- /row -->
-        </div>
+          <div class="span6"> <!-- span 1 greater -->
+            <div class="row-fluid entry">
+              <div class="entryItem span12"> <!-- main info -->
+                <h4><em>{{name}}</em></h4>
+                <table>
+                  <tr>
+                    <td rowspan="3">
+                      <img src="static/img/thumbnail.jpg" data-src="s/{{type}}/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a href="#/{{type}}/get/{{id}}/authors">related authors <i class="icon-circle-arrow-right"></i></a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a href="#/{{type}}/get/{{id}}/tags">related tags <i class="icon-circle-arrow-right"></i></a>
+                    </td>
+                  </tr>
+                </table> <!-- closes table -->
+                <h5>
+                  {{#if bookCount}}
+                    Author of <a href="#/author/get/{{id}}/books">{{bookCount}} books</a>{{#if wroteSeries}} and <a href="#/author/{{id}}/series">{{wroteSeries}} series</a>{{/if}}.
+                  {{/if}}
+                </h5>
+              </div> <!-- /end span12 entry item row -->
+            </div> <!-- /entry row --> 
+        </div> <!-- /inner span -->
       </div>
     </script>
     
-    <script id="series-template" type="text/x-handlebars-template">
+    <script id="generic-template" type="text/x-handlebars-template">
       <div class="row">
-        <div class="span7">
-          <div class="row entry">
-            <div class="entryItem span3">
-              <h4>{{name}}</h4>
-              <img src="static/img/thumbnail.jpg" data-src="s/series/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
-            </div>
-            <div class="entryItem span3"> <!-- misc data, more info -->
-              <p>
-                <a href="#/{{type}}/get/{{id}}/books">books</a>
-                <a href="#/{{type}}/get/{{id}}/tags">tags</a>
-                <a href="#/{{type}}/get/{{id}}/authors">authors</a>
-              </p>
-            </div>
-          </div>
-        </div>
+          <div class="span6"> <!-- span 1 greater -->
+            <div class="row-fluid entry">
+              <div class="entryItem span12"> <!-- main info -->
+                <h4><em>{{name}}</em></h4>
+                <table>
+                  <tr>
+                    <td rowspan="5">
+                      <img src="static/img/thumbnail.jpg" data-src="s/{{type}}/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a href="#/{{type}}/get/{{id}}/books">related books <i class="icon-circle-arrow-right"></i></a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a href="#/{{type}}/get/{{id}}/authors">related authors <i class="icon-circle-arrow-right"></i></a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a href="#/{{type}}/get/{{id}}/series">related series <i class="icon-circle-arrow-right"></i></a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a href="#/{{type}}/get/{{id}}/tags">related tags <i class="icon-circle-arrow-right"></i></a>
+                    </td>
+                  </tr>
+                </table> <!-- closes table -->
+                <h5>&nbsp;</h5> <!-- shim -->
+              </div> <!-- /end span12 entry item row -->
+            </div> <!-- /entry row --> 
+        </div> <!-- /inner span -->
       </div> <!-- /row -->      
     </script>
-   
-    <script id="tag-template" type="text/x-handlebars-template">
-      <div class="row">
-        <div class="span7">
-          <div class="row entry">
-            <div class="entryItem span3">
-              <h4>{{name}}</h4>
-              <img src="static/img/thumbnail.jpg" data-src="s/tag/{{id}}/cover?w=67&h=90" class="thumbnail lazy entryThumb"/>
-            </div>
-            <div class="entryItem span3"> <!-- misc data, more info -->
-              <p>
-                <a href="#/{{type}}/get/{{id}}/books">books</a>
-                <a href="#/{{type}}/get/{{id}}/series">series</a>
-                <a href="#/{{type}}/get/{{id}}/authors">authors</a>
-              </p>
-            </div>
-          </div>
-        </div>
-      </div> <!-- /row -->      
-    </script>
-    
+       
     <script id="multi-response-header-template" type="text/x-handlebars-template">
       <div class="row">
         <div class="span7">
@@ -141,436 +165,98 @@
       </div>      
     </script>
    
-</head>
-      <body>
-        <!-- navigation bar -->
-        <div class="navbar navbar-fixed-top">
-          <div class="navbar-inner">
-            <div class="container">
-         
-              <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
-              <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </a>
-         
-              <!-- Be sure to leave the brand out there if you want it shown -->
-              <a class="brand" href="#main">Janus</a>
+  </head>
+  <body>
+      <!-- navigation bar -->
+      <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+          <div class="container">
+       
+            <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </a>
+       
+            <!-- Be sure to leave the brand out there if you want it shown -->
+            <a class="brand" href="#main">Janus</a>
 
-              <form class="navbar-search pull-left" action="#/search/all" method="get">
-                <input id="term" name="term" type="text" class="search-query" placeholder="Search">
-              </form>
+            <form class="navbar-search pull-left" action="#/search/all" method="get">
+              <input id="term" name="term" type="text" class="search-query" placeholder="Search">
+            </form>
 
-              <!-- Everything you want hidden at 940px or less, place within here -->
-              <div class="nav-collapse collapse">
+            <!-- Everything you want hidden at 940px or less, place within here -->
+            <div class="nav-collapse collapse">
+            </div>
+       
+          </div>
+        </div>
+      </div>
+
+      <!-- sample navigation options -->
+      <div id="mainOptions" class="container" style="display: none;">
+        <div class="row">
+          <div class="span7">
+            <div class="row entry">
+              <div class="span2">
+                <h3>Books</h1>
+                <h6><a href="#/book/list?sort=latest">Sorted by newest</a></h6>
+                <h6><a href="#/book/list?sort=name">Sorted by name</a></h6>
               </div>
-         
+              <div class="span2">
+                <h3>Authors</h3>
+                <h6><a href="#/author/list?sort=latest">Sorted by newest book</a></h6>
+                <h6><a href="#/author/list?sort=books">Sorted by most books</a></h6>
+                <h6><a href="#/author/list?sort=series">Sorted by most series</a></h6>
+                <h6><a href="#/author/list?sort=name">Sorted by name</a></h6>
+              </div>
+              <div class="span2">
+                <h3>Series</h3>
+                <h6><a href="#/series/list?sort=latest">Sorted by newest book</a></h6>
+                <h6><a href="#/series/list?sort=books">Sorted by most books</a></h6>
+                <h6><a href="#/series/list?sort=name">Sorted by name</a></h6>
+              </div>
+              <div class="span2">
+                <h3>Tags</h3>
+                <h6><a href="#/tag/list?sort=latest">Sorted by newest book</a></h6>
+                <h6><a href="#/tag/list?sort=books">Sorted by most books</a></h6>
+                <h6><a href="#/tag/list?sort=name">Sorted by name</a></h6>
+              </div>            
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- sample navigation options -->
-        <div id="mainOptions" class="container" style="display: none;">
-          <div class="row">
-            <div class="span7">
-              <div class="row entry">
-                <div class="span2">
-                  <h3>Books</h1>
-                  <h6><a href="#/book/list?sort=latest">Sorted by newest</a></h6>
-                  <h6><a href="#/book/list?sort=name">Sorted by name</a></h6>
-                </div>
-                <div class="span2">
-                  <h3>Authors</h3>
-                  <h6><a href="#/author/list?sort=latest">Sorted by newest book</a></h6>
-                  <h6><a href="#/author/list?sort=books">Sorted by most books</a></h6>
-                  <h6><a href="#/author/list?sort=series">Sorted by most series</a></h6>
-                  <h6><a href="#/author/list?sort=name">Sorted by name</a></h6>
-                </div>
-                <div class="span2">
-                  <h3>Series</h3>
-                  <h6><a href="#/series/list?sort=latest">Sorted by newest book</a></h6>
-                  <h6><a href="#/series/list?sort=books">Sorted by most books</a></h6>
-                  <h6><a href="#/series/list?sort=name">Sorted by name</a></h6>
-                </div>
-                <div class="span2">
-                  <h3>Tags</h3>
-                  <h6><a href="#/tag/list?sort=latest">Sorted by newest book</a></h6>
-                  <h6><a href="#/tag/list?sort=books">Sorted by most books</a></h6>
-                  <h6><a href="#/tag/list?sort=name">Sorted by name</a></h6>
-                </div>            
-              </div>
-            </div>
-          </div>
-        </div>
+      <div id="multi-header-target" class="container">
+        <!-- this is where the search tab thing goes -->          
+      </div>
+      
+      <div id="target">
+        <!-- target div for new render items -->
+      </div>
 
-        <div id="multi-header-target" class="container">
-          <!-- this is where the search tab thing goes -->          
-        </div>
-        
-        <div id="target">
-          <!-- target div for new render items -->
-        </div>
+      <!-- supporting scripts -->
+      <script src="static/js/jquery.js"></script>
+      <script src="static/js/bootstrap.min.js"></script>
+      <script src="static/js/handlebars.js"></script>
+      <script src="static/js/sammy.js"></script>
+      <script src="static/js/jail.min.js"></script>
+      
+      <!-- janus logic -->
+      <script src="static/janus/janus-config.js"></script>
+      <script src="static/janus/janus-utilities.js"></script>
+      <script src="static/janus/janus-template.js"></script>
+      <script src="static/janus/janus-request.js"></script>
+      <script src="static/janus/janus-render.js"></script>
+      <script src="static/janus/janus-sammy.js"></script>
 
-        <!-- scripts -->
-        <script src="static/js/jquery.js"></script>
-        <script src="static/js/bootstrap.min.js"></script>
-        <script src="static/js/handlebars.js"></script>
-        <script src="static/js/sammy.js"></script>
-        <script src="static/js/jail.min.js"></script>
-
-        <!-- handlebars template stuff -->
-        <script>
-        var defaultPageSize = 10;
-        
-        var book_source   = $("#book-template").html();
-        var book_template = Handlebars.compile(book_source);
-
-        var author_source = $("#author-template").html();
-        var author_template = Handlebars.compile(author_source);
-        
-        var series_source = $('#series-template').html();
-        var series_template = Handlebars.compile(series_source);
-        
-        var tag_source = $('#tag-template').html();
-        var tag_template = Handlebars.compile(tag_source);
-        
-        var multi_source = $('#multi-response-header-template').html();
-        var multi_template = Handlebars.compile(multi_source);
-        
-        function logger(logString) {
-          if(console && console.log) {
-            console.log(logString);
-          }
-        }
-        
-      function request(url, addToCurrent) {
-        if(!url) {
-          logger("[error] called request with bad url");
-          return;
-        }
-          
-        logger(url);
-
-        $.ajax(url)
-        .success(
-          function(context) {
-            var response = renderResponse(context, addToCurrent);
-            logger("[info] response got content: " + response);
-          }
-        );          
-      }
-
-      function renderResponse(itemList, addToCurrent) {
-        if(!itemList) {
-          return;
-        }
-
-        $('#mainOptions').hide(); // ensure main navigation is hidden
-        
-        if(!addToCurrent) {
-          $('.renderTarget').remove();
-        }        
-        
-        var response = false;
-        if(itemList.type && "multientityresponse" == itemList.type) {
-          response = renderMultiResponse(itemList, $('#target'));
-        } else {
-          // create new target for data
-          var newRenderTarget = $("<div class='container renderTarget'></div>")
-          newRenderTarget.hide();
-
-          // clear multi-header when any response comes in
-          $('#multi-header-target').empty();
-
-          if(itemList.type && !itemList.length) {
-            response = renderSingleItem(itemList, newRenderTarget, addToCurrent);
-          } else {
-            response = renderList(itemList, newRenderTarget, addToCurrent);
-          }
-
-          // append render target
-          $('#target').append(newRenderTarget);
-          
-          // make visibile
-          newRenderTarget.show();
-        }
-        
-        // set up JAIL
-        $("img.lazy").jail({
-          offset : 200,
-          event: 'scroll',
-          speed: 0,
-          loadHiddenImages: true
+      <!-- handlebars template stuff -->
+      <script>
+        $(document).ready(function() {
+          // initialize sammy application
+          initSammy();          
         });
-        
-        // log
-        if(itemList.length) {
-          logger("[info] rendered " + itemList.length + " items");
-        }
-        
-        // if not additive, jump to top
-        if(!addToCurrent) {
-          jumpToTop();
-        }
-        
-        return response;
-      }
-      
-      function renderList(list, intoTarget, addToCurrent) {
-        if(!addToCurrent) {
-          intoTarget.empty();
-        }
-        
-        if(!list || !list.length) {
-          logger("[info] no items to render");
-          return false;
-        }
-        
-        for(var i = 0; i < list.length; i++) {
-          var item = list[i];
-          renderSingleItem(item, intoTarget);
-        }
-        
-        logger("[info] rendered " + list.length + " items");
-        
-        return true;
-      }
-      
-      function renderMultiResponse(multiResponse, intoTarget) {
-        // clear multi-header when any response comes in
-        $('#multi-header-target').empty();
-
-        // leave if no items
-        if(!multiResponse.books && !multiResponse.authors && !multiResponse.series && !multiResponse.tags) {
-          return false;
-        }        
-
-        // create new targets
-        var bookTarget = $("<div class='container renderTarget bookTarget'></div>")
-        bookTarget.hide();
-        intoTarget.append(bookTarget);
-        
-        var authorTarget = $("<div class='container renderTarget authorTarget'></div>")
-        authorTarget.hide();
-        intoTarget.append(authorTarget);
-
-        var seriesTarget = $("<div class='container renderTarget seriesTarget'></div>")
-        seriesTarget.hide();
-        intoTarget.append(seriesTarget);
-        
-        var tagTarget = $("<div class='container renderTarget tagTarget'></div>")
-        tagTarget.hide();
-        intoTarget.append(tagTarget);
-        
-        // render portions
-        var bookResponse = renderList(multiResponse.books, bookTarget);
-        var authorResponse = renderList(multiResponse.authors, authorTarget);
-        var seriesResponse = renderList(multiResponse.series, seriesTarget);
-        var tagResponse = renderList(multiResponse.tags, tagTarget);
-        
-        // record overall response of rendering
-        var response = bookResponse || authorResponse || seriesResponse || tagResponse;
-        
-        // leave now if no response
-        if(!response) {
-          logger("[warn] early return from mult-response with no rendering");
-          return false;
-        }
-        
-        // add header 
-        var header = multi_template(multiResponse);
-        $('#multi-header-target').append(header);
-        
-        // decide which should be shown first
-        if(bookTarget && bookTarget.length) {
-          bookTarget.show();
-          bookTarget.addClass('activeTarget');
-          $('.book_tab').addClass('active');
-        } else if(authorTarget && authorTarget.length) {
-          authorTarget.show();
-          authorTarget.addClass('activeTarget');
-          $('.author_tab').addClass('active');
-        } else if(seriesTarget && seriesTarget.length) {
-          seriesTarget.show();
-          seriesTarget.addClass('activeTarget');
-          $('.series_tab').addClass('active');
-        } else if(tagTarget && tagTarget.length) {
-          tagTarget.show();
-          tagTarget.addClass('activeTarget');
-          $('.tag_tab').addClass('active');
-        }
-        
-        return response;
-      }
-
-      function renderSingleItem(item, intoTarget) {
-        var html = false;
-          
-        if("book" == item.type) {
-          html = book_template(item);
-        } else if("author" == item.type) {
-          html = author_template(item);
-        } else if ("series" == item.type) {
-          html = series_template(item);
-        } else if ("tag" == item.type) {
-          html = tag_template(item);
-        } else {
-          logger("[warn] target render item has no type, no rendering performed");
-          return false;
-        }
-
-        var response = false;
-        if(html) {                                  
-          intoTarget.append(html);
-          response = true;
-        }
-        return response;
-      }
-
-      function downloadFile(id, type) {
-        var type = $('#download_box_'+id).val();
-        var url = "s/book/" + identifier + "/file/" + type;
-        window.location.assign(url);
-      }
-  
-      function requestTypeList(type, sort, index, size, addToCurrent) {
-        if(!sort) {
-          sort = "default";
-        }
-        
-        if(!type) {
-          type = "book";            
-        }
-        
-        // normalize paging values
-        if(!size || size < 1) {
-          size = defaultPageSize;
-        }
-        if(!index || index < 0) {
-          index = 0;
-        }
-        
-        var url = "s/" + type + "/list?sort=" + sort + "&index=" + index + "&size=" + size;
-        request(url, addToCurrent);  
-      }
-  
-      function requestBaseType(type, id, animate, addToCurrent) {
-        var url = "s/" + type + "/" + id;
-        request(url, addToCurrent);
-      }
-  
-      function requestChildForType(type, id, child, animate, addToCurrent) {
-        var url = "s/" + type + "/" + id + "/" + child;
-        request(url, addToCurrent);
-      }
-      
-      function searchAll(searchString, addToCurrent) {
-        var url = "s/search/all/" + searchString;
-        request(url, addToCurrent);        
-      }
-      
-      function toggleTarget(showTarget) {
-        // hide and deactivate active status on currently active tab
-        $('.activeTarget').hide();
-        $('.activeTarget').removeClass('.activeTarget');
-        
-        // show new target and make active
-        $('.'+showTarget+'Target').show();
-        $('.'+showTarget+'Target').addClass('activeTarget');
-        
-        // change look of tab
-        $('.active').removeClass('active');
-        $('.'+showTarget+'_tab').addClass('active');
-      }
-    
-      // jump to the top of the document  
-      function jumpToTop(){
-        $("html, body").animate({ scrollTop: 0 }, 600);
-        return false;
-      }
-      
-      $(document).ready(function() {
-          // create 'rest-like' routes for application
-          // and kick off #main route when complete
-          (function($) {              
-            var app = $.sammy( 
-              function() {
-                
-                // no-op
-                this.get("#", function(context) {
-                  // no-op
-                  logger("[warn] reached '#' which is an empty context.");
-                });
-                
-                // main
-                this.get('#main', function(context) {
-                  $('#target').empty(); // main screen doesn't need this
-                  $('#multi-header-target').empty(); // main screen doesn't need this
-                  $('#mainOptions').show(); // ensure main navigation options are visible
-                  
-                  // clear search term
-                  $('#term').val('');
-                });
-
-                // get individual template item of core type
-                this.get('#/:type/get/:id', function(context) {
-                  var id = this.params['id'];
-                  var type = this.params['type'];
-
-                  // clear search term
-                  $('#term').val('');
-
-                  requestBaseType(type, id);
-                });
-
-                // get books for core item
-                this.get('#/:type/get/:id/:child', function(context) {
-                  var id = context.params['id'];
-                  var type = context.params['type'];
-                  var child = context.params['child'];
-                  
-                  // clear search term
-                  $('#term').val('');
-                  
-                  requestChildForType(type, id, child);
-                });                                 
-                
-                // list items
-                this.get('#/:type/list', function(context) {
-                  var type = context.params['type'];
-                  var index = context.params['index'];
-                  var size = context.params['size'];
-                  var sort = context.params['sort'];
-                  
-                  // clear search term
-                  $('#term').val('');
-                  
-                  // request list of given type
-                  requestTypeList(type, sort, index, size);
-                });
-                
-                // searching
-                this.get('#/search/all', function(context) {
-                  var term = context.params['term'];
-
-                  // set ui component
-                  $('#term').val(term)
-                  
-                  // request list of given type
-                  searchAll(term);
-                });
-
-              }
-            );
-            
-            $(function() {
-              app.run('#main');
-            });
-          
-          })(jQuery);
-          
-      });
     </script>
-</body>
+  </body>
 </html>
