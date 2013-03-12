@@ -12,7 +12,7 @@ function renderResponse(itemList, addToCurrent) {
   
   var response = false;
   if(itemList.type && "multientityresponse" == itemList.type) {
-    response = renderMultiResponse(itemList, $('#target'));
+    response = renderMultiResponse(itemList, $('#target'), addToCurrent);
   } else {
     // create new target for data
     var newRenderTarget = $("<div class='container renderTarget'></div>")
@@ -34,7 +34,7 @@ function renderResponse(itemList, addToCurrent) {
     newRenderTarget.show();
   }
   
-  // set up JAIL
+  // set up JAIL to load images async
   $("img.lazy").jail({
     offset : 200,
     event: 'scroll',
@@ -56,6 +56,11 @@ function renderResponse(itemList, addToCurrent) {
 }
 
 function renderList(list, intoTarget, addToCurrent) {
+  // no target means no rendering
+  if(!intoTarget) {
+    return false;
+  }
+  
   if(!addToCurrent) {
     intoTarget.empty();
   }
@@ -75,7 +80,12 @@ function renderList(list, intoTarget, addToCurrent) {
   return true;
 }
 
-function renderMultiResponse(multiResponse, intoTarget) {
+function renderMultiResponse(multiResponse, intoTarget, addToCurrent) {
+  // no target means no rendering
+  if(!intoTarget) {
+    return false;
+  }
+  
   // clear multi-header when any response comes in
   $('#multi-header-target').empty();
 
@@ -85,27 +95,16 @@ function renderMultiResponse(multiResponse, intoTarget) {
   }        
 
   // create new targets
-  var bookTarget = $("<div class='container renderTarget bookTarget'></div>")
-  bookTarget.hide();
-  intoTarget.append(bookTarget);
-  
-  var authorTarget = $("<div class='container renderTarget authorTarget'></div>")
-  authorTarget.hide();
-  intoTarget.append(authorTarget);
-
-  var seriesTarget = $("<div class='container renderTarget seriesTarget'></div>")
-  seriesTarget.hide();
-  intoTarget.append(seriesTarget);
-  
-  var tagTarget = $("<div class='container renderTarget tagTarget'></div>")
-  tagTarget.hide();
-  intoTarget.append(tagTarget);
+  var bookTarget = createOrUpdateTarget('bookTarget', addToCurrent, intoTarget);
+  var authorTarget = createOrUpdateTarget('authorTarget', addToCurrent, intoTarget);
+  var seriesTarget = createOrUpdateTarget('seriesTarget', addToCurrent, intoTarget);
+  var tagTarget = createOrUpdateTarget('tagTarget', addToCurrent, intoTarget);
   
   // render portions
-  var bookResponse = renderList(multiResponse.books, bookTarget);
-  var authorResponse = renderList(multiResponse.authors, authorTarget);
-  var seriesResponse = renderList(multiResponse.series, seriesTarget);
-  var tagResponse = renderList(multiResponse.tags, tagTarget);
+  var bookResponse = renderList(multiResponse.books, bookTarget, addToCurrent);
+  var authorResponse = renderList(multiResponse.authors, authorTarget, addToCurrent);
+  var seriesResponse = renderList(multiResponse.series, seriesTarget, addToCurrent);
+  var tagResponse = renderList(multiResponse.tags, tagTarget, addToCurrent);
   
   // record overall response of rendering
   var response = bookResponse || authorResponse || seriesResponse || tagResponse;
@@ -116,9 +115,11 @@ function renderMultiResponse(multiResponse, intoTarget) {
     return false;
   }
   
-  // add header 
-  var header = multi_template(multiResponse);
-  $('#multi-header-target').append(header);
+  // add header if not already added
+  if(!addToCurrent) {
+    var header = multi_template(multiResponse);
+    $('#multi-header-target').append(header);
+  }
   
   // decide which should be shown first
   if(bookTarget && bookTarget.length) {
@@ -142,7 +143,26 @@ function renderMultiResponse(multiResponse, intoTarget) {
   return response;
 }
 
+function createOrUpdateTarget(specificTargetClass, addToCurrent, intoTargetElement) {
+  var target = null;
+  if(addToCurrent) {
+    target = $(".renderTarget ." + specificTargetClass);
+  } else {
+    target = $("<div class='container renderTarget" + specificTargetClass + "'></div>");
+    intoTargetElement.append(target);
+  }
+  target.hide();
+  
+  // be sure to return target element, not just create
+  return target;
+}
+
 function renderSingleItem(item, intoTarget) {
+  // no target means no rendering
+  if(!intoTarget) {
+    return false;
+  }
+  
   var html = false;
     
   if("book" == item.type) {
@@ -162,4 +182,19 @@ function renderSingleItem(item, intoTarget) {
     response = true;
   }
   return response;
+}
+
+// render next page link
+function renderNextPageLink(href) {
+  $('#loadMoreLinkTarget').empty();
+  var createdLink = $("<a href='" + href +"'>load more entires</a>");
+  $('#loadMoreLinkTarget').append(createdLink);
+}
+
+function showNoData() {
+  $('#noMoreEntries').show();
+}
+
+function hideNoData() {
+  $('#noMoreEntries').hide();
 }

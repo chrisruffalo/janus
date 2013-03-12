@@ -186,7 +186,7 @@ public class FileInfoProvider extends AbstractProvider<FileInfo> {
 	 */
 	public void purgeDiskImageCache() {
 		for(File cachedFile : this.diskCacheLocation.listFiles()) {
-			this.logger.info("Deleting image: {}", cachedFile.getName());
+			this.logger.debug("Deleting image: {}", cachedFile.getName());
 			cachedFile.delete();
 		}
 	}

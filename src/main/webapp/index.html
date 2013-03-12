@@ -11,55 +11,65 @@
     <!-- janus -->
     <link href="static/css/janus.css" rel="stylesheet" media="screen">
 
-    <!-- templates -->
+    <!-- book display template -->
     <script id="book-template" type="text/x-handlebars-template">
       <div class="row">
-          <div class="span6"> <!-- span 1 greater -->
-            <div class="row-fluid entry">
-              <div class="entryItem span12"> <!-- main info -->
-                <h4><em>{{title}}</em></h4>
-                <table>
-                  <tr>
-                    <td rowspan="3">
-                      <img src="static/img/thumbnail.jpg" data-src="s/book/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      {{#if authors}}
-                        Authors:
-                        {{#each authors}}
-                        <span class="label"><a href="#/author/get/{{id}}">{{name}}</a></span>
-                        {{/each}}
-                      {{/if}}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      {{#if fileInfo}}
-                        <div class="input-append">
-                          <select id="download_box_{{../id}}" class="widthOverride">
-                          {{#each fileInfo}}
-                            <option value="{{type}}">{{type}} ({{descriptiveSize}})</option>
-                          {{/each}}
-                          </select>
-                          <button class="btn" type="button" onclick="downloadFile('{{../id}}', '{{type}}')"><i class="icon-download-alt"></i></a>
-                        </div>
-                      {{/if}}                    
-                    </td>
-                  </tr>
-                </table> <!-- closes table -->
-                <h6>
-                  {{#if series}}
-                    Book {{seriesIndex}} in <em><a href="#/series/get/{{series.id}}">{{series.name}}</a></em>
-                  {{/if}}
-                </h6>                
-              </div> <!-- /end span12 entry item row -->
-            </div> <!-- /entry row --> 
-        </div> <!-- /inner span -->
+        <div class="span6 entry">
+          <h4><em>{{title}}</em></h4>
+          <div class="media">
+            <a class="pull-left" href="#">
+              <img src="static/img/thumbnail.jpg" data-src="s/book/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
+            </a>
+            
+            <div class="media-body">
+              {{#if series}}
+                <h6>Book {{seriesIndex}} in <em><a href="#/series/get/{{series.id}}">{{series.name}}</a></em></h6>
+              {{/if}}
+            
+              {{#if authors}}
+                <p><i class="icon-group"></i>
+                {{#each authors}}
+                  <a class="btn btn-mini" href="#/author/get/{{id}}" type="button">{{name}}</a>
+                {{/each}}</p>
+              {{/if}}
+              
+              {{#if tags}}
+                <p><i class="icon-tags"></i>
+                {{#each tags}}
+                  <a class="btn btn-mini" href="#/tag/get/{{id}}" type="button">{{name}}</a>
+                {{/each}}</p>
+                </p>
+              {{/if}}
+            </div>
+          </div> <!-- /end of media body -->
+          <!-- download -->
+          {{#if fileInfo}}
+            <!-- starts local download -->
+            <p>
+              <div class="input-append">
+                <select id="download_box_{{../id}}" class="span1">
+                {{#each fileInfo}}
+                  <option value="{{type}}">{{type}} ({{descriptiveSize}})</option>
+                {{/each}}
+                </select>
+                <button class="btn" type="button" onclick="downloadFile('{{../id}}', '{{type}}')"><i class="icon-download-alt"></i></a>
+              </div>
+            </p>
+            <!-- form for starting email process -->
+            <p>
+              <div class="input-prepend input-append">
+                <input class="span1" id="appendedPrependedInput" type="text"></input>
+                <span class="add-on">@</span>
+                <input class="span1" id="appendedPrependedInput" type="text"></input>
+                <button class="btn" type="button" onclick="emailFile('{{../id}}', '{{type}}')"><i class="icon-envelope"></i></a>
+              </div>
+            </p>
+          {{/if}}                                 
+        </div> <!-- /span -->
       </div> <!-- /row -->      
     </script>
     
+    <!-- typed template specific to author -->
     <script id="author-template" type="text/x-handlebars-template">
       <div class="row">
           <div class="span6"> <!-- span 1 greater -->
@@ -94,6 +104,7 @@
       </div>
     </script>
     
+    <!-- template for other generic view types -->
     <script id="generic-template" type="text/x-handlebars-template">
       <div class="row">
           <div class="span6"> <!-- span 1 greater -->
@@ -133,33 +144,36 @@
         </div> <!-- /inner span -->
       </div> <!-- /row -->      
     </script>
-       
+    
+    <!-- if you get a multi response this part will handle showing the table header -->   
     <script id="multi-response-header-template" type="text/x-handlebars-template">
       <div class="row">
-        <div class="span7">
-          <div class="row">
-            <ul class="nav nav-pills">
-              {{#if books}}
-              <li class="book_tab">
-                <a onclick="toggleTarget('book')"><strong>Books</strong> ({{books.length}})</a>
-              </li>
-              {{/if}}
-              {{#if authors}}
-              <li class="author_tab">
-                <a onclick="toggleTarget('author')"><strong>Authors</strong> ({{authors.length}})</a>
-              </li>
-              {{/if}}
-              {{#if series}}
-              <li class="series_tab">
-                <a onclick="toggleTarget('series')"><strong>Series</strong> ({{series.length}})</a>
-              </li>
-              {{/if}}
-              {{#if tags}}
-              <li class="tag_tab">
-                <a onclick="toggleTarget('tag')"><strong>Tags</strong> ({{tags.length}})</a>
-              </li>
-              {{/if}}        
-            </ul>
+        <div class="span12">
+          <div class="row-fluid">
+            <div class="6">
+              <ul class="nav nav-pills">
+                {{#if books}}
+                <li class="book_tab">
+                  <a onclick="toggleTarget('book')"><strong>Books</strong></a>
+                </li>
+                {{/if}}
+                {{#if authors}}
+                <li class="author_tab">
+                  <a onclick="toggleTarget('author')"><strong>Authors</strong></a>
+                </li>
+                {{/if}}
+                {{#if series}}
+                <li class="series_tab">
+                  <a onclick="toggleTarget('series')"><strong>Series</strong></a>
+                </li>
+                {{/if}}
+                {{#if tags}}
+                <li class="tag_tab">
+                  <a onclick="toggleTarget('tag')"><strong>Tags</strong></a>
+                </li>
+                {{/if}}        
+              </ul>
+            </div>
           </div>
         </div>
       </div>      
@@ -197,27 +211,27 @@
       <!-- sample navigation options -->
       <div id="mainOptions" class="container" style="display: none;">
         <div class="row">
-          <div class="span7">
-            <div class="row entry">
-              <div class="span2">
+          <div class="span12">
+            <div class="row-fluid entry">
+              <div class="span3">
                 <h3>Books</h1>
                 <h6><a href="#/book/list?sort=latest">Sorted by newest</a></h6>
                 <h6><a href="#/book/list?sort=name">Sorted by name</a></h6>
               </div>
-              <div class="span2">
+              <div class="span3">
                 <h3>Authors</h3>
                 <h6><a href="#/author/list?sort=latest">Sorted by newest book</a></h6>
                 <h6><a href="#/author/list?sort=books">Sorted by most books</a></h6>
                 <h6><a href="#/author/list?sort=series">Sorted by most series</a></h6>
                 <h6><a href="#/author/list?sort=name">Sorted by name</a></h6>
               </div>
-              <div class="span2">
+              <div class="span3">
                 <h3>Series</h3>
                 <h6><a href="#/series/list?sort=latest">Sorted by newest book</a></h6>
                 <h6><a href="#/series/list?sort=books">Sorted by most books</a></h6>
                 <h6><a href="#/series/list?sort=name">Sorted by name</a></h6>
               </div>
-              <div class="span2">
+              <div class="span3">
                 <h3>Tags</h3>
                 <h6><a href="#/tag/list?sort=latest">Sorted by newest book</a></h6>
                 <h6><a href="#/tag/list?sort=books">Sorted by most books</a></h6>
@@ -235,6 +249,23 @@
       <div id="target">
         <!-- target div for new render items -->
       </div>
+
+      <!-- div that is shown when no data is found -->
+      <div id="noMoreEntries" class="container" style="display: none">
+        <div class="row">
+          <div class="span6">
+            <div class="row-fluid noMoreEntries">
+              <div class="span12">
+                <h4>no more entries found</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="loadMoreLinkTarget" class="container">
+        <!-- target div for href to load more -->
+      </div>      
 
       <!-- supporting scripts -->
       <script src="static/js/jquery.js"></script>

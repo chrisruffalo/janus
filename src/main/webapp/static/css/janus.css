@@ -1,5 +1,7 @@
-body {
-    padding-top: 55px;
+@media (min-width: 981px) {
+    body {
+      padding-top: 60px;
+    }
 }
 
 .entry {
@@ -33,4 +35,20 @@ body {
 }
 
 .entryItem {
+}
+
+.noMoreEntries {
+    padding-left: 12px;
+    
+    background-color: #abff6b;
+    
+    border: solid;
+    border-width: 1px;
+    border-color: #cccccc;
+    
+    margin-bottom: 10px;
+    
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
 }

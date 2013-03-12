@@ -116,6 +116,9 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 		
 		// set mime type
 		builder.type(info.getType().getMimeType());
+		
+		// let the downloader know what size to expect
+		builder.header("Content-Length", file.length());
 
 		// put streamer in response
 		builder.entity(new JanusStreamingOutput(fromFile, "yes".equalsIgnoreCase(encodeInBase64)));

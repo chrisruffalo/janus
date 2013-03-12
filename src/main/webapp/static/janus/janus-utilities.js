@@ -32,3 +32,11 @@ function downloadFile(id) {
   var url = "s/book/" + id + "/file/" + typeString;
   window.location.assign(url);
 }
+
+function makeBoolean(value) {
+  if(value && (value == "yes" || value=="true")) {
+    return true; 
+  }
+  
+  return false;
+}

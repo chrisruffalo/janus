@@ -33,36 +33,38 @@ public class SearchProvider {
 	@Inject
 	private EntityManager manager;
 
-	public MultiEntityResponse search(String searchPhrase) {
+	public MultiEntityResponse search(String searchPhrase, int index, int size) {
 		MultiEntityResponse response = new MultiEntityResponse();
 		
-		response.setBooks(this.bookSearch(searchPhrase));
-		response.setAuthors(this.authorSearch(searchPhrase));
-		response.setSeries(this.seriesSearch(searchPhrase));
-		response.setTags(this.tagSearch(searchPhrase));
+		response.setBooks(this.bookSearch(searchPhrase, index, size));
+		response.setAuthors(this.authorSearch(searchPhrase, index, size));
+		response.setSeries(this.seriesSearch(searchPhrase, index, size));
+		response.setTags(this.tagSearch(searchPhrase, index, size));
 		
 		return response; 
 	}
 	
-	public List<Author> authorSearch(String searchPhrase) {
-		List<Author> results = this.query(Author.class, searchPhrase, Author.NAME);
+	public List<Author> authorSearch(String searchPhrase, int index, int size) {
+		List<Author> results = this.query(Author.class, index, size, searchPhrase, Author.NAME);
 		return results;
 	}
 
-	public List<Series> seriesSearch(String searchPhrase) {
-		List<Series> results = this.query(Series.class, searchPhrase, Series.NAME);
+	public List<Series> seriesSearch(String searchPhrase, int index, int size) {
+		List<Series> results = this.query(Series.class, index, size, searchPhrase, Series.NAME);
 		return results;
 	}
 	
-	public List<Tag> tagSearch(String searchPhrase) {
-		List<Tag> results = this.query(Tag.class, searchPhrase, Tag.NAME);
+	public List<Tag> tagSearch(String searchPhrase, int index, int size) {
+		List<Tag> results = this.query(Tag.class, index, size, searchPhrase, Tag.NAME);
 		return results;
 	}
 	
-	public List<Book> bookSearch(String searchPhrase) {
+	public List<Book> bookSearch(String searchPhrase, int index, int size) {
 		
 		List<Book> results = this.query(
-			Book.class, 
+			Book.class,
+			index, 
+			size,
 			searchPhrase, 
 			Book.TITLE, 
 			Book.MODEL_AUTHORSORT,
@@ -73,7 +75,7 @@ public class SearchProvider {
 		return results;
 	}
 	
-	private <I extends BaseEntity> List<I> query(Class<I> forClass, String searchPhrase, String... fields) {
+	private <I extends BaseEntity> List<I> query(Class<I> forClass, int index, int size, String searchPhrase, String... fields) {
 		this.logger.debug("Searching {} for {}", forClass.getSimpleName(), searchPhrase);
 		
 		// get full text entity manager
@@ -94,6 +96,16 @@ public class SearchProvider {
 		// build persistence query
 		Query persistenceQuery = fullTextEntityManager.createFullTextQuery(termQuery, forClass);
 	
+		// first result based on index
+		if(index >= 0) {
+			persistenceQuery.setFirstResult(index);
+		}
+		
+		// query up to 'size' elements
+		if(size > 0) {
+			persistenceQuery.setMaxResults(size);
+		}
+		
 		// execute
 		@SuppressWarnings("unchecked")
 		List<I> results = persistenceQuery.getResultList();

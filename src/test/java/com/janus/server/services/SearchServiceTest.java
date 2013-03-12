@@ -1,6 +1,7 @@
 package com.janus.server.services;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -30,10 +31,19 @@ public class SearchServiceTest {
 	@Test
 	public void testMultiSearch() throws SqlJetException {
 		//search
-		MultiEntityResponse response = this.searchService.search("grimm");
+		Response response = this.searchService.search("all", "grimm", 0, 0);
+		Object got = response.getEntity();
 		
-		// some items are returned
-		Assert.assertTrue(response.all().size() > 0);
+		if(got instanceof MultiEntityResponse) {
+			// get entity
+			MultiEntityResponse entity = (MultiEntityResponse)got;					
+			
+			// some items are returned
+			Assert.assertTrue(entity.all().size() > 0);			
+		} else {
+			Assert.fail("Expected MultiEntityResponse and got " + got.getClass());
+		}
+		
 	}
 
 	
