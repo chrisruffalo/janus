@@ -32,8 +32,8 @@
 		<!-- javascript handling form within maven -->
 		<wro4j.version>1.6.2</wro4j.version>
 
-		<!-- sqljet, not provided, provided locally -->
-		<sqljet.version>1.1.1-JANUS</sqljet.version>
+		<!-- sqljet -->
+		<sqljet.version>1.1.7</sqljet.version>
 
 		<!-- arquillian for testing -->
 		<arquillian.version>1.0.3.Final</arquillian.version>
@@ -62,14 +62,12 @@
 			<url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
 		</repository>
 
-		<!-- included version of sqljet -->
+		<!-- tmate soft direct repo for versions not published to central -->
 		<repository>
-			<id>tmate</id>
-			<url>file://${basedir}/ext</url>
+		  <id>tmate</id>
+		  <url>http://maven.tmatesoft.com/content/repositories/releases</url>
 		</repository>
-
 	</repositories>
-
 
 	<!-- manage dependency groups -->
 	<dependencyManagement>
