@@ -6,6 +6,9 @@
 			
 			<!-- infinispan support for hibernate-search -->
 			<module name="org.infinispan" services="import" />
+
+			<!-- hibernate annotations -->
+			<module name="org.hibernate.commons-annotations" services="import" />
 			
 			<!-- enable apache common configuration -->
 			<module name="org.apache.commons.configuration" services="import" />
