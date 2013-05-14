@@ -8,12 +8,15 @@ function logger(logString) {
 // toggle helper for tabs
 function toggleTarget(showTarget) {
   // hide and deactivate active status on currently active tab
-  $('.activeTarget').hide();
-  $('.activeTarget').removeClass('.activeTarget');
+  var currentActive = $('.activeTarget');
+  currentActive.hide();
+  currentActive.removeClass('activeTarget');
   
   // show new target and make active
-  $('.'+showTarget+'Target').show();
-  $('.'+showTarget+'Target').addClass('activeTarget');
+  var target = $('.' + showTarget + 'Target');
+  target.show();
+  target.addClass('activeTarget');
+  logger('showing ' + showTarget + ' related items');
   
   // change look of tab
   $('.active').removeClass('active');

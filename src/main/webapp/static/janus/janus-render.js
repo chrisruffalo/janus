@@ -18,7 +18,10 @@ function renderResponse(itemList, addToCurrent) {
     var newRenderTarget = $("<div class='container renderTarget'></div>")
     newRenderTarget.hide();
 
-    // clear multi-header when any response comes in
+    // clear response/multi-header when any response comes in
+    if(!addToCurrent) {
+      $('#target').empty();
+    }
     $('#multi-header-target').empty();
 
     if(itemList.type && !itemList.length) {
@@ -121,23 +124,30 @@ function renderMultiResponse(multiResponse, intoTarget, addToCurrent) {
     $('#multi-header-target').append(header);
   }
   
+  
+  var activeTarget = null;
+  var targetHeaderClass = null;
+  
   // decide which should be shown first
   if(bookTarget && bookTarget.length) {
-    bookTarget.show();
-    bookTarget.addClass('activeTarget');
-    $('.book_tab').addClass('active');
+    activeTarget = bookTarget;
+    targetHeaderClass = 'book_tab';
   } else if(authorTarget && authorTarget.length) {
-    authorTarget.show();
-    authorTarget.addClass('activeTarget');
-    $('.author_tab').addClass('active');
+    activeTarget = bookTarget;
+    targetHeaderClass = 'author_tab';
   } else if(seriesTarget && seriesTarget.length) {
-    seriesTarget.show();
-    seriesTarget.addClass('activeTarget');
-    $('.series_tab').addClass('active');
+    activeTarget = bookTarget;
+    targetHeaderClass = 'series_tab';
   } else if(tagTarget && tagTarget.length) {
-    tagTarget.show();
-    tagTarget.addClass('activeTarget');
-    $('.tag_tab').addClass('active');
+    activeTarget = bookTarget;
+    targetHeaderClass = 'tag_tab';
+  }
+  
+  // actual show logic
+  if(activeTarget) {
+    activeTarget.show();
+    activeTarget.addClass('activeTarget');
+    $('#' + targetHeaderClass).addClass('active'); 
   }
   
   return response;
