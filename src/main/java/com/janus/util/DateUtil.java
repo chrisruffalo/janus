@@ -9,7 +9,7 @@ public final class DateUtil {
 	/**
 	 * Parser based on sqlite date format 
 	 */
-	private static final SimpleDateFormat DATE_PARSER = new SimpleDateFormat("yyyy-MM-DD HH:mm:ss");
+	private static final SimpleDateFormat DATE_PARSER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	/**
 	 * Private constructor for utility class
