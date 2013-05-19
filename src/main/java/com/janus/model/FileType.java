@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 public enum FileType {
 
 	LIT("application/x-ms-reader, application/x-obak", "lit"),
-	AMAZON("application/octet-stream", "azw"),
+	AMAZON("application/octet-stream", "azw3"),
 	MOBI("application/x-mobipocket-ebook", "mobi"),
 	EPUB("application/epub+zip", "epub"),
 	CBR("application/x-cdisplay", "cbr"),

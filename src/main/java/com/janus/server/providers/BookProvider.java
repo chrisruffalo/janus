@@ -111,7 +111,7 @@ public class BookProvider extends AbstractBaseEntityProvider<Book> {
 		}
 		
 		if("latest".equalsIgnoreCase(sortString)) {
-			query.orderBy(builder.desc(root.get(Book.MODEL_LASTMODIFIED)));
+			query.orderBy(builder.desc(root.get(Book.TIMESTAMP)));
 			return true;
 		}
 		
