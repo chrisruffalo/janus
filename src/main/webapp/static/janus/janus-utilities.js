@@ -43,3 +43,28 @@ function makeBoolean(value) {
   
   return false;
 }
+
+function toggleQR(qrUrl, title) {
+  // remove previous qr modals
+  $('.qrmodal').remove();
+	
+  // create modal
+  var modal = $("<div id='tempModal' class='qrmodal modal hide fade' tabindex='-1' role='dialog'>" +
+	"<div class='modal-header'>" +
+	"<button type='button' class='close' data-dismiss='modal' aria-hidden='true'><i class='icon-remove'></i></button>" +
+	"<h3 id='modal-label'>" + title + " </h3>" +
+	"</div>" +
+	"<div class='modal-body'>" +
+	"<center><img src='" + qrUrl + "'></img></center>" +
+	"</div>" +
+	"<div class='modal-footer'>" +
+	"<button class='btn' data-dismiss='modal' aria-hidden='true'>close</button>" +
+	"</div>" +
+	"</div>");	
+  
+  // append to body
+  $("body").append(modal);
+  
+  // create modal
+  $('#tempModal').modal();
+}

@@ -27,14 +27,14 @@
             
             <div class="media-body">
               {{#if authors}}
-                <p><i class="icon-group"></i>
+                <p><i class="icon-group"></i>&nbsp;
                 {{#each authors}}
                   <a class="btn btn-mini" href="#/author/get/{{id}}" type="button">{{name}}</a>
                 {{/each}}</p>
               {{/if}}
               
               {{#if tags}}
-                <p><i class="icon-tags"></i>
+                <p><i class="icon-tags"></i>&nbsp;
                 {{#each tags}}
                   <a class="btn btn-mini" href="#/tag/get/{{id}}" type="button">{{name}}</a>
                 {{/each}}</p>
@@ -44,11 +44,16 @@
 			  <!-- download(s) -->
           	  {{#if fileInfo}}
             	<!-- starts local download -->
-            	<p><i class="icon-download-alt"></i>
+            	<p><i class="icon-download-alt"></i>&nbsp;
             	{{#each fileInfo}}
 				  <a class="btn btn-mini" target="_blank" href="s/book/{{../id}}/file/{{type}}" type="button">{{type}} ({{descriptiveSize}})</a>		
 			    {{/each}}</p>
 	          {{/if}}
+
+			  <!-- other functions -->
+			  <p><i class="icon-cogs"></i>&nbsp;
+				<button class="btn btn-mini hidden-phone" onclick="toggleQR('s/book/{{id}}/qr', '{{title}}')"><i class="icon-qrcode"></i>&nbsp;QR</button>
+			  </p>
             </div> <!-- /end of media body -->
           </div> <!-- /end of media -->
         </div> <!-- /span -->

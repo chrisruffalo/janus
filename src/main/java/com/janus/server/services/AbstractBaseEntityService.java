@@ -2,9 +2,12 @@ package com.janus.server.services;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -12,10 +15,16 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
+
+import net.glxn.qrgen.QRCode;
+import net.glxn.qrgen.image.ImageType;
+
+import org.slf4j.Logger;
 
 import com.janus.model.BaseEntity;
 import com.janus.model.interfaces.ISorted;
@@ -36,6 +45,12 @@ public abstract class AbstractBaseEntityService<E extends BaseEntity, P extends 
 	@Inject
 	@DiskCacheLocation("img")
 	private File diskCacheLocation;
+	
+	@Context
+	private HttpServletRequest request;
+	
+	@Inject
+	private Logger logger;
 	
 	protected abstract P getProvider();
 	
@@ -62,6 +77,67 @@ public abstract class AbstractBaseEntityService<E extends BaseEntity, P extends 
 		
 		return found;
 	}
+	
+	@GET
+	@Path("/{id}/qr") 
+	public Response qr(@PathParam("id") Long id) {
+		
+		// throw an error if the request cannot be serviced
+		if(this.request == null) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("an internal error occurred while completing this request").build();
+		}
+		
+		// entity
+		E entity = this.getProvider().get(id);
+
+		// if no entity is found
+		if(entity == null) {
+			return Response.status(Status.NOT_FOUND).entity("no entity found for " + this.getProvider().getEntityType().getSimpleName().toLowerCase() + " with id " + id).build();
+		}
+
+		// create good response
+		ResponseBuilder builder = Response.ok();
+
+		// provided type
+		String type = this.getProvider().getEntityType().getSimpleName().toLowerCase();
+		
+		String fullRequestUrl = this.request.getRequestURL().toString();
+		try {
+			URI uri = new URI(fullRequestUrl);
+			String context = this.request.getServletContext().getContextPath();
+			String address = String.format("%s://%s:%s/%s/index.html#/%s/get/%s", 
+				uri.getScheme(), 
+				uri.getHost(), 
+				uri.getPort(), 
+				context, 
+				type, 
+				id.toString()
+			);
+			
+			// generate QR code
+			QRCode code = QRCode.from(address).to(ImageType.PNG).withSize(250, 250);
+				
+			// use entity as response output
+			byte[] output = code.stream().toByteArray();
+			
+			// and set up response content
+			builder.header("Content-Disposition", "attachment; filename=\"" + type + "-" + id + ".png\"");
+			builder.type("image/png");
+			builder.header("Content-Length", output.length);
+			
+			// set response output
+			builder.entity(output);
+			
+			// log for info
+			this.logger.info("uri at: {}", address);
+		} catch (URISyntaxException e) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("could not determine path for server resource").build();
+		}		
+		
+		// return good response
+		return builder.build();
+	}
+
 	
 	@GET
 	@Path("/{id}/cover")
