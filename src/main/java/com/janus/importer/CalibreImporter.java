@@ -134,6 +134,9 @@ public class CalibreImporter {
 		}
 
 		// attempt to set legacy file format for older calibre libraries
+		// update: what this actually does is allow the date format to be
+		// read in a *slightly* different way.  using the non-legacy format
+		// will result in bad dates coming from the sqlite database.
 		try {
 			this.database.getOptions().setLegacyFileFormat(true);
 		} catch (SqlJetException e) {

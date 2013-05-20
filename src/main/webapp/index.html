@@ -16,16 +16,16 @@
       <div class="row">
         <div class="span6 entry">
           <h4><em>{{title}}</em></h4>
+          {{#if series}}
+            <h6>Book {{seriesIndex}} in <em><a href="#/series/get/{{series.id}}">{{series.name}}</a></em></h6>
+          {{/if}}
+
           <div class="media">
             <a class="pull-left" href="#">
               <img src="static/img/thumbnail.jpg" data-src="s/book/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
             </a>
             
             <div class="media-body">
-              {{#if series}}
-                <h6>Book {{seriesIndex}} in <em><a href="#/series/get/{{series.id}}">{{series.name}}</a></em></h6>
-              {{/if}}
-            
               {{#if authors}}
                 <p><i class="icon-group"></i>
                 {{#each authors}}
@@ -40,109 +40,67 @@
                 {{/each}}</p>
                 </p>
               {{/if}}
-            </div>
-          </div> <!-- /end of media body -->
-          <!-- download -->
-          {{#if fileInfo}}
-            <!-- starts local download -->
-            <p>
-              <div class="input-append">
-                <select id="download_box_{{../id}}" class="span1">
-                {{#each fileInfo}}
-                  <option value="{{type}}">{{type}} ({{descriptiveSize}})</option>
-                {{/each}}
-                </select>
-                <button class="btn" type="button" onclick="downloadFile('{{../id}}', '{{type}}')"><i class="icon-download-alt"></i></a>
-              </div>
-            </p>
-            <!-- form for starting email process -->
-            <p>
-              <div class="input-prepend input-append">
-                <input class="span1" id="appendedPrependedInput" type="text"></input>
-                <span class="add-on">@</span>
-                <input class="span1" id="appendedPrependedInput" type="text"></input>
-                <button class="btn" type="button" onclick="emailFile('{{../id}}', '{{type}}')"><i class="icon-envelope"></i></a>
-              </div>
-            </p>
-          {{/if}}                                 
+
+			  <!-- download(s) -->
+          	  {{#if fileInfo}}
+            	<!-- starts local download -->
+            	<p><i class="icon-download-alt"></i>
+            	{{#each fileInfo}}
+				  <a class="btn btn-mini" target="_blank" href="s/book/{{../id}}/file/{{type}}" type="button">{{type}} ({{descriptiveSize}})</a>		
+			    {{/each}}</p>
+	          {{/if}}
+            </div> <!-- /end of media body -->
+          </div> <!-- /end of media -->
         </div> <!-- /span -->
       </div> <!-- /row -->      
     </script>
     
     <!-- typed template specific to author -->
     <script id="author-template" type="text/x-handlebars-template">
-      <div class="row">
-          <div class="span6"> <!-- span 1 greater -->
-            <div class="row-fluid entry">
-              <div class="entryItem span12"> <!-- main info -->
-                <h4><em>{{name}}</em></h4>
-                <table>
-                  <tr>
-                    <td rowspan="3">
-                      <img src="static/img/thumbnail.jpg" data-src="s/{{type}}/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="#/{{type}}/get/{{id}}/authors">related authors <i class="icon-circle-arrow-right"></i></a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="#/{{type}}/get/{{id}}/tags">related tags <i class="icon-circle-arrow-right"></i></a>
-                    </td>
-                  </tr>
-                </table> <!-- closes table -->
-                <h5>
-                  {{#if bookCount}}
-                    Author of <a href="#/author/get/{{id}}/books">{{bookCount}} books</a>{{#if wroteSeries}} and <a href="#/author/{{id}}/series">{{wroteSeries}} series</a>{{/if}}.
-                  {{/if}}
-                </h5>
-              </div> <!-- /end span12 entry item row -->
-            </div> <!-- /entry row --> 
-        </div> <!-- /inner span -->
-      </div>
+     <div class="row">
+        <div class="span6 entry">
+          <h4><em>{{name}}</em></h4>
+          <div class="media">
+            <a class="pull-left" href="#">
+              <img src="static/img/thumbnail.jpg" data-src="s/{{type}}/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
+            </a>
+            
+            <div class="media-body">
+              {{#if bookCount}}
+                <h6>Author of <a href="#/author/get/{{id}}/books">{{bookCount}} books</a>{{#if seriesCount}} and <a href="#/author/get/{{id}}/series">{{seriesCount}} series</a>{{/if}}.</h6>
+              {{/if}}
+              
+			  <!-- other items related to this author -->
+              <p><a href="#/{{type}}/get/{{id}}/authors">related authors <i class="icon-circle-arrow-right"></i></a></p>
+			  <p><a href="#/{{type}}/get/{{id}}/tags">related tags <i class="icon-circle-arrow-right"></i></a></p>		
+
+            </div> <!--/end of media body -->
+          </div> <!-- /end of media -->
+        </div> <!-- /span -->
+      </div> <!-- /row --> 
     </script>
     
     <!-- template for other generic view types -->
     <script id="generic-template" type="text/x-handlebars-template">
-      <div class="row">
-          <div class="span6"> <!-- span 1 greater -->
-            <div class="row-fluid entry">
-              <div class="entryItem span12"> <!-- main info -->
-                <h4><em>{{name}}</em></h4>
-                <table>
-                  <tr>
-                    <td rowspan="5">
-                      <img src="static/img/thumbnail.jpg" data-src="s/{{type}}/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="#/{{type}}/get/{{id}}/books">related books <i class="icon-circle-arrow-right"></i></a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="#/{{type}}/get/{{id}}/authors">related authors <i class="icon-circle-arrow-right"></i></a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="#/{{type}}/get/{{id}}/series">related series <i class="icon-circle-arrow-right"></i></a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="#/{{type}}/get/{{id}}/tags">related tags <i class="icon-circle-arrow-right"></i></a>
-                    </td>
-                  </tr>
-                </table> <!-- closes table -->
-                <h5>&nbsp;</h5> <!-- shim -->
-              </div> <!-- /end span12 entry item row -->
-            </div> <!-- /entry row --> 
-        </div> <!-- /inner span -->
-      </div> <!-- /row -->      
+	  <div class="row">
+        <div class="span6 entry">
+          <h4><em>{{name}}</em></h4>
+          <div class="media">
+            <a class="pull-left" href="#">
+              <img src="static/img/thumbnail.jpg" data-src="s/{{type}}/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
+            </a>
+            
+            <div class="media-body">
+			  <!-- other items related to this item -->
+			  <p><a href="#/{{type}}/get/{{id}}/books">related books <i class="icon-circle-arrow-right"></i></a></p>
+              <p><a href="#/{{type}}/get/{{id}}/authors">related authors <i class="icon-circle-arrow-right"></i></a></p>
+              <p><a href="#/{{type}}/get/{{id}}/series">related series <i class="icon-circle-arrow-right"></i></a></p>
+			  <p><a href="#/{{type}}/get/{{id}}/tags">related tags <i class="icon-circle-arrow-right"></i></a></p>		
+
+            </div> <!--/end of media body -->
+          </div> <!-- /end of media -->
+        </div> <!-- /span -->
+      </div> <!-- /row --> 
     </script>
     
     <!-- if you get a multi response this part will handle showing the table header -->   
