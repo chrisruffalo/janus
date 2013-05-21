@@ -55,7 +55,8 @@
 
 			  <!-- other functions -->
 			  <p><i class="icon-cogs"></i>&nbsp;
-				<button class="btn btn-mini" onclick="toggleQR('{{type}}', '{{id}}', '{{inJavascriptEscape title}}')"><i class="icon-qrcode"></i>&nbsp;QR</button>
+				<button class="btn btn-mini" onclick="toggleQR('{{type}}', '{{id}}', '{{inJavascriptEscape title}}')"><i class="icon-qrcode"></i></button>
+				<button class="btn btn-mini" onclick="toggleBookEmail('{{id}}', '{{inJavascriptEscape title}}')"><i class="icon-envelope"></i></button>
 			  </p>
             </div> <!-- /end of media body -->
           </div> <!-- /end of media -->
@@ -214,9 +215,10 @@
 			<h3 id="qr-modal-label"></h3>
 		</div>
 		<div id="qr-modal-body" class="modal-body widthOverride center">
+			<!-- empty spot for QR code image -->
 		</div>
 		<div class="modal-footer">
-			<button class="btn" data-dismiss="modal" aria-hidden="true">close</button>
+			<button class="btn btn-danger" data-dismiss="modal" aria-hidden="true">close</button>
 		</div>
  	  </div>
  	  
@@ -228,11 +230,33 @@
 			</button>
 			<h3 id="email-modal-label"></h3>
 		</div>
-		<div id="email-modal-body" class="modal-body">
-			
+		<div id="email-modal-body" class="modal-body widthOverride">
+			<div class="row-fluid">
+				<div class="span12">
+					<form>
+						<fieldset>
+							<label>Email</label>
+							<div class="input-prepend input-append normalWrapOverride">
+							  <input class="span2" type="text" placeholder="email">
+							  <span class="add-on">@</span>
+							  <input class="span2" type="text" placeholder="host">
+							  <span class="add-on">.</span>
+							  <input class="span2" type="text" placeholder="com">
+							</div>
+							<label>Book File Type</label>
+							<select>
+								<option>AMAZON</option>
+								<option>EPUB</option>
+								<option>MOBI</option>
+							</select>
+						</fieldset>
+					</form>
+				</div>
+			</div>
 		</div>
 		<div class="modal-footer">
-			<button class="btn" data-dismiss="modal" aria-hidden="true">close</button>
+			<button class="btn btn-success pull-right">send email</button>&nbsp;
+			<button class="btn btn-danger" data-dismiss="modal" aria-hidden="true">close</button>
 		</div>
  	  </div>
 

@@ -56,3 +56,13 @@ function toggleQR(type, id, title) {
   // create modal
   $('#qr-modal').modal();
 }
+
+function toggleBookEmail(id, title) {
+	  // set modal values
+	  $('#email-modal-label').html(unescape(title));
+	  
+	  // kick off entity request to fill out form	 
+	  
+	  // create modal
+	  $('#email-modal').modal();
+	}
