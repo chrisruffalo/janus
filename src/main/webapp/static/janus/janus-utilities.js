@@ -52,7 +52,7 @@ function toggleQR(qrUrl, title) {
   var modal = $("<div id='tempModal' class='qrmodal modal hide fade' tabindex='-1' role='dialog'>" +
 	"<div class='modal-header'>" +
 	"<button type='button' class='close' data-dismiss='modal' aria-hidden='true'><i class='icon-remove'></i></button>" +
-	"<h3 id='modal-label'>" + title + " </h3>" +
+	"<h3 id='modal-label'>" + unescape(title) + " </h3>" +
 	"</div>" +
 	"<div class='modal-body'>" +
 	"<center><img src='" + qrUrl + "'></img></center>" +

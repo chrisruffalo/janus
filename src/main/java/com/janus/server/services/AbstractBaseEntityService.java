@@ -105,15 +105,20 @@ public abstract class AbstractBaseEntityService<E extends BaseEntity, P extends 
 		try {
 			URI uri = new URI(fullRequestUrl);
 			String context = this.request.getServletContext().getContextPath();
-			String address = String.format("%s://%s:%s/%s/index.html#/%s/get/%s", 
+			
+			// create port string only if port is evident (greater than 0) 
+			String portString = uri.getPort() <= 0 ? "" : ":" + uri.getPort();
+			
+			// calculate full address
+			final String address = String.format("%s://%s%s/%s/index.html#/%s/get/%s", 
 				uri.getScheme(), 
 				uri.getHost(), 
-				uri.getPort(), 
+				portString,
 				context, 
 				type, 
 				id.toString()
 			);
-			
+					
 			// generate QR code
 			QRCode code = QRCode.from(address).to(ImageType.PNG).withSize(250, 250);
 				
