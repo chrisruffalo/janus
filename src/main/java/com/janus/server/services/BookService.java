@@ -5,6 +5,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.mail.internet.MimeMessage.RecipientType;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -23,10 +25,16 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.io.FileUtils;
+import org.codemonkey.simplejavamail.Email;
+import org.codemonkey.simplejavamail.Mailer;
+import org.codemonkey.simplejavamail.TransportStrategy;
 import org.slf4j.Logger;
 
 import com.janus.model.Book;
 import com.janus.model.FileInfo;
+import com.janus.server.configuration.ConfigurationProperties;
 import com.janus.server.providers.BookProvider;
 import com.janus.server.providers.FileInfoProvider;
 import com.janus.server.services.support.JanusStreamingOutput;
@@ -35,6 +43,9 @@ import com.janus.server.services.support.JanusStreamingOutput;
 @Stateless
 public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 
+	@Inject
+	private XMLConfiguration configuration;
+	
 	@Inject
 	private BookProvider provider;
 
@@ -152,6 +163,82 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 		
 		// log request
 		this.logger.info("Requesting book {} of type {} to be emailed to {}", new Object[]{id, type, address});
+		
+		// read values from configuration
+		String from = this.configuration.getString(ConfigurationProperties.EMAIL_FROM);
+		String host = this.configuration.getString(ConfigurationProperties.SMTP_HOST);
+		int port = this.configuration.getInt(ConfigurationProperties.SMTP_PORT);
+		String user = this.configuration.getString(ConfigurationProperties.SMTP_USER);
+		String password = this.configuration.getString(ConfigurationProperties.SMTP_PASSORD);
+		String security = this.configuration.getString(ConfigurationProperties.SMTP_SECURITY);
+		
+		// default values
+		boolean ssl = false;
+		boolean tls = false;	
+		
+		// set up ssl/tls booleans from configured security type
+		ssl = "ssl".equalsIgnoreCase(security);
+		tls = "tls".equalsIgnoreCase(security);
+		
+		// log correct configuration read
+		this.logger.info("Using smtp host:{}, port:{}, and user:{} (using security: tls:{}, ssl:{})", new Object[]{host, port, user, tls, ssl});
+		
+		// file from file info
+		File file = new File(info.getFullPath());
+
+		// copy file to byte array
+		final byte[] fileBytes;
+		try {
+			fileBytes = FileUtils.readFileToByteArray(file);
+			this.logger.info("Read file: {}", info.getFullPath());
+		} catch (IOException ex) {
+			this.logger.error("Could not read file for book id:{}", id, ex);
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("email for book " + id + " of type " + type + " could not be sent to " + address).build();
+		}		
+		
+		// use simple-java-mail to send email (with attachment)
+		final Email email = new Email();
+		
+		// set subject and text
+		email.setFromAddress(from, from);
+		email.addRecipient(address, address, RecipientType.TO);
+		email.setSubject("Janus eBook Delivery: " + file.getName());
+		email.setText("Find your eBook, " + file.getName() + ", attached.");
+		
+		// add attachment
+		// note: here there exists the possibility of adding multiple attachments...
+		email.addAttachment(file.getName(), fileBytes, info.getType().getMimeType());
+		
+		// choose transport strategy based on security
+		TransportStrategy transport = TransportStrategy.SMTP_PLAIN;
+		if(ssl) {
+			this.logger.debug("Using ssl transport.");
+			transport = TransportStrategy.SMTP_SSL;
+		} else if(tls) {
+			this.logger.debug("Using tls transport.");
+			transport = TransportStrategy.SMTP_TLS;
+		}
+		
+		// create sender
+		Mailer mailer = null;
+		if(user != null && !user.isEmpty() && password != null && !password.isEmpty()) {
+			mailer = new Mailer(host, port, user, password, transport);
+		} else {
+			mailer = new Mailer(host, port, "", "", transport);
+		}
+		
+		// send email or log failure
+		try {
+			// log start of send
+			this.logger.info("Sending mail to {}... ({})", address, file.getName());			
+			// actually send mail
+			mailer.sendMail(email);
+			// log send
+			this.logger.info("Mail sent to: '{}' with attachment '{}'", address, file.getName());
+		} catch (Exception ex) {
+			this.logger.error("Could not send mail to '{}'", address, ex);
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("email for book " + id + " of type " + type + " could not be sent to " + address).build();
+		}
 		
 		// return 'ok!'
 		return Response.ok().build();

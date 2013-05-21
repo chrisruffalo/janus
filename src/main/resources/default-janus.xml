@@ -7,5 +7,19 @@
 	</library>
 	
 	<!-- email settings -->
-	
+	<smtp>
+		<!-- email address of sender -->
+		<from>janus@janus-book.com</from>
+		
+		<!-- host and port of smtp server -->
+		<host>smtp.janus.com</host>
+		<port>25</port>
+		
+		<!-- username and password -->
+		<user>user</user>
+		<password>password</password>
+		
+		<!-- ssl or tls are valid values, others will be ignored -->
+		<security>tls</security> 		
+	</smtp>
 </janus>

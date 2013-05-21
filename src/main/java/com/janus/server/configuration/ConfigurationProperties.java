@@ -15,6 +15,15 @@ public class ConfigurationProperties {
 	public static final String LIBRARY_LOCATION = "library.path";
 	public static final String LIBRARY_DATABASE = "library.database";
 	
+	public static final String SMTP_HOST = "smtp.host";
+	public static final String SMTP_PORT = "smtp.port";
+	
+	public static final String EMAIL_FROM = "smtp.from";
+	
+	public static final String SMTP_USER = "smtp.user";
+	public static final String SMTP_PASSORD = "smtp.password";
+	public static final String SMTP_SECURITY = "smtp.security"; //ssl or tls
+	
 	/**
 	 * XML Configuration.
 	 */
@@ -97,3 +106,4 @@ public class ConfigurationProperties {
 	}
 
 }
+
