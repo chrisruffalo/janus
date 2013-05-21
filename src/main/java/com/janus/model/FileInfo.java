@@ -23,7 +23,7 @@ import com.janus.util.FileSizeUtil;
 @Entity
 @XmlType
 @XmlRootElement
-public class FileInfo implements IDepthOneCloneable<FileInfo> {
+public class FileInfo implements IDepthOneCloneable<FileInfo>, Comparable<FileInfo> {
 
 	public static final String IDENTIFIER = "identifier";
 	public static final String FULL_PATH = "fullPath";
@@ -158,6 +158,12 @@ public class FileInfo implements IDepthOneCloneable<FileInfo> {
 		}
 		
 		return fileInfoSet;
+	}
+
+	@Override
+	public int compareTo(FileInfo o) {
+		// type is used for comparison
+		return this.getType().compareTo(o.getType());
 	}
 
 }

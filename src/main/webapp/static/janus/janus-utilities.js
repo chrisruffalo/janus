@@ -46,7 +46,7 @@ function makeBoolean(value) {
 
 function toggleQR(type, id, title) {
   // set modal values
-  $('#qr-modal-label').html(unescape(title));
+  $('#qr-modal-label').html("<em>" + unescape(title) + "</em>");
   
   // set qr image in img item of modal
   $('#qr-modal-body').empty();
@@ -56,13 +56,3 @@ function toggleQR(type, id, title) {
   // create modal
   $('#qr-modal').modal();
 }
-
-function toggleBookEmail(id, title) {
-	  // set modal values
-	  $('#email-modal-label').html(unescape(title));
-	  
-	  // kick off entity request to fill out form	 
-	  
-	  // create modal
-	  $('#email-modal').modal();
-	}

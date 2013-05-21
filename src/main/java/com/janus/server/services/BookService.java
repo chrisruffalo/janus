@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -72,6 +73,9 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 			response.add(info.depthOneClone());
 		}
 		
+		// sort response list
+		Collections.sort(response);
+		
 		return response; 
 	}
 	
@@ -124,6 +128,33 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 		builder.entity(new JanusStreamingOutput(fromFile, "yes".equalsIgnoreCase(encodeInBase64)));
 		
 		return builder.build();
+	}
+	
+	@GET
+	@Path("/{id}/email/{type}")
+	public Response email(@PathParam("id") String id, @PathParam("type") String type, @QueryParam("address") String address) {
+		// bad request begets bad response
+		if(address == null || address.isEmpty() || address.startsWith("@")) {
+			return Response.status(Status.BAD_REQUEST).entity("an invalid email address was provided").build();
+		}
+		
+		// aggregate
+		String identifier = id + "." + type;
+		identifier = identifier.toUpperCase();
+		
+		// get file from identifier
+		FileInfo info = this.fileInfoProvider.get(identifier);
+		
+		if(info == null) {
+			// if the file is not found, 404 out
+			return Response.status(Status.NOT_FOUND).entity("no file found for book id " + id + " of type " + type).build();
+		}
+		
+		// log request
+		this.logger.info("Requesting book {} of type {} to be emailed to {}", new Object[]{id, type, address});
+		
+		// return 'ok!'
+		return Response.ok().build();
 	}
 	
 	@Override

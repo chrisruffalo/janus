@@ -17,7 +17,7 @@ function request(baseUrl, index, size, addToCurrent, doAfterSuccessfulResponse) 
   logger(url);
 
   $.ajax(url)
-  .success(
+  .done(
     function(context) {
       var response = renderResponse(context, addToCurrent);
       logger("[info] response got content: " + response);

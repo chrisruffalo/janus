@@ -235,27 +235,31 @@
 				<div class="span12">
 					<form>
 						<fieldset>
-							<label>Email</label>
+							<!-- this is how we know what book to get -->
+							<input type="hidden" id="email-id"></input>
+							
+							<label class="hidden-phone">Email</label>
 							<div class="input-prepend input-append normalWrapOverride">
-							  <input class="span2" type="text" placeholder="email">
+							  <input id="email-text" class="span3" type="text" placeholder="email"></input>
 							  <span class="add-on">@</span>
-							  <input class="span2" type="text" placeholder="host">
+							  <input id="email-host" class="span3" type="text" placeholder="kindle" value="kindle"></input>
 							  <span class="add-on">.</span>
-							  <input class="span2" type="text" placeholder="com">
+							  <input id="email-tld" class="span2" type="text" placeholder="com" value="com"></input>
 							</div>
 							<label>Book File Type</label>
-							<select>
-								<option>AMAZON</option>
-								<option>EPUB</option>
-								<option>MOBI</option>
-							</select>
+							<div id="email-type-holder">
+							</div>
 						</fieldset>
 					</form>
 				</div>
 			</div>
+			<div class="row-fluid">
+				<div id="email-modal-error-container" class="span12">				
+				</div>
+			</div>
 		</div>
 		<div class="modal-footer">
-			<button class="btn btn-success pull-left">send email</button>&nbsp;
+			<button id="email-do-button" class="btn btn-success pull-left" onclick="doEmail()">send email</button>&nbsp;
 			<button class="btn btn-danger" data-dismiss="modal" aria-hidden="true">close</button>
 		</div>
  	  </div>
@@ -274,6 +278,7 @@
       <script src="static/janus/janus-request.js"></script>
       <script src="static/janus/janus-render.js"></script>
       <script src="static/janus/janus-sammy.js"></script>
+      <script src="static/janus/janus-email.js"></script>
 
       <!-- handlebars template stuff -->
       <script>
