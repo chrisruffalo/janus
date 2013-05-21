@@ -177,9 +177,7 @@ function renderSingleItem(item, intoTarget) {
     
   if("book" == item.type) {
     html = book_template(item);
-  } else if("author" == item.type) {
-    html = author_template(item);
-  } else if ("series" == item.type || "tag" == item.type) {
+  } else if ("author" == item.type || "series" == item.type || "tag" == item.type) {
     html = generic_template(item);
   } else {
     logger("[warn] target render item has no type, no rendering performed");

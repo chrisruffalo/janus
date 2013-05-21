@@ -99,7 +99,7 @@ public abstract class AbstractBaseEntityService<E extends BaseEntity, P extends 
 		ResponseBuilder builder = Response.ok();
 
 		// provided type
-		String type = this.getProvider().getEntityType().getSimpleName().toLowerCase();
+		String type = entity.getType();
 		
 		String fullRequestUrl = this.request.getRequestURL().toString();
 		
@@ -145,8 +145,8 @@ public abstract class AbstractBaseEntityService<E extends BaseEntity, P extends 
 		// set response output
 		builder.entity(output);
 		
-		// log for info
-		this.logger.info("uri at: {}", address);
+		// log trace for later debugging
+		this.logger.trace("uri for {}:{} at: {}", new Object[]{type, entity.getId(), address});
 		
 		// return good response
 		return builder.build();

@@ -15,8 +15,11 @@
     <script id="book-template" type="text/x-handlebars-template">
       <div class="row">
         <div class="span6 entry">
-          <h4><em>{{title}}</em></h4>
-          {{#if series}}
+          <!-- permalink -->
+		  <div class="pull-right permalink"><a href="#/{{type}}/get/{{id}}"><i class="icon-link"></i></a></div>
+
+		  <h4><em>{{title}}</em></h4>
+		  {{#if series}}
             <h6>Book {{seriesIndex}} in <em><a href="#/series/get/{{series.id}}">{{series.name}}</a></em></h6>
           {{/if}}
 
@@ -52,7 +55,7 @@
 
 			  <!-- other functions -->
 			  <p><i class="icon-cogs"></i>&nbsp;
-				<button class="btn btn-mini" onclick="toggleQR('s/book/{{id}}/qr', '{{title}}')"><i class="icon-qrcode"></i>&nbsp;QR</button>
+				<button class="btn btn-mini" onclick="toggleQR('{{type}}', '{{id}}', '{{inJavascriptEscape title}}')"><i class="icon-qrcode"></i>&nbsp;QR</button>
 			  </p>
             </div> <!-- /end of media body -->
           </div> <!-- /end of media -->
@@ -61,9 +64,12 @@
     </script>
     
     <!-- typed template specific to author -->
-    <script id="author-template" type="text/x-handlebars-template">
+    <script id="generic-template" type="text/x-handlebars-template">
      <div class="row">
         <div class="span6 entry">
+          <!-- permalink -->
+		  <div class="pull-right permalink"><a href="#/{{type}}/get/{{id}}"><i class="icon-link"></i></a></div>
+
           <h4><em>{{name}}</em></h4>
           <div class="media">
             <a class="pull-left" href="#">
@@ -72,34 +78,14 @@
             
             <div class="media-body">
               {{#if bookCount}}
-                <h6>Author of <a href="#/author/get/{{id}}/books">{{bookCount}} books</a>{{#if seriesCount}} and <a href="#/author/get/{{id}}/series">{{seriesCount}} series</a>{{/if}}.</h6>
+                <h6>Author of <a href="#/{{type}}/get/{{id}}/books">{{bookCount}} books</a>{{#if seriesCount}} and <a href="#/{{type}}/get/{{id}}/series">{{seriesCount}} series</a>{{/if}}.</h6>
+			  {{else}}
+			  	<p><a href="#/{{type}}/get/{{id}}/books">related books <i class="icon-circle-arrow-right"></i></a></p>
+              	<p><a href="#/{{type}}/get/{{id}}/series">related series <i class="icon-circle-arrow-right"></i></a></p>				
               {{/if}}
               
 			  <!-- other items related to this author -->
               <p><a href="#/{{type}}/get/{{id}}/authors">related authors <i class="icon-circle-arrow-right"></i></a></p>
-			  <p><a href="#/{{type}}/get/{{id}}/tags">related tags <i class="icon-circle-arrow-right"></i></a></p>		
-
-            </div> <!--/end of media body -->
-          </div> <!-- /end of media -->
-        </div> <!-- /span -->
-      </div> <!-- /row --> 
-    </script>
-    
-    <!-- template for other generic view types -->
-    <script id="generic-template" type="text/x-handlebars-template">
-	  <div class="row">
-        <div class="span6 entry">
-          <h4><em>{{name}}</em></h4>
-          <div class="media">
-            <a class="pull-left" href="#">
-              <img src="static/img/thumbnail.jpg" data-src="s/{{type}}/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
-            </a>
-            
-            <div class="media-body">
-			  <!-- other items related to this item -->
-			  <p><a href="#/{{type}}/get/{{id}}/books">related books <i class="icon-circle-arrow-right"></i></a></p>
-              <p><a href="#/{{type}}/get/{{id}}/authors">related authors <i class="icon-circle-arrow-right"></i></a></p>
-              <p><a href="#/{{type}}/get/{{id}}/series">related series <i class="icon-circle-arrow-right"></i></a></p>
 			  <p><a href="#/{{type}}/get/{{id}}/tags">related tags <i class="icon-circle-arrow-right"></i></a></p>		
 
             </div> <!--/end of media body -->
@@ -149,13 +135,6 @@
         <div class="navbar-inner">
           <div class="container">
        
-            <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
-            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </a>
-       
             <!-- Be sure to leave the brand out there if you want it shown -->
             <a class="brand" href="#main">Janus</a>
 
@@ -163,10 +142,6 @@
               <input id="term" name="term" type="text" class="search-query" placeholder="Search">
             </form>
 
-            <!-- Everything you want hidden at 940px or less, place within here -->
-            <div class="nav-collapse collapse">
-            </div>
-       
           </div>
         </div>
       </div>
@@ -228,9 +203,40 @@
       
       <div id="loadMoreLinkTarget" class="container">
         <!-- target div for href to load more -->
-      </div>      
+      </div>
+      
+      <!-- QR modal to save time on jquery construction -->
+	  <div id="qr-modal" class="modal hide fade in" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+				<i class="icon-remove"></i>
+			</button>
+			<h3 id="qr-modal-label"></h3>
+		</div>
+		<div id="qr-modal-body" class="modal-body widthOverride center">
+		</div>
+		<div class="modal-footer">
+			<button class="btn" data-dismiss="modal" aria-hidden="true">close</button>
+		</div>
+ 	  </div>
+ 	  
+ 	  <!-- EMAIL modal to save time on jquery construction -->
+ 	  <div id="email-modal" class="modal hide fade in" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+				<i class="icon-remove"></i>
+			</button>
+			<h3 id="email-modal-label"></h3>
+		</div>
+		<div id="email-modal-body" class="modal-body">
+			
+		</div>
+		<div class="modal-footer">
+			<button class="btn" data-dismiss="modal" aria-hidden="true">close</button>
+		</div>
+ 	  </div>
 
-      <!-- supporting scripts -->
+  	  <!-- supporting scripts -->
       <script src="static/js/jquery.js"></script>
       <script src="static/js/bootstrap.min.js"></script>
       <script src="static/js/handlebars.js"></script>

@@ -4,6 +4,16 @@
     }
 }
 
+.center {
+	margin: 0 auto;
+	text-align: center;
+}
+
+.permalink {
+	padding-right: 10px;
+	padding-top: 10px;
+}
+
 .entry {
     padding-left: 12px;
     padding-bottom: 12px;

@@ -22,6 +22,11 @@ function request(baseUrl, index, size, addToCurrent, doAfterSuccessfulResponse) 
       var response = renderResponse(context, addToCurrent);
       logger("[info] response got content: " + response);
       
+      // no further action if minimum page size not reached
+      if(context.length < defaultPageSize) {
+    	  return;
+      }
+      
       // if some content was rendered
       if(response && doAfterSuccessfulResponse) {
         doAfterSuccessfulResponse(Number(index) + Number(size), size);
