@@ -162,14 +162,14 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 		}
 		
 		// log request
-		this.logger.info("Requesting book {} of type {} to be emailed to {}", new Object[]{id, type, address});
+		this.logger.debug("Requesting book {} of type {} to be emailed to {}", new Object[]{id, type, address});
 		
 		// read values from configuration
 		String from = this.configuration.getString(ConfigurationProperties.EMAIL_FROM);
 		String host = this.configuration.getString(ConfigurationProperties.SMTP_HOST);
 		int port = this.configuration.getInt(ConfigurationProperties.SMTP_PORT);
 		String user = this.configuration.getString(ConfigurationProperties.SMTP_USER);
-		String password = this.configuration.getString(ConfigurationProperties.SMTP_PASSORD);
+		String password = this.configuration.getString(ConfigurationProperties.SMTP_PASSWORD);
 		String security = this.configuration.getString(ConfigurationProperties.SMTP_SECURITY);
 		
 		// default values
@@ -181,7 +181,7 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 		tls = "tls".equalsIgnoreCase(security);
 		
 		// log correct configuration read
-		this.logger.info("Using smtp host:{}, port:{}, and user:{} (using security: tls:{}, ssl:{})", new Object[]{host, port, user, tls, ssl});
+		this.logger.trace("Using smtp host:{}, port:{}, user:{} (using security: tls:{}, ssl:{})", new Object[]{host, port, user, tls, ssl});
 		
 		// file from file info
 		File file = new File(info.getFullPath());
@@ -190,7 +190,7 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 		final byte[] fileBytes;
 		try {
 			fileBytes = FileUtils.readFileToByteArray(file);
-			this.logger.info("Read file: {}", info.getFullPath());
+			this.logger.trace("Read file: {}", info.getFullPath());
 		} catch (IOException ex) {
 			this.logger.error("Could not read file for book id:{}", id, ex);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("email for book " + id + " of type " + type + " could not be sent to " + address).build();
@@ -212,10 +212,10 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 		// choose transport strategy based on security
 		TransportStrategy transport = TransportStrategy.SMTP_PLAIN;
 		if(ssl) {
-			this.logger.debug("Using ssl transport.");
+			this.logger.trace("Mailing with ssl transport.");
 			transport = TransportStrategy.SMTP_SSL;
 		} else if(tls) {
-			this.logger.debug("Using tls transport.");
+			this.logger.trace("Mailing with tls transport.");
 			transport = TransportStrategy.SMTP_TLS;
 		}
 		
@@ -230,7 +230,7 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 		// send email or log failure
 		try {
 			// log start of send
-			this.logger.info("Sending mail to {}... ({})", address, file.getName());			
+			this.logger.debug("Sending mail to {}... ({})", address, file.getName());			
 			// actually send mail
 			mailer.sendMail(email);
 			// log send

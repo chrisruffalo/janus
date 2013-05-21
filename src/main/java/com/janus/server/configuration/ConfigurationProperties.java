@@ -21,7 +21,7 @@ public class ConfigurationProperties {
 	public static final String EMAIL_FROM = "smtp.from";
 	
 	public static final String SMTP_USER = "smtp.user";
-	public static final String SMTP_PASSORD = "smtp.password";
+	public static final String SMTP_PASSWORD = "smtp.password";
 	public static final String SMTP_SECURITY = "smtp.security"; //ssl or tls
 	
 	/**
