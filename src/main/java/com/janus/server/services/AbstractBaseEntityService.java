@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -103,60 +102,51 @@ public abstract class AbstractBaseEntityService<E extends BaseEntity, P extends 
 		String type = this.getProvider().getEntityType().getSimpleName().toLowerCase();
 		
 		String fullRequestUrl = this.request.getRequestURL().toString();
-		try {
-			URI uri = new URI(fullRequestUrl);
-			String pathToJanus = this.request.getRequestURI();
-			
-			Enumeration<String> headers = this.request.getHeaderNames();
-			while(headers.hasMoreElements()) {
-				String header = headers.nextElement();
-				String value = this.request.getHeader(header);
-				this.logger.info("header {} => {}", header, value);
-			}
-			
-			Enumeration<String> attributes = this.request.getParameterNames();
-			while(attributes.hasMoreElements()) {
-				String key = attributes.nextElement();
-				String value = this.request.getHeader(key);
-				this.logger.info("params {} => {}", key, value);
-			}
-			
-			this.logger.info(this.request.getContextPath());
-			this.logger.info(this.request.getPathInfo());
-			this.logger.info(this.request.getServletPath());
-									
-			// create port string only if port is evident (greater than 0) 
-			String portString = uri.getPort() <= 0 ? "" : ":" + uri.getPort();
-			
-			// calculate full address
-			final String address = String.format("%s://%s%s/%s/index.html#/%s/get/%s", 
-				uri.getScheme(), 
-				uri.getHost(), 
-				portString,
-				pathToJanus, 
-				type, 
-				id.toString()
-			);
-					
-			// generate QR code as PNG
-			QRCode code = QRCode.from(address).to(ImageType.PNG).withSize(250, 250);
+		
+		// get referer and try that
+		String referer = this.request.getHeader("referer");
+		
+		final String address;
+		if(referer != null) {
+			address = String.format("%s#/%s/get/%s", referer, type, id.toString());
+		} else {
+			try {
+				URI uri = new URI(fullRequestUrl);
+				String pathToJanus = this.request.getContextPath();
+										
+				// create port string only if port is evident (greater than 0) 
+				String portString = uri.getPort() <= 0 ? "" : ":" + uri.getPort();
 				
-			// use entity as response output
-			byte[] output = code.stream().toByteArray();
+				// calculate full address
+				address = String.format("%s://%s%s%s/index.html#/%s/get/%s", 
+					uri.getScheme().toLowerCase(), 
+					uri.getHost(), 
+					portString,
+					pathToJanus, 
+					type, 
+					id.toString()
+				);
+			} catch (URISyntaxException e) {
+				return Response.status(Status.INTERNAL_SERVER_ERROR).entity("could not determine path for server resource").build();
+			}		
+		}
+		
+		// generate QR code as PNG
+		QRCode code = QRCode.from(address).to(ImageType.PNG).withSize(250, 250);
 			
-			// and set up response content
-			builder.header("Content-Disposition", "attachment; filename=\"" + type + "-" + id + ".png\"");
-			builder.type("image/png");
-			builder.header("Content-Length", output.length);
-			
-			// set response output
-			builder.entity(output);
-			
-			// log for info
-			this.logger.info("uri at: {}", address);
-		} catch (URISyntaxException e) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("could not determine path for server resource").build();
-		}		
+		// use entity as response output
+		byte[] output = code.stream().toByteArray();
+		
+		// and set up response content
+		builder.header("Content-Disposition", "attachment; filename=\"" + type + "-" + id + ".png\"");
+		builder.type("image/png");
+		builder.header("Content-Length", output.length);
+		
+		// set response output
+		builder.entity(output);
+		
+		// log for info
+		this.logger.info("uri at: {}", address);
 		
 		// return good response
 		return builder.build();
