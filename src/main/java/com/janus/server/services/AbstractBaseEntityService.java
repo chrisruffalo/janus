@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -104,8 +105,26 @@ public abstract class AbstractBaseEntityService<E extends BaseEntity, P extends 
 		String fullRequestUrl = this.request.getRequestURL().toString();
 		try {
 			URI uri = new URI(fullRequestUrl);
-			String context = this.request.getServletContext().getContextPath();
+			String pathToJanus = this.request.getRequestURI();
 			
+			Enumeration<String> headers = this.request.getHeaderNames();
+			while(headers.hasMoreElements()) {
+				String header = headers.nextElement();
+				String value = this.request.getHeader(header);
+				this.logger.info("header {} => {}", header, value);
+			}
+			
+			Enumeration<String> attributes = this.request.getParameterNames();
+			while(attributes.hasMoreElements()) {
+				String key = attributes.nextElement();
+				String value = this.request.getHeader(key);
+				this.logger.info("params {} => {}", key, value);
+			}
+			
+			this.logger.info(this.request.getContextPath());
+			this.logger.info(this.request.getPathInfo());
+			this.logger.info(this.request.getServletPath());
+									
 			// create port string only if port is evident (greater than 0) 
 			String portString = uri.getPort() <= 0 ? "" : ":" + uri.getPort();
 			
@@ -114,12 +133,12 @@ public abstract class AbstractBaseEntityService<E extends BaseEntity, P extends 
 				uri.getScheme(), 
 				uri.getHost(), 
 				portString,
-				context, 
+				pathToJanus, 
 				type, 
 				id.toString()
 			);
 					
-			// generate QR code
+			// generate QR code as PNG
 			QRCode code = QRCode.from(address).to(ImageType.PNG).withSize(250, 250);
 				
 			// use entity as response output
