@@ -18,9 +18,9 @@ function toggleBookEmail(id, title) {
   $('#email-type-holder').html('<em>loading available files...</em>');
   
   // read cookies...
-  var emailName = "email";
-  var emailHost = "kindle";
-  var emailTld = "com";
+  var emailName = getCookie("janus.emailName", "email");
+  var emailHost = getCookie("janus.emailHost", "kindle");
+  var emailTld = getCookie("janus.emailTld", "com");
   
   // set form values (in some cases from cookies) before showing form
   $('#email-id').val(id);
@@ -100,6 +100,7 @@ function doEmail() {
 	// post request for email to endpoint
     $.ajax({
     	url: 's/book/' + id + '/email/' + type + '?address=' + email,
+    	//url: 's/book/' + id + '/list',
     	cache: false,    	
     })
     // on success clean up form, show success message
@@ -116,6 +117,9 @@ function doEmail() {
     	  $('#email-modal-error-container').append(successAlert);
     	  
     	  // save email values to cookies
+    	  setCookie("janus.emailName", name);
+    	  setCookie("janus.emailHost", host);
+    	  setCookie("janus.emailTld", tld);
       }
     )
     // on error we need to show error message and
