@@ -127,5 +127,9 @@ function showErrorInContainer(title, message) {
     
     // put error in document
     $('#error-div').append(error);
-    $('#error-div').show();
+}
+
+function clearErrors() {
+	// empty errors
+	$('#error-div').empty();	
 }

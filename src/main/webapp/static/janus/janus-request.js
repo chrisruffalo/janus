@@ -22,6 +22,10 @@ function request(baseUrl, index, size, addToCurrent, doAfterSuccessfulResponse) 
   })
   .done(
     function(context) {
+      // we no we got *something* (in the 200 range) so clear (all) errors
+      clearErrors();
+      
+      // then render response
       var response = renderResponse(context, addToCurrent);
       logger("[info] response got content: " + response);
       
