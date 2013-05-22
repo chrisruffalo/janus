@@ -29,6 +29,24 @@ function jumpToTop(){
   return false;
 }
 
+//jump to the top of the document  
+function jumpToElement(element){
+  if(!element) {
+	  return false;
+  }
+  
+  // try and do scroll to element
+  try {
+	  var top = element.offset().top;
+	  // scroll to top minus modest offset (40px for top border, 3px for meeee)
+	  var to = top - 43;
+	  $("html, body").animate({ scrollTop: to }, 600);
+  } catch (e) {
+	  logger('[error] error while scrolling to given element: ' + e);
+  }  
+  return false;
+}
+
 // download file
 function downloadFile(id) {
   var typeString = $('#download_box_'+id).val();
@@ -90,4 +108,24 @@ function getCookie(name, defaultValue) {
 
 function deleteCookie(name) {
 	setCookie(name, "", -1);
+}
+
+function showErrorInContainer(title, message) {
+	if(!message) {
+		// don't show non-available message
+		return;
+	}
+	
+	// empty errors
+	$('#error-div').empty();
+	
+	// create error html
+    var error = $('<div class="alert alert-error">'
+		  + '<button type="button" class="close" data-dismiss="alert">&times;</button>'
+		  + '<strong>' + title + '</strong> ' + message
+		  + '</div>');
+    
+    // put error in document
+    $('#error-div').append(error);
+    $('#error-div').show();
 }

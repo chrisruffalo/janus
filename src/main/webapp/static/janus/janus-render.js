@@ -1,5 +1,4 @@
-
-function renderResponse(itemList, addToCurrent) {
+function renderResponse(itemList, addToCurrent, startEntry, endEntry) {
   if(!itemList) {
     return false;
   }
@@ -16,7 +15,6 @@ function renderResponse(itemList, addToCurrent) {
   } else {
     // create new target for data
     var newRenderTarget = $("<div class='container renderTarget'></div>");
-    newRenderTarget.hide();
 
     // clear response/multi-header when any response comes in
     if(!addToCurrent) {
@@ -30,11 +28,30 @@ function renderResponse(itemList, addToCurrent) {
       response = renderList(itemList, newRenderTarget, addToCurrent);
     }
 
+    // append milestone to target
+    var milestone = null;
+    if(addToCurrent) {
+    	// create milestone message
+    	var message = null;
+    	if(startEntry && endEntry) {
+    		message = "loaded entries " + startEntry + " to " + endEntry + " (" + (endEntry - startEntry) + ")";
+    	} else {
+    		var length = 1;
+    		if(itemList.length) {
+    			length = itemList.length;
+    		}
+    		message = "loaded " + length + " additional entries";
+    	}
+    	
+    	milestone = $('<div class="container renderTarget"><div class="row"><div class="span6 milestoneEntry"><h6 class="center milestoneTitle">' + message + '</h6></div></div></div>');
+    	$('#target').append(milestone);
+    }
+    
     // append render target
     $('#target').append(newRenderTarget);
     
-    // make visibile
-    newRenderTarget.show();
+    // jump to milestone
+    jumpToElement(milestone);
   }
   
   // set up JAIL to load images async
@@ -123,8 +140,7 @@ function renderMultiResponse(multiResponse, intoTarget, addToCurrent) {
     var header = multi_template(multiResponse);
     $('#multi-header-target').append(header);
   }
-  
-  
+    
   var activeTarget = null;
   var targetHeaderClass = null;
   
@@ -195,7 +211,7 @@ function renderSingleItem(item, intoTarget) {
 // render next page link
 function renderNextPageLink(href) {
   $('#loadMoreLinkTarget').empty();
-  var createdLink = $("<a href='" + href +"'>load more entires</a>");
+  var createdLink = $('<div class="container renderTarget"><div class="row"><div class="span6 linkEntry"><h6 class="center milestoneTitle"><a href="' + href + '">load more entires</a></h6></div></div></div>');
   $('#loadMoreLinkTarget').append(createdLink);
 }
 

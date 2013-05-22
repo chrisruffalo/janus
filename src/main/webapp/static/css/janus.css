@@ -35,6 +35,40 @@
     border-radius: 10px;
 }
 
+.milestoneEntry {
+    padding-left: 12px;
+    padding-bottom: 12px;
+    
+    background-color: #ddebff;
+    
+    border: solid;
+    border-width: 1px;
+    border-color: #cccccc;
+    
+    margin-bottom: 10px;
+    
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;	
+}
+
+.linkEntry {
+    padding-left: 12px;
+    padding-bottom: 12px;
+    
+    background-color: #ddebff;
+    
+    border: solid;
+    border-width: 1px;
+    border-color: #cccccc;
+    
+    margin-bottom: 10px;
+    
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;	
+}
+
 .widthOverride {
     width: auto !important;
 }
@@ -68,6 +102,11 @@
     border-radius: 10px;
 }
 
+.errorBox {
+	min-width: 0px !important;
+	min-height: 0px !important;
+}
+
 .title {
 	margin-top: 5px;
 	margin-bottom: 2px;
@@ -78,4 +117,10 @@
 	margin-bottom: 5px;
 	margin-left: 5px;
 	color: #6e6e6e;
+}
+
+.milestoneTitle {
+	margin-top: 0px;
+	margin-bottom: 2px !important;
+	margin-top: 12px !important;
 }

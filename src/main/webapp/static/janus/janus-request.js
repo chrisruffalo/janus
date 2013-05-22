@@ -39,7 +39,17 @@ function request(baseUrl, index, size, addToCurrent, doAfterSuccessfulResponse) 
         showNoData();
       }
     }
-  );          
+  )
+  .fail(
+    function(jqXHR, textStatus, errorThrown) {
+    	if(textStatus == 503) {
+    		showErrorInContainer('Uh oh!', 'There was an error accessing Janus.  It is likely, at this time, that the Janus server is reindexing content.  Please try again later.');
+    	} else {
+    		showErrorInContainer('Oh man!', 'An unspecified error has occurred, it would be best to contact someone who knows what is going on.');
+    	}
+    }
+  )
+  ;          
 }
 
 // request a list of elements of the given type sorted as
