@@ -14,6 +14,8 @@ public class ConfigurationProperties {
 
 	public static final String LIBRARY_LOCATION = "library.path";
 	public static final String LIBRARY_DATABASE = "library.database";
+	public static final String LIBRARY_SCAN = "library.scan";
+	public static final String LIBRARY_INTERVAL = "library.interval";
 	
 	public static final String SMTP_HOST = "smtp.host";
 	public static final String SMTP_PORT = "smtp.port";

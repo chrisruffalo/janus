@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
@@ -111,6 +112,43 @@ public abstract class AbstractBaseEntityProvider<E extends BaseEntity> extends A
 				new Object[] { result, this.getEntityType().getSimpleName(), upperStart });
 
 		return result;
+	}
+	
+	/**
+	 * Drops all items managed by this provider 
+	 */
+	public void dropAll() {
+		
+		CriteriaBuilder builder = this.manager.getCriteriaBuilder();
+		
+		CriteriaQuery<E> query = builder.createQuery(this.getEntityType());
+		
+		Root<E> root = query.from(this.getEntityType());
+		query.select(root);
+		
+		List<E> results;
+		try {
+			results = this.manager.createQuery(query).getResultList();
+		} catch (NoResultException nre) {
+			results = Collections.emptyList();
+		}
+		
+		String typeString = this.getEntityType().getSimpleName().toLowerCase();
+
+		int count = 0;
+		for(E result : results) {
+			try {
+				this.manager.remove(result);
+				count++;
+			} catch (Exception ex) {
+				this.logger.error("Error '{}' while dropping {}:{}", new Object[]{ex.getMessage(), typeString, result.getId()});
+			}
+		}
+		
+		this.logger.info("Dropped {} items of type {}", count, typeString);
+		
+		// flush drop
+		this.manager.flush();
 	}
 	
 	public List<E> list(int index, int size) {

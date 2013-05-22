@@ -14,10 +14,12 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import com.janus.server.providers.SearchProvider;
+import com.janus.server.services.inservice.ServiceBasedOnLibraryStatus;
 
 @Path("/search")
 @Produces(value={MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.TEXT_PLAIN})
 @Stateless
+@ServiceBasedOnLibraryStatus
 public class SearchService {
 
 	@Inject

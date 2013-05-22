@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <title>Janus</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
     <!-- Bootstrap -->
     <link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
@@ -18,7 +18,10 @@
           <!-- permalink -->
 		  <div class="pull-right permalink"><a href="#/{{type}}/get/{{id}}"><i class="icon-link"></i></a></div>
 
-		  <h4><em>{{title}}</em></h4>
+		  <h4 class="title"><em>{{mainTitle}}</em></h4>
+		  {{#if subTitle}}
+			<h5 class="subtitle"><em>{{subTitle}}</em></h5>
+          {{/if}}
 		  {{#if series}}
             <h6>Book {{seriesIndex}} in <em><a href="#/series/get/{{series.id}}">{{series.name}}</a></em></h6>
           {{/if}}
@@ -265,7 +268,7 @@
  	  </div>
 
   	  <!-- supporting scripts -->
-      <script src="static/js/jquery.js"></script>
+      <script src="static/js/jquery-2.0.0.min.js"></script>
       <script src="static/js/bootstrap.min.js"></script>
       <script src="static/js/handlebars.js"></script>
       <script src="static/js/sammy.js"></script>

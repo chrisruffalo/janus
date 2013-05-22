@@ -1,8 +1,5 @@
 package com.janus.server.lifecycle;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.Singleton;
@@ -10,6 +7,8 @@ import javax.ejb.Startup;
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
+
+import com.janus.server.calibre.CalibreImportScheduler;
 
 @Startup
 @Singleton
@@ -19,30 +18,14 @@ public class JanusLifecycle {
 	private Logger logger;
 	
 	@Inject
-	private CalibreImportWorker importWorker;
+	private CalibreImportScheduler importScheduler;
 	
 	@PostConstruct
 	public void start() {
 		this.logger.info("Starting Janus");		
 		
-		Future<Boolean> result = this.importWorker.importCalibre();
-		Boolean value;
-		try {
-			value = result.get();
-		} catch (InterruptedException e) {
-			value = false;
-		} catch (ExecutionException e) {
-			value = false;
-		}
-		
-		// log errors
-		if(!value) {
-			// no import
-			this.logger.error("No database import performed on startup, attempting indexing");
-			
-			// start reindex
-			this.importWorker.reindex();
-		}
+		// schedule imports
+		this.importScheduler.schedule();
 	}
 	
 	@PreDestroy

@@ -29,7 +29,10 @@ function toggleBookEmail(id, title) {
   $('#email-tld').val(emailTld);
   
   // kick off request
-  $.ajax('s/book/' + id + '/list')
+  $.ajax({
+	  url: 's/book/' + id + '/list',
+	  cache: false
+  })  
   .done(
     function(context) {
     	// clear value list
@@ -100,7 +103,6 @@ function doEmail() {
 	// post request for email to endpoint
     $.ajax({
     	url: 's/book/' + id + '/email/' + type + '?address=' + email,
-    	//url: 's/book/' + id + '/list',
     	cache: false,    	
     })
     // on success clean up form, show success message
@@ -112,7 +114,7 @@ function doEmail() {
     	  // show success message
     	  var successAlert = $('<div class="alert alert-success">'
     		  + '<button type="button" class="close" data-dismiss="alert">&times;</button>'
-    		  + '<strong>Awesome!</strong> Your email is on the way.'
+    		  + '<strong>Awesome!</strong> Your book is on the way.'
     		  + '</div>');
     	  $('#email-modal-error-container').append(successAlert);
     	  
@@ -132,7 +134,7 @@ function doEmail() {
     	  // show error message
     	  var errorAlert = $('<div class="alert alert-error">'
     		  + '<button type="button" class="close" data-dismiss="alert">&times;</button>'
-    		  + '<strong>Uhoh!</strong> An error occurred while sending your books.  Check your values and try again.'
+    		  + '<strong>Oh no!</strong> An error occurred while sending your book.  Check your values and try again.'
     		  + '</div>');
     	  $('#email-modal-error-container').append(errorAlert);
       }

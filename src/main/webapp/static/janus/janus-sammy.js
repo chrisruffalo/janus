@@ -31,7 +31,7 @@ function initSammy() {
           this.get('#/:type/get/:id', function(context) {
             var id = this.params['id'];
             var type = this.params['type'];
-            var add = makeBoolean(context.params['add']);
+            //var add = makeBoolean(context.params['add']);
 
             // clear search term
             $('#term').val('');
@@ -85,7 +85,7 @@ function initSammy() {
             var add = makeBoolean(context.params['add']);
 
             // set ui component
-            $('#term').val(term)
+            $('#term').val(term);
             
             // request list of given type
             searchAll(term, index, size, add, function(newIndex, newSize){

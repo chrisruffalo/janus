@@ -16,7 +16,10 @@ function request(baseUrl, index, size, addToCurrent, doAfterSuccessfulResponse) 
     
   logger(url);
 
-  $.ajax(url)
+  $.ajax({
+    "url": url,
+    "cache": false
+  })
   .done(
     function(context) {
       var response = renderResponse(context, addToCurrent);

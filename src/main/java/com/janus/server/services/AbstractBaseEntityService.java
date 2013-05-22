@@ -31,6 +31,7 @@ import com.janus.model.interfaces.ISorted;
 import com.janus.server.configuration.ImageConfiguration;
 import com.janus.server.providers.AbstractBaseEntityProvider;
 import com.janus.server.resources.DiskCacheLocation;
+import com.janus.server.services.inservice.ServiceBasedOnLibraryStatus;
 import com.janus.server.services.support.JanusImageStreamingOutput;
 
 @Produces(value = { 
@@ -40,7 +41,8 @@ import com.janus.server.services.support.JanusImageStreamingOutput;
 		MediaType.TEXT_PLAIN 
 	}
 )
-public abstract class AbstractBaseEntityService<E extends BaseEntity, P extends AbstractBaseEntityProvider<E>>  {
+@ServiceBasedOnLibraryStatus
+public abstract class AbstractBaseEntityService<E extends BaseEntity, P extends AbstractBaseEntityProvider<E>> {
 	
 	@Inject
 	@DiskCacheLocation("img")

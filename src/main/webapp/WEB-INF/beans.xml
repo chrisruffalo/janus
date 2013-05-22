@@ -5,6 +5,7 @@ http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
 
 	<interceptors>
 		<class>com.janus.server.statistics.MetricsLoggingInterceptor</class>
+		<class>com.janus.server.services.inservice.LibraryStatusInterceptor</class>
 	</interceptors>
 
 </beans>

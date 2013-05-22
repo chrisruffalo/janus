@@ -1,4 +1,4 @@
-package com.janus.server.lifecycle;
+package com.janus.server.calibre;
 
 import java.io.File;
 import java.util.Date;
@@ -19,10 +19,13 @@ import com.janus.model.Book;
 import com.janus.model.FileType;
 import com.janus.model.configuration.DatabaseStatus;
 import com.janus.server.configuration.ConfigurationProperties;
+import com.janus.server.providers.AuthorProvider;
 import com.janus.server.providers.BookProvider;
 import com.janus.server.providers.FileInfoProvider;
 import com.janus.server.providers.SearchProvider;
+import com.janus.server.providers.SeriesProvider;
 import com.janus.server.providers.SettingsProvider;
+import com.janus.server.providers.TagProvider;
 import com.janus.util.DigestUtil;
 
 @Stateless
@@ -33,6 +36,15 @@ public class CalibreImportWorker {
 	
 	@Inject
 	private BookProvider bookProvider;
+	
+	@Inject
+	private AuthorProvider authorProvider;
+	
+	@Inject
+	private TagProvider tagProvider;
+	
+	@Inject
+	private SeriesProvider seriesProvider;
 	
 	@Inject
 	private SettingsProvider settingsProvider;
@@ -135,8 +147,11 @@ public class CalibreImportWorker {
 				
 		// if there are books found
 		if(!books.isEmpty()) {
-			// clear old books
-			this.bookProvider.drop();
+			// clear old entities
+			this.bookProvider.dropAll();
+			this.seriesProvider.dropAll();
+			this.authorProvider.dropAll();
+			this.tagProvider.dropAll();
 			
 			// clear old full text index
 			this.searchProvider.purge();

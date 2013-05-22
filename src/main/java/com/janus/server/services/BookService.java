@@ -59,11 +59,6 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
 	public int save(Collection<Book> books) {
 		return this.provider.save(books);
 	}
-
-	// do not export as rest path
-	public void drop() {
-		this.provider.drop();
-	}
 	
 	@GET
 	@Path("/{id}/list")

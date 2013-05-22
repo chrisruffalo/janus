@@ -10,7 +10,6 @@ import javax.interceptor.InvocationContext;
 
 import org.slf4j.Logger;
 
-
 @LogMetrics
 @Interceptor
 public class MetricsLoggingInterceptor {
@@ -73,3 +72,4 @@ public class MetricsLoggingInterceptor {
 	}
 	
 }
+

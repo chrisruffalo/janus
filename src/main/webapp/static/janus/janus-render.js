@@ -15,7 +15,7 @@ function renderResponse(itemList, addToCurrent) {
     response = renderMultiResponse(itemList, $('#target'), addToCurrent);
   } else {
     // create new target for data
-    var newRenderTarget = $("<div class='container renderTarget'></div>")
+    var newRenderTarget = $("<div class='container renderTarget'></div>");
     newRenderTarget.hide();
 
     // clear response/multi-header when any response comes in

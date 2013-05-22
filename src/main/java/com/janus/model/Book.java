@@ -15,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -298,6 +299,52 @@ public class Book extends BaseEntity implements ISorted {
 
 	public void setFileInfo(Map<FileType, FileInfo> fileInfo) {
 		this.fileInfo = fileInfo;
+	}
+	
+	/**
+	 * Breaks "Title: Some Title" into "Main Title" and "Sub Title".  Returns
+	 * the "Main Title" bit.
+	 * 
+	 * @return
+	 */
+	@Transient
+	public String getMainTitle() {
+		String title = this.getTitle();
+		
+		if(title == null) {
+			return "";
+		}
+		
+		if(title.indexOf(":") <= 0) {
+			return title;
+		}
+		
+		String mainTitle = title.substring(0, title.indexOf(":")).trim();		
+		
+		return mainTitle;
+	}
+	
+	/**
+	 * Breaks "Title: Some Title" into "Main Title" and "Sub Title".  Returns
+	 * the "Sub Title" bit.
+	 * 
+	 * @return
+	 */
+	@Transient
+	public String getSubTitle() {
+		String title = this.getTitle();
+		
+		if(title == null) {
+			return "";
+		}
+		
+		if(title.indexOf(":") <= 0) {
+			return "";
+		}
+		
+		String subTitle = title.substring(title.indexOf(":")+1).trim();		
+		
+		return subTitle;
 	}
 
 	/**
