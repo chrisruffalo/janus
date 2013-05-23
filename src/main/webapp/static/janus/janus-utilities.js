@@ -142,6 +142,9 @@ function showErrorInContainer(title, message) {
     
     // put error in document
     $('#error-div').append(error);
+    
+    // jump to error
+    jumpToTop();
 }
 
 function clearErrors() {
