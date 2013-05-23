@@ -223,18 +223,6 @@ function renderNextPageLink(href) {
  
   // add link to body
   $('#loadMoreLinkTarget').append(createdLink);
-  
-  // onclick become 'loading'
-  $('#nextPageLink').click(function() {
-	 logger("[info] target link clicked!");
-	 // todo: added 'loading' ajax style gif
-  });
-  // on appear, click self
-  $('#nextPageContainer').waypoint(function() {
-	 logger("[info] target appears!");
-	 // todo: possible infinite scroll
-  });  
-
 }
 
 function showNoData() {
