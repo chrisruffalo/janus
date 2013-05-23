@@ -38,8 +38,8 @@ function jumpToElement(element){
   // try and do scroll to element
   try {
 	  var top = element.offset().top;
-	  // scroll to top minus modest offset (40px for top border, 3px for meeee)
-	  var to = top - 43;
+	  // scroll to top minus modest offset (40px for top border, 5px for meeee)
+	  var to = top - 45;
 	  $("html, body").animate({ scrollTop: to }, 600);
   } catch (e) {
 	  logger('[error] error while scrolling to given element: ' + e);
@@ -103,6 +103,7 @@ function getCookie(name, defaultValue) {
 			return c.substring(nameEQ.length, c.length);
 		}
 	}
+	
 	return defaultValue;
 }
 
@@ -110,6 +111,20 @@ function deleteCookie(name) {
 	setCookie(name, "", -1);
 }
 
+/**
+ * Load user-specific configuration from cookies
+ * 
+ */
+function loadConfigurationFromCookies() {
+	// load page size as set from cookie (overrides default, uses default as default value)
+	DEFAULT_PAGE_SIZE = getCookie(DEFAULT_PAGE_SIZE_PROPERTY, DEFAULT_PAGE_SIZE);
+	logger("[debug] loaded default page size: " + DEFAULT_PAGE_SIZE);
+}
+
+/**
+ * Public function for showing an error near the title bar
+ * 
+ */
 function showErrorInContainer(title, message) {
 	if(!message) {
 		// don't show non-available message

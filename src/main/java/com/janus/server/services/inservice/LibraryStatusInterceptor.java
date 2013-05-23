@@ -12,7 +12,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
@@ -58,12 +60,22 @@ public class LibraryStatusInterceptor {
 			
 			// if it is a web method, return bad status
 			if(getAnnotation != null || putAnnotation != null || postAnnotation != null || pathAnnotation != null) {
-				Response serviceUnavailableResponse = Response.status(Status.SERVICE_UNAVAILABLE).entity("the calibre library is currently unavailable").build();
+				// create (proper) response 
+				ResponseBuilder builder = Response
+						 					.status(Status.SERVICE_UNAVAILABLE)
+						 					.entity("the calibre library is currently unavailable")
+						 					.cacheControl(null)
+						 					.type(MediaType.TEXT_PLAIN);
+				 
+				// build response
+				Response serviceUnavailableResponse = builder.build();
 				
-				// if it can be returned, return it, otherwise throw exception
+				// if the response type can be directly returned, return it, otherwise throw exception
 				if(method.getReturnType().isAssignableFrom(Response.class)) {
 					return serviceUnavailableResponse;
 				} else {
+					// otherwise create an exception (which logs fairly messily) and throw that instead
+					// of continuing
 					WebApplicationException serviceUnavailableException = new WebApplicationException(serviceUnavailableResponse);
 					throw serviceUnavailableException;
 				}

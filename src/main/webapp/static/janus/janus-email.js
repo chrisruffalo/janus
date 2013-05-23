@@ -18,9 +18,9 @@ function toggleBookEmail(id, title) {
   $('#email-type-holder').html('<em>loading available files...</em>');
   
   // read cookies...
-  var emailName = getCookie("janus.emailName", "email");
-  var emailHost = getCookie("janus.emailHost", "kindle");
-  var emailTld = getCookie("janus.emailTld", "com");
+  var emailName = getCookie(EMAIL_NAME_PROPERTY, "email");
+  var emailHost = getCookie(EMAIL_HOST_PROPERTY, "kindle");
+  var emailTld = getCookie(EMAIL_TLD_PROPERTY, "com");
   
   // set form values (in some cases from cookies) before showing form
   $('#email-id').val(id);
@@ -119,9 +119,9 @@ function doEmail() {
     	  $('#email-modal-error-container').append(successAlert);
     	  
     	  // save email values to cookies
-    	  setCookie("janus.emailName", name);
-    	  setCookie("janus.emailHost", host);
-    	  setCookie("janus.emailTld", tld);
+    	  setCookie(EMAIL_NAME_PROPERTY, name);
+    	  setCookie(EMAIL_HOST_PROPERTY, host);
+    	  setCookie(EMAIL_TLD_PROPERTY, tld);
       }
     )
     // on error we need to show error message and

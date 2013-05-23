@@ -30,7 +30,7 @@ function request(baseUrl, index, size, addToCurrent, doAfterSuccessfulResponse) 
       logger("[info] response got content: " + response);
       
       // no further action if minimum page size not reached
-      if(context.length < defaultPageSize) {
+      if(context.length < DEFAULT_PAGE_SIZE) {
     	  return;
       }
       
@@ -46,7 +46,7 @@ function request(baseUrl, index, size, addToCurrent, doAfterSuccessfulResponse) 
   )
   .fail(
     function(jqXHR, textStatus, errorThrown) {
-    	if(textStatus == 503) {
+    	if(textStatus == "503") {
     		showErrorInContainer('Uh oh!', 'There was an error accessing Janus.  It is likely, at this time, that the Janus server is reindexing content.  Please try again later.');
     	} else {
     		showErrorInContainer('Oh man!', 'An unspecified error has occurred, it would be best to contact someone who knows what is going on.');
@@ -93,7 +93,7 @@ function searchAll(searchString, index, size, addToCurrent, doAfterSuccessfulRes
 function pagedUrl(baseUrl, index, size) {
   // normalize paging values
   if(!size || size < 1) {
-    size = defaultPageSize;
+    size = DEFAULT_PAGE_SIZE;
   }
   if(!index || index < 0) {
     index = 0;

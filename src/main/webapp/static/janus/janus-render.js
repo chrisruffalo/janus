@@ -17,7 +17,8 @@ function renderResponse(itemList, addToCurrent, startEntry, endEntry) {
     var newRenderTarget = $("<div class='container renderTarget'></div>");
 
     // clear response/multi-header when any response comes in
-    if(!addToCurrent) {
+    // only clear if not empty
+    if(!addToCurrent && !$('#target').is(':empty')) {
       $('#target').empty();
     }
     $('#multi-header-target').empty();
@@ -28,9 +29,10 @@ function renderResponse(itemList, addToCurrent, startEntry, endEntry) {
       response = renderList(itemList, newRenderTarget, addToCurrent);
     }
 
-    // append milestone to target
     var milestone = null;
-    if(addToCurrent) {
+    // if the target for rendering is empty, and adding to current target
+    // this prevents a 'milestone' element from being added to an empty page
+    if(addToCurrent && !$('#target').is(':empty')){
     	// create milestone message
     	var message = null;
     	if(startEntry && endEntry) {
@@ -43,7 +45,10 @@ function renderResponse(itemList, addToCurrent, startEntry, endEntry) {
     		message = "loaded " + length + " additional entries";
     	}
     	
+    	// build milestone element
     	milestone = $('<div class="container renderTarget"><div class="row"><div class="span6 milestoneEntry"><h6 class="center milestoneTitle">' + message + '</h6></div></div></div>');
+    	
+	    // append milestone to target if adding new
     	$('#target').append(milestone);
     }
     
@@ -210,9 +215,26 @@ function renderSingleItem(item, intoTarget) {
 
 // render next page link
 function renderNextPageLink(href) {
+  // empty previous targets
   $('#loadMoreLinkTarget').empty();
-  var createdLink = $('<div class="container renderTarget"><div class="row"><div class="span6 linkEntry"><h6 class="center milestoneTitle"><a href="' + href + '">load more entires</a></h6></div></div></div>');
+  
+  // create new link
+  var createdLink = $('<div id="nextPageContainer" class="container renderTarget"><div class="row"><div class="span6 linkEntry"><h6 class="center milestoneTitle"><a id="nextPageLink" href="' + href + '">load more entires</a></h6></div></div></div>');
+ 
+  // add link to body
   $('#loadMoreLinkTarget').append(createdLink);
+  
+  // onclick become 'loading'
+  $('#nextPageLink').click(function() {
+	 logger("[info] target link clicked!");
+	 // todo: added 'loading' ajax style gif
+  });
+  // on appear, click self
+  $('#nextPageContainer').waypoint(function() {
+	 logger("[info] target appears!");
+	 // todo: possible infinite scroll
+  });  
+
 }
 
 function showNoData() {

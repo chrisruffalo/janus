@@ -196,13 +196,11 @@
         </div>
       </div>
 
-      <div id="multi-header-target" class="container">
-        <!-- this is where the search tab thing goes -->          
-      </div>
-      
-      <div id="target">
-        <!-- target div for new render items -->
-      </div>
+      <!-- this is where the search tab thing goes -->
+      <div id="multi-header-target" class="container"></div>
+
+      <!-- target div for new render items -->      
+      <div id="target"></div>
 
       <!-- div that is shown when no data is found -->
       <div id="noMoreEntries" class="container" style="display: none">
@@ -288,6 +286,7 @@
       <script src="static/js/handlebars.js"></script>
       <script src="static/js/sammy.js"></script>
       <script src="static/js/jail.min.js"></script>
+      <script src="static/js/jquery-waypoints-2.0.2.min.js"></script>
       
       <!-- janus logic -->
       <script src="static/janus/janus-config.js"></script>
@@ -301,6 +300,9 @@
       <!-- handlebars template stuff -->
       <script>
         $(document).ready(function() {
+		  // load default values from cookies
+		  loadConfigurationFromCookies();
+            
           // initialize sammy application
           initSammy();          
         });

@@ -112,7 +112,7 @@ function normalizeIndex(index) {
 
 function normalizeSize(size) {
     if(!size || size < 0) {
-        return defaultPageSize;
+        return DEFAULT_PAGE_SIZE;
     }
     return size;
 }
