@@ -19,12 +19,13 @@
 		
 		<!-- support -->
 		<class>com.janus.model.configuration.DatabaseStatus</class>
+		<class>com.janus.model.Download</class>
 		
 		<!-- exclude other classes -->
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
 		<!-- cache mode -->
-		<shared-cache-mode>ALL</shared-cache-mode>
+		<shared-cache-mode>DISABLE_SELECTIVE</shared-cache-mode>
 		
 		<properties>
 			<!-- enable hibernate caching -->

@@ -1,8 +1,10 @@
 package com.janus.server.calibre;
 
-import javax.enterprise.context.ApplicationScoped;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 
@@ -18,28 +20,30 @@ import com.janus.server.calibre.LibraryUpdateEvent.LibraryStatus;
  * @author Chris Ruffalo
  *
  */
-@ApplicationScoped
+@Singleton
 public class CalibreLibraryStatus {
 
 	@Inject
 	private Logger logger;
 	
-	private volatile boolean libraryAvailable = false;
+	private AtomicBoolean libraryAvailable = new AtomicBoolean(false);
 	
 	public boolean isLibraryAvailable() {
-		return this.libraryAvailable;
+		return this.libraryAvailable.get();
 	}
 	
 	public void observeLibraryStatusChanges(@Observes LibraryUpdateEvent event) {
 		// debug print event status
-		this.logger.debug("Library Status: {}", event.getStatus());
+		this.logger.info("Library Status change: {}", event.getStatus());
 		
 		// if the library is ready then the status is "true" otherwise "false"
 		if(LibraryStatus.READY.equals(event.getStatus())) {
-			this.libraryAvailable = true;
+			this.libraryAvailable.set(true);
 		} else {
-			this.libraryAvailable = false;
+			this.libraryAvailable.set(false);
 		}
+		
+		this.logger.info("Library Available: {}", this.libraryAvailable.get());
 	}
 	
 }

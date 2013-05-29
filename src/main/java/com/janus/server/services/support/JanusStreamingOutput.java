@@ -1,5 +1,6 @@
 package com.janus.server.services.support;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -40,6 +41,21 @@ public class JanusStreamingOutput implements StreamingOutput {
 		
 		// close stream
 		localInput.close();
+	}
+	
+	/**
+	 * Helper method for taking a janus streaming output object and converting
+	 * it to a byte stream
+	 * 
+	 * @param outputStreamer
+	 * @return
+	 * @throws WebApplicationException
+	 * @throws IOException
+	 */
+	public static byte[] convertJanusStreamToByteArray(JanusStreamingOutput outputStreamer) throws WebApplicationException, IOException {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		outputStreamer.write(outputStream);
+		return outputStream.toByteArray();
 	}
 
 }

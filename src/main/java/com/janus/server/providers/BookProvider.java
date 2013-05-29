@@ -13,6 +13,12 @@ import org.slf4j.Logger;
 
 import com.janus.model.Book;
 
+/**
+ * Provides book-specific entity functions
+ * 
+ * @author Chris Ruffalo <cruffalo@redhat.com>
+ *
+ */
 @RequestScoped
 public class BookProvider extends AbstractBaseEntityProvider<Book> {
 

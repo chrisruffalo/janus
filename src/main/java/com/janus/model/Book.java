@@ -95,10 +95,11 @@ public class Book extends BaseEntity implements ISorted {
 	public static final String MODEL_HASCOVER = "hasCover";
 	public static final String MODEL_LASTMODIFIED = "lastModified";
 	
+	@Column(columnDefinition="LONGTEXT")
 	@Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
 	private String title;
 
-	@Column(name="sort")
+	@Column(name="sort", columnDefinition="LONGTEXT")
 	private String sort;
 	
 	// calculated sort title from name
@@ -107,24 +108,25 @@ public class Book extends BaseEntity implements ISorted {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date timestamp;
 
-	// column: pubdate
+	// sqlite column: pubdate
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date publicationDate;
 
-	// column: series_index
+	// sqlite column: series_index
 	private Double seriesIndex;
 
-	// column: author_sort
+	// sqlite column: author_sort
 	@Field(index = Index.YES, analyze = Analyze.NO, store = Store.NO)
 	private String authorSort;
 
-	// column: path
+	// sqlite column: path
+	@Column(columnDefinition="LONGTEXT")
 	private String path;
 
-	// column: has_cover
+	// sqlite column: has_cover
 	private Boolean hasCover;
 
-	// column: last_modified
+	// sqlite column: last_modified
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastModified;
 	

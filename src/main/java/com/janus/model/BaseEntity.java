@@ -2,6 +2,7 @@ package com.janus.model;
 
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
@@ -17,7 +18,10 @@ import com.janus.model.interfaces.ICanLoadFromSqlCursorRow;
  * 
  */
 @MappedSuperclass
-@XmlType(propOrder=BaseEntity.ID)
+@XmlType(propOrder={
+		BaseEntity.ID,
+		"downloads"
+})
 public abstract class BaseEntity implements ICanLoadFromSqlCursorRow {
 	
 	// shared properties
@@ -25,13 +29,16 @@ public abstract class BaseEntity implements ICanLoadFromSqlCursorRow {
 
 	@Id
 	private Long id;
+	
+	@Transient
+	private int downloads;
 
 	/**
 	 * Construct default entity
 	 * 
 	 */
 	public BaseEntity() {
-
+		this.downloads = 0;
 	}
 	
 	@XmlAttribute(name="type")
@@ -46,6 +53,15 @@ public abstract class BaseEntity implements ICanLoadFromSqlCursorRow {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	
+	public int getDownloads() {
+		return downloads;
+	}
+
+	public void setDownloads(int downloads) {
+		this.downloads = downloads;
 	}
 
 	/**

@@ -28,6 +28,22 @@ public abstract class AbstractBaseEntityProvider<E extends BaseEntity> extends A
 	@Inject
 	private EntityManager manager;
 	
+	@Inject
+	private DownloadCountProvider counts;
+	
+	@Override
+	public E get(Object identifier) {
+		E found = super.get(identifier);
+		
+		// update downloads if not null
+		if(found != null) {
+			int count = this.counts.getCount(found.getClass(), found.getId());
+			found.setDownloads(count);
+		}
+		
+		return found;
+	}
+
 	/**
 	 * Get a list of items of type I that start with given characters
 	 * 

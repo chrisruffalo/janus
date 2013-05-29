@@ -41,7 +41,7 @@ import com.janus.server.services.support.JanusStreamingOutput;
 
 @Path("/book")
 @Stateless
-public class BookService extends AbstractBaseEntityService<Book, BookProvider>{
+public class BookService extends AbstractBaseEntityService<Book, BookProvider> {
 
 	@Inject
 	private XMLConfiguration configuration;

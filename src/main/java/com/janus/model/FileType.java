@@ -14,6 +14,7 @@ public enum FileType {
 	EPUB("application/epub+zip", "epub"),
 	CBR("application/x-cdisplay", "cbr"),
 	CBZ("application/x-cdisplay", "cbz"),
+	HTML("application/zip","zip"),
 	PDF("application/pdf", "pdf"),
 	LIT("application/x-ms-reader, application/x-obak", "lit"),
 	;

@@ -72,7 +72,9 @@ public class CalibreImportScheduler {
 			this.logger.warn("The scan interval was set less than 1 while scanning was enabled, setting to 5 minutes");
 		}
 		
-		// note: regardless of scan the schedule keeps coming back to see if the file has changed
+		// note: regardless of scan the schedule keeps coming back to see if the
+		// CONFIGURATION (janus.xml) has changed.  That way, if the settings have
+		// changed, it will still scan. 
 			
 		// create date 5 minutes from now
 		Calendar calendar = Calendar.getInstance();
@@ -133,9 +135,11 @@ public class CalibreImportScheduler {
 				}			
 			}
 			
-			// fire event that marks library available again
-			this.eventSink.fire(new LibraryUpdateEvent(LibraryStatus.READY));
 		}
+		
+		// always make library available
+		this.eventSink.fire(new LibraryUpdateEvent(LibraryStatus.READY));
+
 		
 		// schedule next run
 		this.scheduleNext();

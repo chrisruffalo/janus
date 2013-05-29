@@ -44,11 +44,14 @@ public class LibraryStatusInterceptor {
 		boolean status = this.status.isLibraryAvailable();
 		
 		// if the library status is blocked, intercept and throw/return error
-		this.logger.debug("Library Available? {}", status);
+		this.logger.info("Library Available: {}", status);
 		
 		// if the status is false, we need to investigate further
 		// and throw an error if the method is web-facing
 		if(!status) {
+			// if the library status is blocked, intercept and throw/return error
+			this.logger.info("Library is not available, throwing exception...");
+			
 			// get the method
 			Method method = context.getMethod();
 			
@@ -74,9 +77,11 @@ public class LibraryStatusInterceptor {
 				if(method.getReturnType().isAssignableFrom(Response.class)) {
 					return serviceUnavailableResponse;
 				} else {
+					// create cause
+					Exception cause = new Exception(serviceUnavailableResponse.getEntity().toString());					
 					// otherwise create an exception (which logs fairly messily) and throw that instead
 					// of continuing
-					WebApplicationException serviceUnavailableException = new WebApplicationException(serviceUnavailableResponse);
+					WebApplicationException serviceUnavailableException = new WebApplicationException(cause, serviceUnavailableResponse);
 					throw serviceUnavailableException;
 				}
 			}

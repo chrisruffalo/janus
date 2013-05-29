@@ -5,6 +5,7 @@ import javax.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,7 +16,7 @@ import com.janus.model.response.MultiEntityResponse;
 import com.janus.support.DeploymentFactory;
 
 @RunWith(Arquillian.class)
-public class SearchServiceTest {
+public class SearchServiceTest extends BaseServiceTest {
 	
 	@Inject
 	private BookService bookService;
@@ -29,6 +30,7 @@ public class SearchServiceTest {
 	}
 	
 	@Test
+	@InSequence(10)
 	public void testMultiSearch() throws SqlJetException {
 		//search
 		Response response = this.searchService.search("all", "grimm", 0, 0);

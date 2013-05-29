@@ -1,6 +1,5 @@
 package com.janus.server.services;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -12,6 +11,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,7 +23,7 @@ import com.janus.server.services.support.JanusStreamingOutput;
 import com.janus.support.DeploymentFactory;
 
 @RunWith(Arquillian.class)
-public class BookServiceTest {
+public class BookServiceTest extends BaseServiceTest {
 
 	@Inject
 	private BookService bookService;
@@ -34,6 +34,7 @@ public class BookServiceTest {
 	}
 
 	@Test(expected=Exception.class)
+	@InSequence(10)
 	public void testPersist() throws SqlJetException {
 		// load book
 		try {
@@ -52,6 +53,7 @@ public class BookServiceTest {
 	}
 	
 	@Test
+	@InSequence(20)
 	public void testStartsWith() throws SqlJetException {
 		// get books
 		List<Book> books = this.bookService.startsWith("l", 0, 0);
@@ -61,6 +63,7 @@ public class BookServiceTest {
 	}
 
 	@Test
+	@InSequence(30)
 	public void testStartsWithSymbol() throws SqlJetException {
 		// get books
 		List<Book> books = this.bookService.startsWith("!", 0, 0);
@@ -70,6 +73,7 @@ public class BookServiceTest {
 	}
 	
 	@Test
+	@InSequence(40)
 	public void testBasicBookPaging() {
 		// page size 0 gives whole set
 		List<Book> books = this.bookService.list("default", 0, 0);
@@ -97,6 +101,7 @@ public class BookServiceTest {
 	}
 	
 	@Test
+	@InSequence(50)
 	public void testGetMissingFile() {
 		// look for file that won't be there
 		Response response = this.bookService.file("1", "EPUB", "no");
@@ -105,6 +110,7 @@ public class BookServiceTest {
 	}
 	
 	@Test
+	@InSequence(60)
 	public void testGetFile() throws WebApplicationException, IOException {
 		// look for file that will be there
 		Response response = this.bookService.file("2", "EPUB", "no");
@@ -121,13 +127,14 @@ public class BookServiceTest {
 		}
 		
 		// get object
-		byte[] bookContents = this.streamToByteArray((JanusStreamingOutput)entity);
+		byte[] bookContents = JanusStreamingOutput.convertJanusStreamToByteArray((JanusStreamingOutput)entity);
 		
 		// check byte count
 		Assert.assertTrue(bookContents.length > 1);
 	}
 	
 	@Test
+	@InSequence(70)
 	public void testBase64Encoding() throws WebApplicationException, IOException {		
 		// look for file that will be there
 		Response response = this.bookService.file("2", "EPUB", "no");
@@ -148,8 +155,8 @@ public class BookServiceTest {
 		}
 		
 		// compare time
-		byte[] bookContents = this.streamToByteArray((JanusStreamingOutput)entity);
-		byte[] bookContents64 = this.streamToByteArray((JanusStreamingOutput)entity64);
+		byte[] bookContents = JanusStreamingOutput.convertJanusStreamToByteArray((JanusStreamingOutput)entity);
+		byte[] bookContents64 = JanusStreamingOutput.convertJanusStreamToByteArray((JanusStreamingOutput)entity64);
 		byte[] bookContentsConverted = Base64.decodeBase64(bookContents64);
 		
 		// expect lengths > 0
@@ -163,18 +170,4 @@ public class BookServiceTest {
 		Assert.assertEquals(Hex.encodeHexString(bookContents), Hex.encodeHexString(bookContentsConverted));
 	}
 
-	/**
-	 * Helper method for taking a janus streaming output object and converting
-	 * it to a byte stream
-	 * 
-	 * @param outputStreamer
-	 * @return
-	 * @throws WebApplicationException
-	 * @throws IOException
-	 */
-	private byte[] streamToByteArray(JanusStreamingOutput outputStreamer) throws WebApplicationException, IOException {
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		outputStreamer.write(outputStream);
-		return outputStream.toByteArray();
-	}
 }
