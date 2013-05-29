@@ -279,14 +279,14 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider> {
 			return;
 		}
 		
-		this.logger.info("Incrementing download count for book: {} ({})", forBook.getId(), forBook.getTitle());
+		this.logger.trace("Incrementing download count for book: {} ({})", forBook.getId(), forBook.getTitle());
 		
 		// increment the book's count
 		this.countProvider.incrementCount(forBook.getClass(), forBook.getId());
 		
 		// increment the count of all children
 		for(BaseEntity child : forBook.children()) {
-			this.logger.info("Incrementing download count for child: {} ({})", child.getId(), child.getType());
+			this.logger.trace("Incrementing download count for child: {} ({})", child.getId(), child.getType());
 			
 			this.countProvider.incrementCount(child.getClass(), child.getId());
 		}		

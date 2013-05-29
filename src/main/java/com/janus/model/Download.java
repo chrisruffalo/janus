@@ -18,8 +18,18 @@ import javax.persistence.Id;
 @Cacheable(false)
 public class Download {
 
+	// model
+	public static final String ITEM_ID = "itemId";
+	public static final String DOWNLOAD_COUNT = "downloadCount";
+	public static final String ID = "id";
+	public static final String TYPE = "type";
+	
 	@Id
 	private String itemId;
+	
+	private long id;
+	
+	private String type;
 	
 	private int downloadCount;
 	
@@ -34,16 +44,43 @@ public class Download {
 		if(itemType == null) {
 			throw new IllegalArgumentException("Item type cannot be null");
 		}
+
+		this.id = itemId;
+		this.type = itemType.getSimpleName().toUpperCase();
 		
-		this.itemId = itemId + ":" + itemType.getSimpleName().toLowerCase();
+		this.itemId = this.id + ":" + this.type;
 	}
 	
+	public String getItemId() {
+		return itemId;
+	}
+
+	protected void setItemId(String itemId) {
+		this.itemId = itemId;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	protected void setId(long id) {
+		this.id = id;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	protected void setType(String type) {
+		this.type = type;
+	}
+
 	public int getDownloadCount() {
 		return downloadCount;
 	}
 
 	public void setDownloadCount(int downloadCount) {
 		this.downloadCount = downloadCount;
-	}
+	}	
 	
 }

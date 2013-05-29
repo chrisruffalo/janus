@@ -152,6 +152,10 @@ public class BookServiceTest extends BaseServiceTest {
 			int childCount = this.countProvider.getCount(child.getClass(), child.getId());
 			Assert.assertEquals("Expected 1 download but got " + childCount, 1, childCount);
 		}
+		
+		// test download based sort
+		List<Book> downloadedBookList = this.bookService.list("downloads", 0, 10);
+		Assert.assertEquals("Expected one downloaded book in the sort", 1, downloadedBookList.size());
 	}
 	
 	@Test

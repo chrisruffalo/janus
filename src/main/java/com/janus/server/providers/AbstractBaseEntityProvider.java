@@ -1,5 +1,6 @@
 package com.janus.server.providers;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,6 +17,7 @@ import javax.persistence.criteria.Root;
 import org.slf4j.Logger;
 
 import com.janus.model.BaseEntity;
+import com.janus.model.Download;
 import com.janus.model.interfaces.ISorted;
 import com.janus.server.statistics.LogMetrics;
 
@@ -201,12 +203,50 @@ public abstract class AbstractBaseEntityProvider<E extends BaseEntity> extends A
 		
 		// name / sort based sort
 		if("name".equalsIgnoreCase(sortString)) {
+			this.logger.debug("Using 'NAME' sort strategy.");
+
+			// sort by name
 			Order order = builder.asc(root.get(ISorted.SORT));
 			query.orderBy(order);
 			
-			this.logger.debug("Using 'NAME' sort strategy.");
+			// return true because the item is already sorted
+			return true;
+		} else if("downloads".equalsIgnoreCase(sortString) || "download".equalsIgnoreCase(sortString)) {
+			this.logger.debug("Using 'DOWNLOADS' sort strategy.");
 			
-			// sorted this way
+			// get class
+			Class<?> type = this.getEntityType();
+			String typeName = type.getSimpleName().toUpperCase();
+			
+			// also selecting from downloads
+			Root<Download> downloadRoot = query.from(Download.class);
+
+			// predicate list
+			List<Predicate> predicates = new ArrayList<Predicate>(4);
+			
+			// preserve existing predicates
+			if(query.getRestriction() != null) {
+				predicates.add(query.getRestriction());
+			}
+			
+			// add predicates to manually cross-join the download table
+			predicates.add(builder.gt(downloadRoot.get(Download.DOWNLOAD_COUNT).as(Integer.class), 0));
+			predicates.add(builder.equal(downloadRoot.get(Download.TYPE), typeName));
+			predicates.add(builder.equal(downloadRoot.get(Download.ID), root.get(BaseEntity.ID)));
+			
+			// where existing restrictions are in place
+			query.where(builder.and(predicates.toArray(new Predicate[predicates.size()])));				
+			
+			// sort by download count (descending)
+			Order countOrder = builder.desc(downloadRoot.get(Download.DOWNLOAD_COUNT));
+			
+			// sort by name order as a tie breaker 
+			Order nameOrder = builder.asc(root.get(ISorted.SORT));
+			
+			// add sort options
+			query.orderBy(countOrder, nameOrder);
+			
+			// return true because the item is already sorted
 			return true;
 		}
 		
