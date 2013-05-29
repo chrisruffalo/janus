@@ -412,6 +412,34 @@ public class Book extends BaseEntity implements ISorted {
 		}
 		
 	}
+	
+	/**
+	 * Get all children of this book
+	 * 
+	 * @return
+	 */
+	@Transient
+	@XmlTransient
+	@JsonIgnore
+	public Set<BaseEntity> children() {
+		
+		Set<BaseEntity> children = new HashSet<BaseEntity>(0);
+		
+		// add authors and tags
+		if(this.authors != null && !this.authors.isEmpty()) {
+			children.addAll(this.authors);
+		}
+		
+		if(this.tags != null && !this.tags.isEmpty()) {
+			children.addAll(this.tags);
+		}
+		
+		if(this.series != null) {
+			children.add(series);
+		}
+		
+		return children;
+	}
 
 	@Override
 	public String toString() {

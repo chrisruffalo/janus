@@ -26,6 +26,11 @@ public class DownloadCountProvider {
 	 */
 	public void incrementCount(Class<?> type, long id) {
 		
+		if(type == null || id < 0) {
+			this.logger.error("Could not increment download count type:{}, id:{}", type, id);
+			return;
+		}
+		
 		// create string key for item
 		String itemKey = id + ":" + type.getSimpleName().toLowerCase();
 		
@@ -34,14 +39,21 @@ public class DownloadCountProvider {
 			// look for existing count object
 			count = this.manager.find(Download.class, itemKey);
 		} catch (NoResultException nre) {
+			this.logger.info("No count result found, creating an entry for {}", itemKey);
+		}
+		
+		if(count == null) {
 			// if count object does not exist create it
 			// and then persist it
 			count = new Download(type, id);
+			count.setDownloadCount(1);
 			this.manager.persist(count);
+		} else {
+			// increment count
+			count.setDownloadCount(count.getDownloadCount() + 1);		
 		}
 		
-		// increment count
-		count.increment();		
+		this.logger.info("Incremented count for: {} (count is {})", itemKey, count.getDownloadCount());		
 	}
 
 	/**
@@ -55,15 +67,20 @@ public class DownloadCountProvider {
 		// create string key for item
 		String itemKey = id + ":" + type.getSimpleName().toLowerCase();
 		
-		final Download count;
+		int count = 0;
 		try {
 			// look for existing count object
-			count = this.manager.find(Download.class, itemKey);
+			Download d = this.manager.find(Download.class, itemKey);
+			if(d != null) {
+				count = d.getDownloadCount();
+			}
 		} catch (NoResultException nre) {
-			return 0;
+			this.logger.info("No count result found for {}", itemKey);
 		}
-
-		return count.getDownloadCount();
+		
+		this.logger.info("Download count for {} is {}", itemKey, count);
+		
+		return count;
 	}
 	
 }

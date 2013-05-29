@@ -38,16 +38,11 @@ public class Download {
 		this.itemId = itemId + ":" + itemType.getSimpleName().toLowerCase();
 	}
 	
-
-	public void increment() {
-		this.downloadCount++;
-	}
-	
 	public int getDownloadCount() {
 		return downloadCount;
 	}
 
-	protected void setDownloadCount(int downloadCount) {
+	public void setDownloadCount(int downloadCount) {
 		this.downloadCount = downloadCount;
 	}
 	

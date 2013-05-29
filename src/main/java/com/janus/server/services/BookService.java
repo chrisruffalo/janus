@@ -32,10 +32,12 @@ import org.codemonkey.simplejavamail.Mailer;
 import org.codemonkey.simplejavamail.TransportStrategy;
 import org.slf4j.Logger;
 
+import com.janus.model.BaseEntity;
 import com.janus.model.Book;
 import com.janus.model.FileInfo;
 import com.janus.server.configuration.ConfigurationProperties;
 import com.janus.server.providers.BookProvider;
+import com.janus.server.providers.DownloadCountProvider;
 import com.janus.server.providers.FileInfoProvider;
 import com.janus.server.services.support.JanusStreamingOutput;
 
@@ -51,6 +53,9 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider> {
 
 	@Inject
 	private FileInfoProvider fileInfoProvider;
+	
+	@Inject
+	private DownloadCountProvider countProvider;
 	
 	@Inject
 	private Logger logger;
@@ -87,7 +92,7 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider> {
 	
 	@GET
 	@Path("/{id}/file/{type}")
-	public Response file(@PathParam("id") String id, @PathParam("type") String type, @QueryParam("base64") @DefaultValue("no") String encodeInBase64) {
+	public Response file(@PathParam("id") long id, @PathParam("type") String type, @QueryParam("base64") @DefaultValue("no") String encodeInBase64) {
 
 		// aggregate
 		String identifier = id + "." + type;
@@ -133,12 +138,18 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider> {
 		// put streamer in response
 		builder.entity(new JanusStreamingOutput(fromFile, "yes".equalsIgnoreCase(encodeInBase64)));
 		
+		// get book
+		Book book = this.get(id);
+		
+		// update downloads on good return
+		this.updateDownloadCount(book);
+		
 		return builder.build();
 	}
 	
 	@GET
 	@Path("/{id}/email/{type}")
-	public Response email(@PathParam("id") String id, @PathParam("type") String type, @QueryParam("address") String address) {
+	public Response email(@PathParam("id") long id, @PathParam("type") String type, @QueryParam("address") String address) {
 		// bad request begets bad response
 		if(address == null || address.isEmpty() || address.startsWith("@")) {
 			return Response.status(Status.BAD_REQUEST).entity("an invalid email address was provided").build();
@@ -235,6 +246,12 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider> {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("email for book " + id + " of type " + type + " could not be sent to " + address).build();
 		}
 		
+		// get book
+		Book book = this.get(id);
+		
+		// update downloads on good return
+		this.updateDownloadCount(book);
+		
 		// return 'ok!'
 		return Response.ok().build();
 	}
@@ -247,6 +264,32 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider> {
 	@Override
 	protected BufferedImage getCoverImage(Long id, int width, int height) {
 		return this.fileInfoProvider.getCoverDataForBook(id, width, height);
+	}
+	
+	/**
+	 * Used to increment the download count for all children
+	 * 
+	 * @param forBook
+	 */
+	private void updateDownloadCount(Book forBook) {
+		
+		// if book is bad return without updating counts
+		if(forBook == null) {
+			this.logger.error("Attempted to pass a null book for updating download count, skipping");
+			return;
+		}
+		
+		this.logger.info("Incrementing download count for book: {} ({})", forBook.getId(), forBook.getTitle());
+		
+		// increment the book's count
+		this.countProvider.incrementCount(forBook.getClass(), forBook.getId());
+		
+		// increment the count of all children
+		for(BaseEntity child : forBook.children()) {
+			this.logger.info("Incrementing download count for child: {} ({})", child.getId(), child.getType());
+			
+			this.countProvider.incrementCount(child.getClass(), child.getId());
+		}		
 	}
 
 }

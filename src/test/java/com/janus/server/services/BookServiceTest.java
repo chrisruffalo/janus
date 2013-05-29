@@ -18,7 +18,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tmatesoft.sqljet.core.SqlJetException;
 
+import com.janus.model.BaseEntity;
 import com.janus.model.Book;
+import com.janus.server.providers.DownloadCountProvider;
 import com.janus.server.services.support.JanusStreamingOutput;
 import com.janus.support.DeploymentFactory;
 
@@ -27,6 +29,9 @@ public class BookServiceTest extends BaseServiceTest {
 
 	@Inject
 	private BookService bookService;
+	
+	@Inject
+	private DownloadCountProvider countProvider;
 	
 	@Deployment
 	public static WebArchive getDeployment() {
@@ -104,7 +109,7 @@ public class BookServiceTest extends BaseServiceTest {
 	@InSequence(50)
 	public void testGetMissingFile() {
 		// look for file that won't be there
-		Response response = this.bookService.file("1", "EPUB", "no");
+		Response response = this.bookService.file(1, "EPUB", "no");
 		// assert that the status is 404
 		Assert.assertEquals(404, response.getStatus());		
 	}
@@ -113,7 +118,7 @@ public class BookServiceTest extends BaseServiceTest {
 	@InSequence(60)
 	public void testGetFile() throws WebApplicationException, IOException {
 		// look for file that will be there
-		Response response = this.bookService.file("2", "EPUB", "no");
+		Response response = this.bookService.file(2, "EPUB", "no");
 		
 		// look at response
 		Object entity = response.getEntity();
@@ -131,16 +136,32 @@ public class BookServiceTest extends BaseServiceTest {
 		
 		// check byte count
 		Assert.assertTrue(bookContents.length > 1);
+		
+		// check downloads!
+		int count = this.countProvider.getCount(Book.class, 2);
+		
+		// one download
+		Assert.assertEquals("Expected 1 download but got " + count, 1, count);
+		
+		// one download on book through "get" method
+		Book book = this.bookService.get(2l);
+		Assert.assertEquals("Expected 1 download but got " + book.getDownloads(), 1, book.getDownloads());
+		
+		// one download on children
+		for(BaseEntity child : book.children()) {
+			int childCount = this.countProvider.getCount(child.getClass(), child.getId());
+			Assert.assertEquals("Expected 1 download but got " + childCount, 1, childCount);
+		}
 	}
 	
 	@Test
 	@InSequence(70)
 	public void testBase64Encoding() throws WebApplicationException, IOException {		
 		// look for file that will be there
-		Response response = this.bookService.file("2", "EPUB", "no");
+		Response response = this.bookService.file(2, "EPUB", "no");
 		
 		// look for file that will be there
-		Response response64 = this.bookService.file("2", "EPUB", "yes");
+		Response response64 = this.bookService.file(2, "EPUB", "yes");
 		
 		// get entities
 		Object entity = response.getEntity();
