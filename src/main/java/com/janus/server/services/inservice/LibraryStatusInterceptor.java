@@ -44,13 +44,13 @@ public class LibraryStatusInterceptor {
 		boolean status = this.status.isLibraryAvailable();
 		
 		// if the library status is blocked, intercept and throw/return error
-		this.logger.info("Library Available: {}", status);
+		this.logger.trace("Library Available: {}", status);
 		
 		// if the status is false, we need to investigate further
 		// and throw an error if the method is web-facing
 		if(!status) {
 			// if the library status is blocked, intercept and throw/return error
-			this.logger.info("Library is not available, throwing exception...");
+			this.logger.debug("Library is not available, throwing exception...");
 			
 			// get the method
 			Method method = context.getMethod();

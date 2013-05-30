@@ -9,6 +9,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.codec.binary.Base64InputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.io.ByteStreams;
 
@@ -18,11 +20,19 @@ public class JanusStreamingOutput implements StreamingOutput {
 	
 	private boolean base64;
 	
+	private Logger logger;
+	
+	private JanusStreamingOutput() {
+		this.logger = LoggerFactory.getLogger(this.getClass());
+	}
+	
 	public JanusStreamingOutput(InputStream input) {
 		this(input, false);		
 	}
 	
 	public JanusStreamingOutput(InputStream input, boolean base64) {
+		this();
+		
 		this.input = input;
 		this.base64 = base64;
 	}
@@ -33,6 +43,7 @@ public class JanusStreamingOutput implements StreamingOutput {
 		
 		InputStream localInput = this.input;
 		if(this.base64) {
+			this.logger.info("Encoding to base64");
 			localInput = new Base64InputStream(this.input, true);
 		}
 		

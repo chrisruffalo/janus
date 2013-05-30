@@ -64,8 +64,8 @@
 
 		<!-- tmate soft direct repo for versions not published to central -->
 		<repository>
-		  <id>tmate</id>
-		  <url>http://maven.tmatesoft.com/content/repositories/releases</url>
+			<id>tmate</id>
+			<url>http://maven.tmatesoft.com/content/repositories/releases</url>
 		</repository>
 	</repositories>
 
@@ -216,20 +216,20 @@
 			<artifactId>stringtemplate</artifactId>
 			<version>3.2.1</version>
 		</dependency>
-		
+
 		<!-- qr code -->
-	    <dependency>
-	        <groupId>net.glxn</groupId>
-	        <artifactId>qrgen</artifactId>
-	        <version>1.2</version>
-	    </dependency>
-	    
-	    <!-- make email easy -->
-	    <dependency>
+		<dependency>
+			<groupId>net.glxn</groupId>
+			<artifactId>qrgen</artifactId>
+			<version>1.2</version>
+		</dependency>
+
+		<!-- make email easy -->
+		<dependency>
 			<groupId>org.codemonkey.simplejavamail</groupId>
 			<artifactId>simple-java-mail</artifactId>
 			<version>2.0</version>
-		</dependency>	    
+		</dependency>
 
 		<!-- testing -->
 		<dependency>

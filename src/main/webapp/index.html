@@ -1,8 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
   <head>
     <title>Janus</title>
+    
+    <!-- meta page configuration -->
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="description" content="">
 
     <!-- Bootstrap -->
     <link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
@@ -10,6 +15,10 @@
 
     <!-- janus -->
     <link href="static/css/janus.css" rel="stylesheet" media="screen">
+
+	<!-- future-press -->
+	<link rel="stylesheet" href="static/fpjs/css/popup.css">
+	<link rel="stylesheet" href="static/fpjs/css/main.css">
 
     <!-- book display template -->
     <script id="book-template" type="text/x-handlebars-template">
@@ -25,8 +34,8 @@
 		  {{#if series}}
             <h6>Book {{seriesIndex}} in <em><a href="#/series/get/{{series.id}}">{{series.name}}</a></em></h6>
           {{/if}}
-
-          <div class="media">
+ 
+	      <div class="media">
             <a class="pull-left" href="#">
               <img src="static/img/thumbnail.jpg" data-src="s/book/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
             </a>
@@ -60,6 +69,7 @@
 			  <p><i class="icon-cogs"></i>&nbsp;
 				<button class="btn btn-mini" onclick="toggleQR('{{type}}', '{{id}}', '{{inJavascriptEscape title}}')"><i class="icon-qrcode"></i></button>
 				<button class="btn btn-mini" onclick="toggleBookEmail('{{id}}', '{{inJavascriptEscape title}}')"><i class="icon-envelope"></i></button>
+				<a class="btn btn-mini readLink" id="read_book_link_{{id}}" href="s/book/{{id}}/exploded"><i class="icon-book"></i></a>
 			  </p>
             </div> <!-- /end of media body -->
           </div> <!-- /end of media -->
@@ -75,6 +85,10 @@
 		  <div class="pull-right permalink"><a href="#/{{type}}/get/{{id}}"><i class="icon-link"></i></a></div>
 
           <h4><em>{{name}}</em></h4>
+  	      {{#if downloads}}
+		    <p><em>Downloaded {{downloads}} times</em></p> 
+	      {{/if}}
+
           <div class="media">
             <a class="pull-left" href="#">
               <img src="static/img/thumbnail.jpg" data-src="s/{{type}}/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
@@ -135,7 +149,7 @@
   </head>
   <body>
       <!-- navigation bar -->
-      <div class="navbar navbar-fixed-top">
+      <div class="navbar navbar-fixed-top main">
         <div class="navbar-inner">
           <div class="container">
        
@@ -150,7 +164,7 @@
         </div>
       </div>
 	  <!-- error div -->
-      <div id="error-container" class="container">
+      <div id="error-container" class="container main">
         <div class="row">
           <div class="span6">
             <div class="row-fluid">
@@ -163,7 +177,7 @@
       </div>
 
       <!-- sample navigation options -->
-      <div id="mainOptions" class="container">
+      <div id="mainOptions" class="container main">
         <div class="row">
           <div class="span12 entry">
             <div class="row-fluid">
@@ -283,6 +297,34 @@
 			<button class="btn btn-danger" data-dismiss="modal" aria-hidden="true">close</button>
 		</div>
  	  </div>
+ 	  
+ 	  <!-- from here down is the stuff for the future-press reading --> 	  
+ 	  <div id="sidebar" class="reading" style="display: none">
+          <div id="controls">
+            <!-- <input id="search" placeholder="search"> -->
+            <a id="network"><img id="store" src="static/fpjs/img/save.png"></a>
+            <a id="setting"><img id="settings" src="static/fpjs/img/settings.png"></a>
+            <a id="bookmark"><img id="bookmarks" src="static/fpjs/img/star.png"></a>
+          </div>
+          <div id="toc"></div>
+          <div id="settingsPanel"></div>            
+      </div>
+      <div id="main" class="reading" style="display: none">
+        <div id="opener">
+          <a id="open"><i class="icon-list"></i></a>
+          <a id="close"><i class="icon-close"></i></a>
+        </div>
+        <div id="titlebar">
+          <span id="book-title"></span>
+          <span id="title-seperator">&nbsp;&nbsp;–&nbsp;&nbsp;</span>
+          <span id="chapter-title"> </span>
+        </div>
+        <div id="divider"></div>
+        <div id="prev" class="arrow">‹</div>
+        <div id="area"></div>
+        <div id="next" class="arrow">›</div>
+        <div id="loader"><img src="img/loader.gif"></div>
+      </div>
 
   	  <!-- supporting scripts -->
       <script src="static/js/jquery-2.0.0.min.js"></script>
@@ -300,6 +342,15 @@
       <script src="static/janus/janus-render.js"></script>
       <script src="static/janus/janus-sammy.js"></script>
       <script src="static/janus/janus-email.js"></script>
+      <script src="static/janus/janus-read.js"></script>
+      
+      <!-- future-press specific logic -->
+      <script src="static/fpjs/dist/libs/modernizr-2.6.2.min.js"></script>
+      <script src="static/fpjs/dist/render.min.js"></script>
+      <script async src="static/fpjs/dist/hooks/hooks.min.js"></script>
+      <script src="static/fpjs/dist/reader.min.js"></script>
+      <script src="static/fpjs/dist/libs/fileStorage.min.js"></script>
+      <script src="static/fpjs/dist/libs/zip.js"></script>      
 
       <!-- handlebars template stuff -->
       <script>

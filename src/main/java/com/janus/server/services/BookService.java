@@ -11,6 +11,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -27,6 +30,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.codemonkey.simplejavamail.Email;
 import org.codemonkey.simplejavamail.Mailer;
 import org.codemonkey.simplejavamail.TransportStrategy;
@@ -35,6 +39,7 @@ import org.slf4j.Logger;
 import com.janus.model.BaseEntity;
 import com.janus.model.Book;
 import com.janus.model.FileInfo;
+import com.janus.model.FileType;
 import com.janus.server.configuration.ConfigurationProperties;
 import com.janus.server.providers.BookProvider;
 import com.janus.server.providers.DownloadCountProvider;
@@ -90,6 +95,137 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider> {
 		return response; 
 	}
 	
+	/**
+	 * Reaches into an exploded EPUB or ZIP for the path requested and then returns the file
+	 * requested by the path parameter.  This is pretty fragile and will pretty much throw
+	 * a 404 or 500 at the slightest provocation.
+	 * 
+	 * @param id
+	 * @param path
+	 * @return
+	 */
+	@GET
+	@Path("/{id}/exploded/{path : .*}")
+	public Response exploded(@PathParam("id") long id, @PathParam("path") String path) {
+		
+		this.logger.debug("Looking for exploded path '{}' for book '{}'", path, id);
+		
+		// get book object and return 404 on non-exist
+		Book book = this.provider.get(id);
+		if(book == null) {
+			// if the file is not found, 404 out
+			return Response.status(Status.NOT_FOUND).entity("no book exists for id=" + id).build();
+		}
+		
+		// make sure that epub exists
+		if(!book.getFileInfo().containsKey(FileType.EPUB)) {
+			// if the file is not found, 404 out
+			return Response.status(Status.NOT_FOUND).entity("no book exists for id=" + id).build();
+		}
+		
+		// grab book file and explode into book root
+		FileInfo info = book.getFileInfo().get(FileType.EPUB);
+	
+		File targetEbookFile = new File(info.getFullPath());
+		
+		try {
+			ZipFile zipFile = new ZipFile(targetEbookFile);
+			
+			// attempt to pick out individual file
+			ZipEntry individualFile = zipFile.getEntry(path);
+			
+			// 404 if file not found
+			if(individualFile == null) {
+				return Response.status(Status.NOT_FOUND).entity("file \"" + path + "\" not found for book id=" + id).build();
+			}
+			
+			// create "ok" (200) response builder
+			ResponseBuilder builder = Response.ok();
+			
+			// default to binary/octet
+			String typeString = "application/octet-stream";
+
+			// magically interpret mime type?
+			String extension = FilenameUtils.getExtension(individualFile.getName());
+			
+			// adjust for library
+			if(extension.startsWith(".") && extension.length() > 1) {
+				extension = extension.substring(1);
+			}
+			
+			// guess mime type from extension, this is cheap, but it works
+			if(extension != null && !extension.isEmpty()) {
+				if("html".equalsIgnoreCase(extension) || "htm".equalsIgnoreCase(extension)) {
+					typeString = "text/html";
+				} else if("xml".equalsIgnoreCase(extension)) {
+					typeString = "application/xml";
+				} else if("opf".equalsIgnoreCase(extension)) {
+					typeString = "application/oebps-package+xml";
+				} else if("jpg".equalsIgnoreCase(extension)) {
+					typeString = "image/jpeg";
+				} else if("xhtml".equalsIgnoreCase(extension)) {
+					typeString = "application/xhtml+xml";
+				} else if("ncx".equalsIgnoreCase(extension)) {
+					typeString = "application/x-dtbncx+xml";
+				} else if("png".equalsIgnoreCase(extension)) {
+					typeString = "image/png";
+				} else if("css".equalsIgnoreCase(extension)) {
+					typeString = "text/css";
+				} 
+			}
+			
+			// set media type
+			this.logger.info("Using mime type: {}", typeString);
+			builder.type(typeString);
+			
+			// target exists, serve up file from within zip
+			builder.entity(new JanusStreamingOutput(zipFile.getInputStream(individualFile)));			    
+			
+			return builder.build();
+		} catch (ZipException e) {
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("could not access resource for book id=" + id).build();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("could not access resource for book id=" + id).build();
+		}		
+	}
+	
+	/**
+	 * Alias for non-encoded filestream
+	 * 
+	 * @param id
+	 * @param type
+	 * @return
+	 */
+	@GET
+	@Path("/file/{id}.{type}")
+	public Response file(@PathParam("id") long id, @PathParam("type") String type) {
+		return this.file(id, type, "no");
+	}
+	
+	/**
+	 * Alias for base64 encoded filestream
+	 * 
+	 * @param id
+	 * @param type
+	 * @return
+	 */
+	@GET
+	@Path("/file64/{id}.{type}")
+	public Response file64(@PathParam("id") long id, @PathParam("type") String type) {
+		return this.file(id, type, "yes");
+	}
+
+	
+	/**
+	 * Get the file stream for the given file
+	 * 
+	 * @param id
+	 * @param type
+	 * @param encodeInBase64
+	 * @return
+	 */
 	@GET
 	@Path("/{id}/file/{type}")
 	public Response file(@PathParam("id") long id, @PathParam("type") String type, @QueryParam("base64") @DefaultValue("no") String encodeInBase64) {
@@ -97,6 +233,10 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider> {
 		// aggregate
 		String identifier = id + "." + type;
 		identifier = identifier.toUpperCase();
+		
+		// log base64 encoding
+		boolean base64encode = "yes".equalsIgnoreCase(encodeInBase64);
+		this.logger.debug("Base 64: '{}'/'{}'", encodeInBase64, base64encode);
 		
 		// get file from identifier
 		FileInfo info = this.fileInfoProvider.get(identifier);
@@ -136,7 +276,7 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider> {
 		builder.header("Content-Length", file.length());
 
 		// put streamer in response
-		builder.entity(new JanusStreamingOutput(fromFile, "yes".equalsIgnoreCase(encodeInBase64)));
+		builder.entity(new JanusStreamingOutput(fromFile, base64encode));
 		
 		// get book
 		Book book = this.get(id);

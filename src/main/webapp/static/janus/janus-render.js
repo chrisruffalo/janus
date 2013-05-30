@@ -2,6 +2,9 @@ function renderResponse(itemList, addToCurrent, startEntry, endEntry) {
   if(!itemList) {
     return false;
   }
+  
+  // if items to render we need to ensure any book is closed
+  closeBook();
 
   $('#mainOptions').hide(); // ensure main navigation is hidden
   
@@ -76,6 +79,12 @@ function renderResponse(itemList, addToCurrent, startEntry, endEntry) {
   if(!addToCurrent) {
     jumpToTop();
   }
+  
+  // transform readlinks and then disables the 
+  // class on them so that they aren't enabled 
+  // twice
+  $(".readLink").click(readBook);
+  $(".readLink").removeClass(".readLink");
   
   return response;
 }

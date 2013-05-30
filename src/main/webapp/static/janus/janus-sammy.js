@@ -13,6 +13,9 @@ function initSammy() {
           
           // main
           this.get('#main', function(context) {
+        	// books should be closed
+        	closeBook();
+        	  
             $('#target').empty(); // main screen doesn't need this
             $('#multi-header-target').empty(); // main screen doesn't need this
             $('#mainOptions').show(); // ensure main navigation options are visible

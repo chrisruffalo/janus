@@ -53,8 +53,7 @@ public abstract class BaseEntity implements ICanLoadFromSqlCursorRow {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-	
+	}	
 	
 	public int getDownloads() {
 		return downloads;
