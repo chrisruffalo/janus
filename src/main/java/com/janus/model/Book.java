@@ -419,8 +419,6 @@ public class Book extends BaseEntity implements ISorted {
 	 * @return
 	 */
 	@Transient
-	@XmlTransient
-	@JsonIgnore
 	public Set<BaseEntity> children() {
 		
 		Set<BaseEntity> children = new HashSet<BaseEntity>(0);
