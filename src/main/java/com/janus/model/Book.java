@@ -95,11 +95,11 @@ public class Book extends BaseEntity implements ISorted {
 	public static final String MODEL_HASCOVER = "hasCover";
 	public static final String MODEL_LASTMODIFIED = "lastModified";
 	
-	@Column(columnDefinition="LONGTEXT")
+	@Column(columnDefinition="TEXT")
 	@Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
 	private String title;
 
-	@Column(name="sort", columnDefinition="LONGTEXT")
+	@Column(name="sort", columnDefinition="TEXT")
 	private String sort;
 	
 	// calculated sort title from name
@@ -120,7 +120,7 @@ public class Book extends BaseEntity implements ISorted {
 	private String authorSort;
 
 	// sqlite column: path
-	@Column(columnDefinition="LONGTEXT")
+	@Column(columnDefinition="TEXT")
 	private String path;
 
 	// sqlite column: has_cover

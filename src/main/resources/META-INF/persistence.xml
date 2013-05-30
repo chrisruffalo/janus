@@ -57,7 +57,7 @@
 			<property name="hibernate.format_sql" value="true" />
 			
 			<!-- TODO: This should be changed to validate or some other option before going to production. -->
-			<property name="hibernate.hbm2ddl.auto" value="create" />
+			<property name="hibernate.hbm2ddl.auto" value="update" />
 			
 		</properties>
 	</persistence-unit>
