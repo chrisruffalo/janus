@@ -3,6 +3,7 @@ package com.janus.model;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,6 +33,8 @@ import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Store;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tmatesoft.sqljet.core.SqlJetException;
 import org.tmatesoft.sqljet.core.table.ISqlJetCursor;
 
@@ -49,6 +52,7 @@ import com.janus.util.DateUtil;
 @XmlType(
 	propOrder = {
 		Book.TITLE,
+		Book.ISBN,
 		Book.SORT,
 		Book.MODEL_AUTHORSORT,
 		Book.MODEL_SERIESINDEX,
@@ -70,7 +74,8 @@ public class Book extends BaseEntity implements ISorted {
 	// shared properties
 	public static final String TITLE = "title";
 	public static final String TIMESTAMP = "timestamp";
-		
+	public static final String ISBN = "isbn";
+	
 	// children
 	public static final String AUTHORS = "authors";
 	public static final String SERIES = "series";
@@ -94,6 +99,10 @@ public class Book extends BaseEntity implements ISorted {
 	public static final String MODEL_PATH = "path";
 	public static final String MODEL_HASCOVER = "hasCover";
 	public static final String MODEL_LASTMODIFIED = "lastModified";
+	
+	// logger
+	@Transient
+	private Logger logger;
 	
 	@Column(columnDefinition="TEXT")
 	@Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
@@ -125,6 +134,9 @@ public class Book extends BaseEntity implements ISorted {
 
 	// sqlite column: has_cover
 	private Boolean hasCover;
+	
+	// loaded from another table
+	private String isbn;
 
 	// sqlite column: last_modified
 	@Temporal(TemporalType.TIMESTAMP)
@@ -162,6 +174,9 @@ public class Book extends BaseEntity implements ISorted {
 		this.tags = new HashSet<Tag>();
 		
 		this.fileInfo = new HashMap<FileType, FileInfo>();
+		
+		// init logger
+		this.logger = LoggerFactory.getLogger(this.getClass());
 	}
 	
 	public String getTitle() {
@@ -304,6 +319,19 @@ public class Book extends BaseEntity implements ISorted {
 	}
 	
 	/**
+	 * Unique book identifier
+	 * 	
+	 * @return
+	 */
+	public String getIsbn() {
+		return isbn;
+	}
+
+	public void setIsbn(String isbn) {
+		this.isbn = isbn;
+	}
+
+	/**
 	 * Breaks "Title: Some Title" into "Main Title" and "Sub Title".  Returns
 	 * the "Main Title" bit.
 	 * 
@@ -379,6 +407,49 @@ public class Book extends BaseEntity implements ISorted {
 		this.authorSort = cursor.getString(Book.SQLITE_AUTHOR_SORT);
 		this.path = cursor.getString(Book.SQLITE_PATH);
 		this.hasCover = cursor.getBoolean(Book.SQLITE_HAS_COVER);
+	}
+	
+	/**
+	 * Load identifiers into properties.
+	 * 
+	 * @param identifiers list of identifiers to turn into properties
+	 */
+	public void loadIdentifiers(List<Identifier> identifiers) {
+		// don't worry about a null or empty list
+		if(identifiers == null || identifiers.isEmpty()) {
+			return;
+		}
+		
+		// load identifiers
+		for(Identifier identifier : identifiers) {
+			// skip potentially broken things
+			if(identifier == null || identifier.getType() == null || identifier.getValue() == null) {
+				continue;
+			}
+			
+			// note to self: these are Long not long and == and != have
+			// different semantics with primitives... took about 30 minutes
+			// to remember that...
+			if(!this.getId().equals(identifier.getBookId())) {
+				this.logger.debug("Book id '{}' does not equal identifire id '{}'", this.getId(), identifier.getBookId());
+				continue;
+			}
+			
+			this.logger.debug("Next up: {}:{}", this.getId(), identifier.getType());
+			
+			// if the value has a pipe in it then it's in an extended format of some type
+			// and it needs to be parsed out
+			String value = identifier.getValue();
+			if(value.indexOf("|") >= 0) {
+				value = value.substring(value.lastIndexOf("|"));
+			}
+			
+			// load into appropriate member value
+			if("isbn".equalsIgnoreCase(identifier.getType())) {
+				this.isbn = identifier.getValue();
+				this.logger.trace("Loading! {}:{} identifier", identifier.getType(), identifier.getValue());
+			}
+		}
 	}
 
 	/**

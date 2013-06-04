@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import com.janus.model.BaseEntity;
 import com.janus.model.Book;
 import com.janus.model.FileInfo;
 import com.janus.model.FileType;
+import com.janus.model.Identifier;
 import com.janus.model.Rating;
 import com.janus.model.Series;
 import com.janus.model.Tag;
@@ -212,6 +214,9 @@ public class CalibreImporter {
 		this.correlate(books, tags, bookToTags);
 		this.correlate(books, ratings, bookToRatings);
 		
+		// load identifiers
+		final Map<Long, List<Identifier>> identifierMap = this.loadIdentifiers();		
+		
 		// final total and benchmark of correlations
 		int correlationTotal = bookToAuthors.size() + bookToSeries.size() + bookToTags.size();
 		this.logger.info("Performed {} correlations in {}ms", correlationTotal, System.currentTimeMillis() - before);
@@ -231,7 +236,7 @@ public class CalibreImporter {
 		// create list of books to be inserted
 		final List<Book> result = Collections.unmodifiableList(new ArrayList<Book>(books.values()));
 		
-		// now that we have books, load file and book cover information
+		// now that we have books, load file, identifier, and book cover information
 		before = System.currentTimeMillis();
 		int totalInfo = 0; 
 		for(Book book : result) {
@@ -244,6 +249,15 @@ public class CalibreImporter {
 			
 			// save to book
 			book.getFileInfo().putAll(info);
+			
+			// load identifiers into book
+			List<Identifier> identifiers = identifierMap.get(book.getId());
+			if(identifiers != null) {
+				this.logger.trace("passing identifiers {}:{}", book.getId(), identifiers.size());
+			} else {
+				this.logger.trace("no identifiers for {}", book.getId());
+			}
+			book.loadIdentifiers(identifiers);
 		}
 		this.logger.info("Scanned {} files for metadata in {}ms", totalInfo, System.currentTimeMillis() - before);
 		total += totalInfo;
@@ -374,6 +388,43 @@ public class CalibreImporter {
 		}
 	}
 
+	private Map<Long, List<Identifier>> loadIdentifiers() throws SqlJetException {
+		
+		Map<Long, List<Identifier>> identifierMap = new HashMap<Long, List<Identifier>>(0);
+		
+		ISqlJetTable table = this.database.getTable("identifiers");
+		
+		this.database.beginTransaction(SqlJetTransactionMode.READ_ONLY);
+		
+		ISqlJetCursor cursor = table.open();
+		
+		if(!cursor.eof()) {
+			do {
+				Identifier identifier = new Identifier();
+				identifier.loadFromRow(cursor);
+				
+				List<Identifier> listForBook = identifierMap.get(identifier.getBookId());
+				if(listForBook == null) {
+					listForBook = new LinkedList<Identifier>();
+					identifierMap.put(identifier.getBookId(), listForBook);
+				}
+				
+				// log
+				this.logger.trace("Loaded Identifier {}:{}:{}", new Object[]{
+					identifier.getBookId(), 
+					identifier.getType(), 
+					identifier.getValue()	
+				});
+				
+				// add identifier to list
+				listForBook.add(identifier);				
+			} while(cursor.next());
+		}		
+		
+		this.database.commit();
+		
+		return identifierMap;
+	}
 	
 	/**
 	 * Closes the importer and the underlying database

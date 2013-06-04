@@ -20,12 +20,13 @@ import com.janus.model.interfaces.ICanLoadFromSqlCursorRow;
 @MappedSuperclass
 @XmlType(propOrder={
 		BaseEntity.ID,
-		"downloads"
+		BaseEntity.DOWNLOADS
 })
 public abstract class BaseEntity implements ICanLoadFromSqlCursorRow {
 	
 	// shared properties
 	public static final String ID = "id";
+	public static final String DOWNLOADS = "downloads";
 
 	@Id
 	private Long id;

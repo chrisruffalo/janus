@@ -71,6 +71,13 @@
 				<button class="btn btn-mini" onclick="toggleBookEmail('{{id}}', '{{inJavascriptEscape title}}')"><i class="icon-envelope"></i></button>
 				<a class="btn btn-mini readLink" id="read_book_link_{{id}}" href="s/book/{{id}}/exploded"><i class="icon-book"></i></a>
 			  </p>
+
+			  <!-- ibsn -->
+			  {{#if isbn}}
+                <p><i class="icon-info-sign"></i>&nbsp;
+				  <a href="http://www.goodreads.com/search?q={{isbn}}">more info on goodreads.com</a>
+				</p>
+			  {{/if}}
             </div> <!-- /end of media body -->
           </div> <!-- /end of media -->
         </div> <!-- /span -->
