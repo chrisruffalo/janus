@@ -5,4 +5,4 @@ var EMAIL_TLD_PROPERTY = "janus.emailTld";
 var DEFAULT_PAGE_SIZE_PROPERTY = "janus.defaultPageSize";
 
 // configurable settings
-var DEFAULT_PAGE_SIZE = 10;
+var DEFAULT_PAGE_SIZE = 25;

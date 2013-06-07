@@ -24,6 +24,10 @@ public class DatabaseStatus {
 	// it will trigger a full rescan
 	private long fileCount;
 	
+	// stores the version of janus used to create 
+	// the database
+	private String version;
+	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedTime;
 
@@ -31,6 +35,7 @@ public class DatabaseStatus {
 		this.id = 0;
 		this.fileCount = 0;
 		this.hash = "";
+		this.version = "janus-unidentified-build";
 	}
 
 	public Integer getId() {
@@ -71,6 +76,14 @@ public class DatabaseStatus {
 
 	public void setFileCount(long fileCount) {
 		this.fileCount = fileCount;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String janusVersion) {
+		this.version = janusVersion;
 	}
 	
 }

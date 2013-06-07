@@ -28,7 +28,19 @@ function renderResponse(itemList, addToCurrent, startEntry, endEntry) {
 
     if(itemList.type && !itemList.length) {
       response = renderSingleItem(itemList, newRenderTarget, addToCurrent);
+      if (itemList.title) {
+        document.title = itemList.title + ' | Janus'; 
+      } else if(itemList.name) {
+        document.title = itemList.name + ' | Janus'; 
+      }
     } else {
+      var first = itemList[0];
+      var last = itemList[itemList.length - 1];
+      if (first.title && last.title) {
+        document.title = first.title + ' to ' + last.title + ' | Janus'; 
+      } else if (first.name && last.name) {
+        document.title = first.name + ' to ' + last.name + ' | Janus'; 
+      }
       response = renderList(itemList, newRenderTarget, addToCurrent);
     }
 

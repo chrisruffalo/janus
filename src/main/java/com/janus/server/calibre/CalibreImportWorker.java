@@ -26,6 +26,7 @@ import com.janus.server.providers.SearchProvider;
 import com.janus.server.providers.SeriesProvider;
 import com.janus.server.providers.SettingsProvider;
 import com.janus.server.providers.TagProvider;
+import com.janus.server.resources.JanusProperty;
 import com.janus.util.DigestUtil;
 
 @Stateless
@@ -54,6 +55,10 @@ public class CalibreImportWorker {
 	
 	@Inject
 	private FileInfoProvider fileInfoProvider;
+	
+	@JanusProperty("build")
+	@Inject
+	private String janusBuildVersion;
 	
 	@Inject
 	private Logger logger;
@@ -111,6 +116,21 @@ public class CalibreImportWorker {
 			}
 		} else {
 			status.setHash(currentDigest);
+		}
+		
+		// check janus build version and rebuild the database
+		// if the versions are not equal
+		if(status.getVersion() != null && !status.getVersion().isEmpty()) {
+			String checkVersion = status.getVersion();
+			
+			// rebuild on unequal versions
+			if(!checkVersion.equals(this.janusBuildVersion)) {
+				this.logger.info("Updating the version to support build: {}", this.janusBuildVersion);
+				doUpdate = true;
+				status.setVersion(this.janusBuildVersion);
+			}		
+		} else {
+			status.setVersion(this.janusBuildVersion);
 		}
 		
 		// lookup ebook files

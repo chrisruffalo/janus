@@ -73,10 +73,13 @@
 			  </p>
 
 			  <!-- ibsn -->
-			  {{#if isbn}}
+			  {{#if identifiers}}
                 <p><i class="icon-info-sign"></i>&nbsp;
-				  <a href="http://www.goodreads.com/search?q={{isbn}}">more info on goodreads.com</a>
-				</p>
+                {{# each identifiers}}
+                  {{#if link}}
+                    <a class="btn btn-mini" href="{{link}}">{{this/title}}</a>
+                  {{/if}}
+				{{/each}}</p>
 			  {{/if}}
             </div> <!-- /end of media body -->
           </div> <!-- /end of media -->

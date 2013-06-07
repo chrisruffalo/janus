@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 
 import com.janus.server.calibre.CalibreImportScheduler;
+import com.janus.server.resources.JanusProperty;
 
 @Startup
 @Singleton
@@ -18,11 +19,15 @@ public class JanusLifecycle {
 	private Logger logger;
 	
 	@Inject
+	@JanusProperty("build")
+	private String janusVersion;
+	
+	@Inject
 	private CalibreImportScheduler importScheduler;
 	
 	@PostConstruct
 	public void start() {
-		this.logger.info("Starting Janus");		
+		this.logger.info("Starting Janus: {}", this.janusVersion);		
 		
 		// schedule imports
 		this.importScheduler.schedule();

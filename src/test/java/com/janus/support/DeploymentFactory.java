@@ -52,6 +52,7 @@ public final class DeploymentFactory {
 		
 		// janus configuration
 		archive.addAsResource("default-janus.xml");
+		archive.addAsResource("janus.properties");
 		
 		// web resources
 		archive.addAsWebInfResource("web.xml");

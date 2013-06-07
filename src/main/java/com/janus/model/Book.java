@@ -52,7 +52,7 @@ import com.janus.util.DateUtil;
 @XmlType(
 	propOrder = {
 		Book.TITLE,
-		Book.ISBN,
+		Book.IDENTIFIERS,
 		Book.SORT,
 		Book.MODEL_AUTHORSORT,
 		Book.MODEL_SERIESINDEX,
@@ -74,14 +74,14 @@ public class Book extends BaseEntity implements ISorted {
 	// shared properties
 	public static final String TITLE = "title";
 	public static final String TIMESTAMP = "timestamp";
-	public static final String ISBN = "isbn";
-	
+		
 	// children
 	public static final String AUTHORS = "authors";
 	public static final String SERIES = "series";
 	public static final String TAGS = "tags";
 	public static final String RATING = "rating";
 	public static final String FILE_INFO = "fileInfo";
+	public static final String IDENTIFIERS = "identifiers";
 	
 	// sql database properties
 	public static final String SQLITE_SORT_TITLE = "sort_title";
@@ -135,8 +135,9 @@ public class Book extends BaseEntity implements ISorted {
 	// sqlite column: has_cover
 	private Boolean hasCover;
 	
-	// loaded from another table
-	private String isbn;
+	@OneToMany(cascade={CascadeType.PERSIST, CascadeType.REMOVE}, fetch=FetchType.EAGER, orphanRemoval=true)
+	@Fetch(FetchMode.JOIN)
+	private Set<Identifier> identifiers;
 
 	// sqlite column: last_modified
 	@Temporal(TemporalType.TIMESTAMP)
@@ -169,6 +170,8 @@ public class Book extends BaseEntity implements ISorted {
 
 	public Book() {
 		super();
+		
+		this.identifiers = new HashSet<Identifier>();
 		
 		this.authors = new HashSet<Author>();
 		this.tags = new HashSet<Tag>();
@@ -318,17 +321,14 @@ public class Book extends BaseEntity implements ISorted {
 		this.fileInfo = fileInfo;
 	}
 	
-	/**
-	 * Unique book identifier
-	 * 	
-	 * @return
-	 */
-	public String getIsbn() {
-		return isbn;
+	@XmlElementWrapper(name="identifiers")
+	@XmlElement(name="identifier")
+	public Set<Identifier> getIdentifiers() {
+		return identifiers;
 	}
 
-	public void setIsbn(String isbn) {
-		this.isbn = isbn;
+	public void setIdentifiers(Set<Identifier> identifiers) {
+		this.identifiers = identifiers;
 	}
 
 	/**
@@ -423,7 +423,12 @@ public class Book extends BaseEntity implements ISorted {
 		// load identifiers
 		for(Identifier identifier : identifiers) {
 			// skip potentially broken things
-			if(identifier == null || identifier.getType() == null || identifier.getValue() == null) {
+			if(identifier == null 
+			|| identifier.getType() == null 
+			|| identifier.getValue() == null 
+			|| identifier.getLink() == null
+			|| identifier.getLink().isEmpty()
+			) {
 				continue;
 			}
 			
@@ -431,24 +436,12 @@ public class Book extends BaseEntity implements ISorted {
 			// different semantics with primitives... took about 30 minutes
 			// to remember that...
 			if(!this.getId().equals(identifier.getBookId())) {
-				this.logger.debug("Book id '{}' does not equal identifire id '{}'", this.getId(), identifier.getBookId());
+				this.logger.trace("Book id '{}' does not equal identifire id '{}'", this.getId(), identifier.getBookId());
 				continue;
 			}
-			
-			this.logger.debug("Next up: {}:{}", this.getId(), identifier.getType());
-			
-			// if the value has a pipe in it then it's in an extended format of some type
-			// and it needs to be parsed out
-			String value = identifier.getValue();
-			if(value.indexOf("|") >= 0) {
-				value = value.substring(value.lastIndexOf("|"));
-			}
-			
-			// load into appropriate member value
-			if("isbn".equalsIgnoreCase(identifier.getType())) {
-				this.isbn = identifier.getValue();
-				this.logger.trace("Loading! {}:{} identifier", identifier.getType(), identifier.getValue());
-			}
+
+			// add to local store
+			this.identifiers.add(identifier);
 		}
 	}
 
