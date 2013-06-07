@@ -132,7 +132,10 @@ public class Identifier implements ICanLoadFromSqlCursorRow {
 		} else if("amazon".equalsIgnoreCase(this.type)) {
 			this.link = "http://amzn.com/" + this.value;
 			this.title = "amazon";
-		}		
+		} else if("google".equalsIgnoreCase(this.type)) {
+			this.link = "http://books.google.com/books?id=" + this.value;
+			this.title = "google";
+		}
 		
 		// manually set id
 		this.id = this.bookId + ":" + this.type;
