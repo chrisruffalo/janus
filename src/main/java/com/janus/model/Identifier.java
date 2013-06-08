@@ -128,7 +128,7 @@ public class Identifier implements ICanLoadFromSqlCursorRow {
 		// create title and link from type
 		if("isbn".equalsIgnoreCase(this.type)) {
 			this.link = "http://www.goodreads.com/search?q=" + this.value;
-			this.title = "goodreads.com";
+			this.title = "goodreads";
 		} else if("amazon".equalsIgnoreCase(this.type)) {
 			this.link = "http://amzn.com/" + this.value;
 			this.title = "amazon";
