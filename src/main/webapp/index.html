@@ -169,6 +169,16 @@
             <form class="navbar-search pull-left" action="#/search/all" method="get">
               <input id="term" name="term" type="text" class="search-query" placeholder="Search">
             </form>
+            
+            <!-- version -->
+            <div class="pull-right hidden-phone" style="margin-top: 9px; color: #9f9f9f">
+              <small>
+                <em>
+                  <span id="code-show"><i class="icon-code"></i> &nbsp;</span>
+                  <span class="version hide" style="margin-top: 1px;"></span>
+                </em>
+              </small>
+            </div>
 
           </div>
         </div>
@@ -367,9 +377,23 @@
         $(document).ready(function() {
 		  // load default values from cookies
 		  loadConfigurationFromCookies();
-            
+          
           // initialize sammy application
-          initSammy();          
+          initSammy();
+          
+          // call for version
+          $.ajax({
+            "url": 's/status/version',
+            "cache": false
+          })
+          .done(
+            function(context) {
+              $('.version').html(context);
+              $('#code-show').click(function(){
+                $('.version').toggle();
+              });
+            }
+          );
         });
     </script>
   </body>

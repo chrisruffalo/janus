@@ -312,6 +312,8 @@
 					</execution>
 				</executions>
 				<configuration>
+					<!-- use only the first 5 characters of the git revision -->
+					<shortRevisionLength>5</shortRevisionLength>
 					<getRevisionOnlyOnce>true</getRevisionOnlyOnce>
 					<doCheck>false</doCheck>
 					<doUpdate>false</doUpdate>
