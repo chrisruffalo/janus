@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.googlecode.janus</groupId>
 	<artifactId>janus-server</artifactId>
-	<version>2.0-SNAPSHOT</version>
+	<version>2.1</version>
 	<packaging>war</packaging>
 	<name>janus-server</name>
 	<description>janus server for calibre</description>

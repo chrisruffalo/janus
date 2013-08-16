@@ -44,14 +44,14 @@
               {{#if authors}}
                 <p><i class="icon-group"></i>&nbsp;
                 {{#each authors}}
-                  <a class="btn btn-mini" href="#/author/get/{{id}}" type="button">{{name}}</a>
+                  <a class="btn btn-default btn-xs" href="#/author/get/{{id}}" type="button">{{name}}</a>
                 {{/each}}</p>
               {{/if}}
               
               {{#if tags}}
                 <p><i class="icon-tags"></i>&nbsp;
                 {{#each tags}}
-                  <a class="btn btn-mini" href="#/tag/get/{{id}}" type="button">{{name}}</a>
+                  <a class="btn btn-default btn-xs" href="#/tag/get/{{id}}" type="button">{{name}}</a>
                 {{/each}}</p>
                 </p>
               {{/if}}
@@ -61,15 +61,17 @@
             	<!-- starts local download -->
             	<p><i class="icon-download-alt"></i>&nbsp;
             	{{#each fileInfo}}
-				  <a class="btn btn-mini" target="_blank" href="s/book/{{../id}}/file/{{type}}" type="button">{{type}} ({{descriptiveSize}})</a>		
+				  <a class="btn btn-default btn-xs" target="_blank" href="s/book/{{../id}}/file/{{type}}" type="button">{{type}} ({{descriptiveSize}})</a>		
 			    {{/each}}</p>
 	          {{/if}}
 
 			  <!-- other functions -->
 			  <p><i class="icon-cogs"></i>&nbsp;
-				<button class="btn btn-mini" onclick="toggleQR('{{type}}', '{{id}}', '{{inJavascriptEscape title}}')"><i class="icon-qrcode"></i></button>
-				<button class="btn btn-mini" onclick="toggleBookEmail('{{id}}', '{{inJavascriptEscape title}}')"><i class="icon-envelope"></i></button>
-				<a class="btn btn-mini readLink" id="read_book_link_{{id}}" href="s/book/{{id}}/exploded"><i class="icon-book"></i></a>
+				<button class="btn btn-default btn-xs" onclick="toggleQR('{{type}}', '{{id}}', '{{inJavascriptEscape title}}')"><i class="icon-qrcode"></i></button>
+				<button class="btn btn-default btn-xs" onclick="toggleBookEmail('{{id}}', '{{inJavascriptEscape title}}')"><i class="icon-envelope"></i></button>
+				<!--
+				<a class="btn btn-default btn-xs readLink" id="read_book_link_{{id}}" href="s/book/{{id}}/exploded"><i class="icon-book"></i></a>
+				-->
 			  </p>
 
 			  <!-- ibsn -->
@@ -77,7 +79,7 @@
                 <p><i class="icon-info-sign"></i>&nbsp;
                 {{# each identifiers}}
                   {{#if link}}
-                    <a class="btn btn-mini" href="{{link}}">{{this/title}}</a>
+                    <a class="btn btn-default btn-xs" href="{{link}}">{{this/title}}</a>
                   {{/if}}
 				{{/each}}</p>
 			  {{/if}}
@@ -158,31 +160,33 @@
    
   </head>
   <body>
-      <!-- navigation bar -->
-      <div class="navbar navbar-fixed-top main">
-        <div class="navbar-inner">
-          <div class="container">
-       
-            <!-- Be sure to leave the brand out there if you want it shown -->
-            <a class="brand" href="#main">Janus</a>
-
-            <form class="navbar-search pull-left" action="#/search/all" method="get">
-              <input id="term" name="term" type="text" class="search-query" placeholder="Search">
-            </form>
-            
+      	<!-- navigation bar -->
+		<div class="navbar navbar-inverse navbar-fixed-top">
+		  <div class="container">
+		    <div class="navbar-header">
+		        <a class="navbar-brand" href="#">Janus</a>
+			
+	            <form class="navbar-form navbar-left" role="search" method="get" action="#/search/all">
+			      <div class="form-group">
+			        <input id="term" name="term" type="text" class="form-control" placeholder="Search">
+			      </div>
+			    </form>
+			    
+			</div>
+	            
             <!-- version -->
-            <div class="pull-right hidden-phone" style="margin-top: 9px; color: #9f9f9f">
+            <div class="pull-right visible-md visible-lg" style="margin-top: 9px; color: #9f9f9f">
               <small>
                 <em>
                   <span id="code-show"><i class="icon-code"></i> &nbsp;</span>
-                  <span class="version hide" style="margin-top: 1px;"></span>
+                  <span class="version" style="margin-top: 1px;"></span>
                 </em>
               </small>
             </div>
 
-          </div>
-        </div>
-      </div>
+		  </div>
+		</div>
+
 	  <!-- error div -->
       <div id="error-container" class="container main">
         <div class="row">
@@ -261,30 +265,32 @@
       <!-- below this point there should be no 'active' content -->
       
       <!-- QR modal to save time on jquery construction -->
-	  <div id="qr-modal" class="modal hide fade in" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true">
-		<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-				<i class="icon-remove"></i>
-			</button>
-			<h3 id="qr-modal-label"></h3>
-		</div>
-		<div id="qr-modal-body" class="modal-body widthOverride center">
-			<!-- empty spot for QR code image -->
-		</div>
-		<div class="modal-footer">
-			<button class="btn btn-danger" data-dismiss="modal" aria-hidden="true">close</button>
-		</div>
- 	  </div>
- 	  
+        <div id="qr-modal" class="modal fade">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i></button>
+		       	<h3 id="qr-modal-label"></h3>
+		      </div>
+		      <div id="qr-modal-body" class="modal-body">
+		        <p>One fine body&hellip;</p>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">close</button>
+		      </div>
+		    </div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+       	  
  	  <!-- EMAIL modal to save time on jquery construction -->
- 	  <div id="email-modal" class="modal hide fade in" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true">
-		<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-				<i class="icon-remove"></i>
-			</button>
-			<h3 id="email-modal-label"></h3>
-		</div>
-		<div id="email-modal-body" class="modal-body widthOverride">
+	<div class="modal fade" id="email-modal" tabindex="-1" role="dialog" aria-labelledby="email-modal" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i></button>
+	        <h3 class="modal-title" id="email-modal-label"></h4>
+	      </div>
+	      <div class="modal-body" id="email-modal-body">
 			<div class="row-fluid">
 				<div class="span12">
 					<form>
@@ -293,7 +299,7 @@
 							<input type="hidden" id="email-id"></input>
 							
 							<label class="hidden-phone">Email</label>
-							<div class="input-prepend input-append normalWrapOverride">
+							<div class="input-prepend input-append">
 							  <input id="email-text" class="span3" type="text" placeholder="email"></input>
 							  <span class="add-on">@</span>
 							  <input id="email-host" class="span3" type="text" placeholder="kindle" value="kindle"></input>
@@ -311,12 +317,15 @@
 				<div id="email-modal-error-container" class="span12">				
 				</div>
 			</div>
-		</div>
-		<div class="modal-footer">
+	      </div>
+	      <div class="modal-footer">
 			<button id="email-do-button" class="btn btn-success pull-left" onclick="doEmail()">send email</button>&nbsp;
 			<button class="btn btn-danger" data-dismiss="modal" aria-hidden="true">close</button>
-		</div>
- 	  </div>
+	      </div>
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+
  	  
  	  <!-- from here down is the stuff for the future-press reading --> 	  
  	  <div id="sidebar" class="reading" style="display: none">
@@ -343,7 +352,7 @@
         <div id="prev" class="arrow">‹</div>
         <div id="area"></div>
         <div id="next" class="arrow">›</div>
-        <div id="loader"><img src="img/loader.gif"></div>
+        <div id="loader"><!-- todo: loader --></div>
       </div>
 
   	  <!-- supporting scripts -->
@@ -377,17 +386,27 @@
         $(document).ready(function() {
 		  // load default values from cookies
 		  loadConfigurationFromCookies();
+
+		  // ensure all modals are hidden to start
+		  $(".modal").modal('hide')
           
           // initialize sammy application
           initSammy();
+
+          // make sure version is hidden and that it is 
+          // being retrieved 
+		  logger("[version] getting version...");
+		  $('.version').hide();
           
-          // call for version
+          // call for version 
           $.ajax({
             "url": 's/status/version',
             "cache": false
           })
           .done(
             function(context) {
+              logger("[version] got version: " + context);
+                
               $('.version').html(context);
               $('#code-show').click(function(){
                 $('.version').toggle();

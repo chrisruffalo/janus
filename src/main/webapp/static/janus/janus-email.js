@@ -1,5 +1,7 @@
 // turns on the book email modal
 function toggleBookEmail(id, title) {
+  logger("[email] opening email dialog");
+	
   // empty any previous alerts
   $('#email-modal-error-container').empty();
   
@@ -10,8 +12,12 @@ function toggleBookEmail(id, title) {
   $('#email-file-type').removeAttr('disabled');
   $('#email-do-button').removeAttr('disabled');
 	
+  logger("[email] setting title");
+  
   // set modal values
   $('#email-modal-label').html("Emailing <em>" + unescape(title) + "</em>");
+  
+  logger("[email] setting up 'loading'");
   
   // show 'loading' dialog bit	 
   $('#email-type-holder').empty();
@@ -28,6 +34,8 @@ function toggleBookEmail(id, title) {
   $('#email-host').val(emailHost);
   $('#email-tld').val(emailTld);
   
+  logger("[email] starting request");
+  
   // kick off request
   $.ajax({
 	  url: 's/book/' + id + '/list',
@@ -35,6 +43,8 @@ function toggleBookEmail(id, title) {
   })  
   .done(
     function(context) {
+    	logger("[email] got response for types");
+    	
     	// clear value list
     	$('#email-type-holder').empty();
     	
