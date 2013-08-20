@@ -239,6 +239,13 @@
 			<artifactId>simple-java-mail</artifactId>
 			<version>2.0</version>
 		</dependency>
+		
+		<!-- jackson annotations -->
+		<dependency>
+		    <groupId>org.codehaus.jackson</groupId>
+		    <artifactId>jackson-core-asl</artifactId>
+		    <version>1.9.13</version>
+		</dependency>		
 
 		<!-- testing -->
 		<dependency>
