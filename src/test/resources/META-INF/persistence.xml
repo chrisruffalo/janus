@@ -48,11 +48,10 @@
 			<property name="hibernate.cache.infinispan.statistics" value="false"/>
 			
 			<!-- hibernate search index setup -->
-			<property name="hibernate.search.default.directory_provider" value="infinispan"/>
-			<property name="hibernate.search.default.infinispan.cachemanager_jndiname" value="java:jboss/infinispan/container/hibernate-search"/>
-			<property name="hibernate.search.infinispan.configuration_resourcename" value="janus-hibernate-search-infinispan.xml"/>
-			<property name="hibernate.search.analyzer" value="org.apache.lucene.analysis.en.EnglishAnalyzer"/>			
-			
+            <property name="hibernate.search.default.directory_provider" value="filesystem"/> 
+            <property name="hibernate.search.default.indexBase" value="${jboss.server.data.dir}/janus/indexes"/> 
+            <property name="hibernate.search.analyzer" value="org.apache.lucene.analysis.en.EnglishAnalyzer"/>
+            			
 			<!-- hibernate sql printing -->			
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="true" />

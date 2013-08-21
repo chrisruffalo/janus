@@ -170,25 +170,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-search-infinispan</artifactId>
-			<version>${hibernate.search.version}</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>hibernate-search-engine</artifactId>
-					<groupId>org.hibernate</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>infinispan-core</artifactId>
-					<groupId>org.infinispan</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>lucene-core</artifactId>
-					<groupId>org.apache.lucene</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 
 		<!-- logging -->
 		<dependency>

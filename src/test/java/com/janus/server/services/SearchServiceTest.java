@@ -18,8 +18,8 @@ import com.janus.support.DeploymentFactory;
 @RunWith(Arquillian.class)
 public class SearchServiceTest extends BaseServiceTest {
 	
-	@Inject
-	private BookService bookService;
+	//@Inject
+	//private BookService bookService;
 	
 	@Inject
 	private SearchService searchService;

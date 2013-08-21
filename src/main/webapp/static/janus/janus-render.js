@@ -161,7 +161,7 @@ function renderMultiResponse(multiResponse, intoTarget, addToCurrent) {
   
   // add header if not already added
   if(!addToCurrent) {
-    var header = multi_template(multiResponse);
+    var header = templates.multi.render(multiResponse);
     $('#multi-header-target').append(header);
   }
     

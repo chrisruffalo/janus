@@ -4,11 +4,13 @@ function initSammy() {
     (function($) {              
       var app = $.sammy( 
         function() {
-          
+          var logger = LoggerFactory.get("sammy");
+        	
+        	
           // no-op
           this.get("#", function(context) {
             // no-op
-            logger("[warn] reached '#' which is an empty context.");
+            logger.warn("reached '#' which is an empty context.");
           });
           
           // main

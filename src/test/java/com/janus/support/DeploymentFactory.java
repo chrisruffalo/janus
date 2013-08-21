@@ -21,7 +21,7 @@ public final class DeploymentFactory {
 		MavenDependencyResolver resolver = DependencyResolvers.use(MavenDependencyResolver.class);
 		
 		// create archive
-		WebArchive archive = ShrinkWrap.create(WebArchive.class, "janus-server-test-" + UUID.randomUUID() + ".war");
+		WebArchive archive = ShrinkWrap.create(WebArchive.class, "janus-" + UUID.randomUUID() + ".war");
 		
 		// whole project
 		archive.addPackages(true, "com.janus");
@@ -40,15 +40,9 @@ public final class DeploymentFactory {
 									   .exclusion("org.jboss.logging:jboss-logging")
 									   .resolveAsFiles());		
 		
-		archive.addAsLibraries(resolver.artifact("org.hibernate:hibernate-search-infinispan:4.2.0.Final")
-									   .exclusion("org.hibernate:hibernate-search-engine")
-									   .exclusion("org.infinispan:infinispan-core")
-									   .exclusion("org.apache.lucene:lucene-core")
-									   .resolveAsFiles());
-		
 		// persistence
 		archive.addAsResource("META-INF/persistence.xml");
-		archive.addAsResource("janus-hibernate-search-infinispan.xml");
+		//archive.addAsResource("janus-hibernate-search-infinispan.xml");
 		
 		// janus configuration
 		archive.addAsResource("default-janus.xml");

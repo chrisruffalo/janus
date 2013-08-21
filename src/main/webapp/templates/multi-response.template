@@ -1,0 +1,30 @@
+      <div class="row">
+        <div class="span12">
+          <div class="row-fluid">
+            <div class="6">
+              <ul class="nav nav-pills">
+                <%if(input.books) {%>
+                <li class="book_tab">
+                  <a onclick="toggleTarget('book')"><strong>Books</strong></a>
+                </li>
+                <%}%>
+                <%if(input.authors){%>
+                <li class="author_tab">
+                  <a onclick="toggleTarget('author')"><strong>Authors</strong></a>
+                </li>
+                <%}%>
+                <%if(input.series) {%>
+                <li class="series_tab">
+                  <a onclick="toggleTarget('series')"><strong>Series</strong></a>
+                </li>
+                <%}%>
+                <%if(input.tags) {%>
+                <li class="tag_tab">
+                  <a onclick="toggleTarget('tag')"><strong>Tags</strong></a>
+                </li>
+                <%}%>        
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>    

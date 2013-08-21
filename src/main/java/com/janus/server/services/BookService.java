@@ -128,8 +128,9 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider> {
 	
 		File targetEbookFile = new File(info.getFullPath());
 		
+		ZipFile zipFile = null; 
 		try {
-			ZipFile zipFile = new ZipFile(targetEbookFile);
+			zipFile = new ZipFile(targetEbookFile);
 			
 			// attempt to pick out individual file
 			ZipEntry individualFile = zipFile.getEntry(path);
@@ -188,7 +189,15 @@ public class BookService extends AbstractBaseEntityService<Book, BookProvider> {
 		} catch (IOException e) {
 			e.printStackTrace();
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("could not access resource for book id=" + id).build();
-		}		
+		} finally {
+			if(zipFile != null) {
+				try {
+					zipFile.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	/**
