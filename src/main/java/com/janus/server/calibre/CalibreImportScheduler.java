@@ -123,16 +123,7 @@ public class CalibreImportScheduler {
 			
 			// log errors
 			if(!value) {
-				if(this.firstRun.compareAndSet(true, false)) {
-					// no import
-					//this.logger.info("No database import performed on startup, attempting indexing");
-					
-					// start reindex
-					//this.importWorker.reindex();
-				} else {
-					// no import required
-					this.logger.info("No import required");
-				}			
+				this.logger.info("No import required");
 			}
 			
 		}
