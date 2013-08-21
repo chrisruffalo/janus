@@ -234,7 +234,7 @@
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
 		</dependency>
-
+		
 		<!-- Arquillian -->
 		<dependency>
 			<groupId>org.jboss.arquillian.junit</groupId>

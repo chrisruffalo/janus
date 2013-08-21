@@ -17,24 +17,21 @@ public class JanusIndexingProgressMonitor implements MassIndexerProgressMonitor 
 	
 	@Override
 	public void documentsAdded(long increment) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void documentsBuilt(int number) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void entitiesLoaded(int size) {
-		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void addToTotalCount(long count) {
-		// TODO Auto-generated method stub
 		this.totalCount += count;
 	}
 

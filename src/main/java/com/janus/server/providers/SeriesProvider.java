@@ -1,12 +1,9 @@
 package com.janus.server.providers;
 
 import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-
-import org.slf4j.Logger;
 
 import com.janus.model.Book;
 import com.janus.model.Series;
@@ -14,8 +11,8 @@ import com.janus.model.Series;
 @RequestScoped
 public class SeriesProvider extends AbstractChildProvider<Series> {
 
-	@Inject
-	private Logger logger;
+	//@Inject
+	//private Logger logger;
 	
 	@Override
 	protected String getJoinField() {

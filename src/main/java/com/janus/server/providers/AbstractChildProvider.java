@@ -14,8 +14,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 
-import org.slf4j.Logger;
-
 import com.janus.model.Author;
 import com.janus.model.BaseEntity;
 import com.janus.model.Book;
@@ -28,8 +26,8 @@ public abstract class AbstractChildProvider<E extends BaseEntity> extends Abstra
 	@Inject
 	private FileInfoProvider fileInfoProvider;
 	
-	@Inject
-	private Logger logger;
+	//@Inject
+	//private Logger logger;
 	
 	@Inject
 	private EntityManager manager;
