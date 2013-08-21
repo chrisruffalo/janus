@@ -218,7 +218,7 @@ function renderSingleItem(item, intoTarget) {
   var html = false;
     
   if("book" == item.type) {
-    html = book_template(item);
+    html = templates.book.render(item);
   } else if ("author" == item.type || "series" == item.type || "tag" == item.type) {
     html = generic_template(item);
   } else {

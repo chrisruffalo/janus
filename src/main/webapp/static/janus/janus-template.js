@@ -3,9 +3,6 @@
  *
  */
 
-var book_source   = $("#book-template").html();
-var book_template = Handlebars.compile(book_source);
-
 var generic_source = $('#generic-template').html();
 var generic_template = Handlebars.compile(generic_source);
 

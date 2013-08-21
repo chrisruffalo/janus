@@ -20,75 +20,6 @@
 	<link rel="stylesheet" href="static/fpjs/css/popup.css">
 	<link rel="stylesheet" href="static/fpjs/css/main.css">
 
-    <!-- book display template -->
-    <script id="book-template" type="text/x-handlebars-template">
-      <div class="row">
-        <div class="span6 entry">
-          <!-- permalink -->
-		  <div class="pull-right permalink"><a href="#/{{type}}/get/{{id}}"><i class="icon-link"></i></a></div>
-
-		  <h4 class="title"><em>{{mainTitle}}</em></h4>
-		  {{#if subTitle}}
-			<h5 class="subtitle"><em>{{subTitle}}</em></h5>
-          {{/if}}
-		  {{#if series}}
-            <h6>Book {{seriesIndex}} in <em><a href="#/series/get/{{series.id}}">{{series.name}}</a></em></h6>
-          {{/if}}
- 
-	      <div class="media">
-            <a class="pull-left" href="#">
-              <img src="static/img/thumbnail.jpg" data-src="s/book/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
-            </a>
-            
-            <div class="media-body">
-              {{#if authors}}
-                <p><i class="icon-group"></i>&nbsp;
-                {{#each authors}}
-                  <a class="btn btn-default btn-xs" href="#/author/get/{{id}}" type="button">{{name}}</a>
-                {{/each}}</p>
-              {{/if}}
-              
-              {{#if tags}}
-                <p><i class="icon-tags"></i>&nbsp;
-                {{#each tags}}
-                  <a class="btn btn-default btn-xs" href="#/tag/get/{{id}}" type="button">{{name}}</a>
-                {{/each}}</p>
-                </p>
-              {{/if}}
-
-			  <!-- download(s) -->
-          	  {{#if fileInfo}}
-            	<!-- starts local download -->
-            	<p><i class="icon-download-alt"></i>&nbsp;
-            	{{#each fileInfo}}
-				  <a class="btn btn-default btn-xs" target="_blank" href="s/book/{{../id}}/file/{{type}}" type="button">{{type}} ({{descriptiveSize}})</a>		
-			    {{/each}}</p>
-	          {{/if}}
-
-			  <!-- other functions -->
-			  <p><i class="icon-cogs"></i>&nbsp;
-				<button class="btn btn-default btn-xs" onclick="toggleQR('{{type}}', '{{id}}', '{{inJavascriptEscape title}}')"><i class="icon-qrcode"></i></button>
-				<button class="btn btn-default btn-xs" onclick="toggleBookEmail('{{id}}', '{{inJavascriptEscape title}}')"><i class="icon-envelope"></i></button>
-				<!--
-				<a class="btn btn-default btn-xs readLink" id="read_book_link_{{id}}" href="s/book/{{id}}/exploded"><i class="icon-book"></i></a>
-				-->
-			  </p>
-
-			  <!-- ibsn -->
-			  {{#if identifiers}}
-                <p><i class="icon-info-sign"></i>&nbsp;
-                {{# each identifiers}}
-                  {{#if link}}
-                    <a class="btn btn-default btn-xs" href="{{link}}">{{this/title}}</a>
-                  {{/if}}
-				{{/each}}</p>
-			  {{/if}}
-            </div> <!-- /end of media body -->
-          </div> <!-- /end of media -->
-        </div> <!-- /span -->
-      </div> <!-- /row -->      
-    </script>
-    
     <!-- typed template specific to author -->
     <script id="generic-template" type="text/x-handlebars-template">
      <div class="row">
@@ -164,26 +95,33 @@
 		<div class="janus-nav navbar navbar-inverse navbar-fixed-top">
 		  <div class="container">
 		    <div class="navbar-header">
-		        <a class="navbar-brand" href="#">Janus</a>
+			    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+			      <span class="sr-only">Toggle navigation</span>
+			      <span class="icon-bar"></span>
+			      <span class="icon-bar"></span>
+			      <span class="icon-bar"></span>
+			    </button>		    
+		        <a class="navbar-brand" href="#main">Janus</a>
+			</div>
 			
-	            <form class="navbar-form navbar-left" role="search" method="get" action="#/search/all">
+			<div class="collapse navbar-collapse navbar-ex1-collapse">
+			     <!-- search box -->
+			    <form class="navbar-form navbar-left" role="search">
 			      <div class="form-group">
-			        <input id="term" name="term" type="text" class="form-control input-sm" placeholder="Search">
+			        <input type="text" class="form-control" placeholder="Search Janus">
 			      </div>
 			    </form>
 			    
-			</div>
-	            
-            <!-- version -->
-            <div class="pull-right visible-md visible-lg" style="margin-top: 9px; color: #9f9f9f">
-              <small>
-                <em>
-                  <span id="code-show"><i class="icon-code"></i> &nbsp;</span>
-                  <span class="version" style="margin-top: 1px;"></span>
-                </em>
-              </small>
-            </div>
-
+			    <!-- version -->
+			    <ul class="nav navbar-nav navbar-right">
+			      <li>
+			         <a href="https://github.com/chrisruffalo/janus" target="_blank">
+			              <i class="icon-github"></i>
+		                  <span class="version" style="margin-top: 1px;"></span>
+		              </a>
+			      </li>
+			    </ul>
+			  </div><!-- /.navbar-collapse -->
 		  </div>
 		</div>
 
@@ -273,7 +211,7 @@
 		       	<h3 id="qr-modal-label"></h3>
 		      </div>
 		      <div id="qr-modal-body" class="modal-body">
-		        <p>One fine body&hellip;</p>
+		          <!-- content goes here -->
 		      </div>
 		      <div class="modal-footer">
 		        <button type="button" class="btn btn-default" data-dismiss="modal">close</button>
@@ -325,7 +263,6 @@
 	    </div><!-- /.modal-content -->
 	  </div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
-
  	  
  	  <!-- from here down is the stuff for the future-press reading --> 	  
  	  <div id="sidebar" class="reading" style="display: none">
@@ -362,11 +299,13 @@
       <script src="static/js/sammy.js"></script>
       <script src="static/js/jail.min.js"></script>
       <script src="static/js/jquery-waypoints-2.0.2.min.js"></script>
+      <script src="static/js/underscore.min.js"></script>
       
       <!-- janus logic -->
       <script src="static/janus/janus-config.js"></script>
       <script src="static/janus/janus-utilities.js"></script>
       <script src="static/janus/janus-template.js"></script>
+      <script src="static/janus/janus-template2.js"></script>
       <script src="static/janus/janus-request.js"></script>
       <script src="static/janus/janus-render.js"></script>
       <script src="static/janus/janus-sammy.js"></script>
@@ -392,11 +331,13 @@
           
           // initialize sammy application
           initSammy();
+		  
+		  // load templates 
+		  loadTemplates();
 
           // make sure version is hidden and that it is 
           // being retrieved 
 		  logger("[version] getting version...");
-		  $('.version').hide();
           
           // call for version 
           $.ajax({
@@ -405,12 +346,7 @@
           })
           .done(
             function(context) {
-              logger("[version] got version: " + context);
-                
               $('.version').html(context);
-              $('#code-show').click(function(){
-                $('.version').toggle();
-              });
             }
           );
         });

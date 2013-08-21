@@ -1,0 +1,70 @@
+      <% 
+        // change variable
+        var book = input;
+      %>
+      <div class="row">
+        <div class="span6 entry">
+          <!-- permalink -->
+          <div class="pull-right permalink"><a href="#/<%=book.type%>/get/<%=book.id%>"><i class="icon-link"></i></a></div>
+
+          <h4 class="title"><em><%=book.mainTitle%></em></h4>
+          <%if(book.subTitle) {%>
+            <h5 class="subtitle"><em><%=book.subTitle%></em></h5>
+          <%}%>
+          <%if(book.series) {%>
+            <h6>Book <%=book.seriesIndex%> in <em><a href="#/series/get/<%=book.series.id%>"><%=book.series.name%></a></em></h6>
+          <%}%>
+ 
+          <div class="media">
+            <a class="pull-left" href="#">
+              <img src="static/img/thumbnail.jpg" data-src="s/book/<%=book.id%>/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
+            </a>
+            
+            <div class="media-body">
+              <%if(_.size(book.authors)) {%>
+                <p><i class="icon-group"></i>&nbsp;
+                <%_.each(book.authors, function(author) {%>
+                  <a class="btn btn-default btn-xs" href="#/author/get/<%=author.id%>" type="button"><%=author.name%></a>
+                <%});%></p>
+              <%}%>
+              
+              <%if(_.size(book.tags)) {%>
+                <p><i class="icon-tags"></i>&nbsp;
+                <%_.each(book.tags, function(tag) {%>
+                  <a class="btn btn-default btn-xs" href="#/tag/get/<%=tag.id%>" type="button"><%=tag.name%></a>
+                <%});%></p>
+                </p>
+              <%}%>
+
+              <!-- download(s) -->
+              <%if(_.size(book.fileInfo)) {%>
+                <!-- starts local download -->
+                <p><i class="icon-download-alt"></i>&nbsp;
+                <%_.each(book.fileInfo, function(fileInfo) {%>
+                  <a class="btn btn-default btn-xs" target="_blank" href="s/book/<%=book.id%>/file/<%=fileInfo.type%>" type="button"><%=fileInfo.type%> (<%=fileInfo.descriptiveSize%>)</a>      
+                <%});%></p>
+              <%}%>
+
+              <!-- other functions -->
+              <p><i class="icon-cogs"></i>&nbsp;
+                <% var escapedTitle = escape(book.title); %>
+                <button class="btn btn-default btn-xs" onclick="toggleQR('<%=book.type%>', '<%=book.id%>', '<%=escapedTitle%>')"><i class="icon-qrcode"></i></button>
+                <button class="btn btn-default btn-xs" onclick="toggleBookEmail('<%=book.id%>', '<%=escapedTitle%>')"><i class="icon-envelope"></i></button>
+                <!--
+                <a class="btn btn-default btn-xs readLink" id="read_book_link_<%=book.id%>" href="s/book/<%=book.id%>/exploded"><i class="icon-book"></i></a>
+                -->
+              </p>
+
+              <!-- book identifiers link to external websites -->
+              <%if(_.size(book.identifiers)) {%>
+                <p><i class="icon-info-sign"></i>&nbsp;
+                <%_.each(book.identifiers, function(identifier) {%>
+                  <%if(identifier.link) {%>
+                    <a class="btn btn-default btn-xs" href="<%=identifier.link%>"><%=identifier.title%></a>
+                  <%}%>
+                <%});%></p>
+              <%}%>
+            </div> <!-- /end of media body -->
+          </div> <!-- /end of media -->
+        </div> <!-- /span -->
+      </div> <!-- /row -->
