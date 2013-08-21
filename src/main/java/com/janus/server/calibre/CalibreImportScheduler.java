@@ -125,10 +125,10 @@ public class CalibreImportScheduler {
 			if(!value) {
 				if(this.firstRun.compareAndSet(true, false)) {
 					// no import
-					this.logger.info("No database import performed on startup, attempting indexing");
+					//this.logger.info("No database import performed on startup, attempting indexing");
 					
 					// start reindex
-					this.importWorker.reindex();
+					//this.importWorker.reindex();
 				} else {
 					// no import required
 					this.logger.info("No import required");
@@ -139,7 +139,6 @@ public class CalibreImportScheduler {
 		
 		// always make library available
 		this.eventSink.fire(new LibraryUpdateEvent(LibraryStatus.READY));
-
 		
 		// schedule next run
 		this.scheduleNext();
