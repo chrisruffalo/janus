@@ -29,4 +29,5 @@ public class Series extends NamedSortedEntity implements IDepthOneCloneable<Seri
 		
 		return series;
 	}	
+	
 }

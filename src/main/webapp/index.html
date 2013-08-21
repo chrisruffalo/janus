@@ -20,41 +20,6 @@
 	<link rel="stylesheet" href="static/fpjs/css/popup.css">
 	<link rel="stylesheet" href="static/fpjs/css/main.css">
 
-    <!-- typed template specific to author -->
-    <script id="generic-template" type="text/x-handlebars-template">
-     <div class="row">
-        <div class="span6 entry">
-          <!-- permalink -->
-		  <div class="pull-right permalink"><a href="#/{{type}}/get/{{id}}"><i class="icon-link"></i></a></div>
-
-          <h4><em>{{name}}</em></h4>
-  	      {{#if downloads}}
-		    <p><em>Downloaded {{downloads}} times</em></p> 
-	      {{/if}}
-
-          <div class="media">
-            <a class="pull-left" href="#">
-              <img src="static/img/thumbnail.jpg" data-src="s/{{type}}/{{id}}/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
-            </a>
-            
-            <div class="media-body">
-              {{#if bookCount}}
-                <h6>Author of <a href="#/{{type}}/get/{{id}}/books">{{bookCount}} books</a>{{#if seriesCount}} and <a href="#/{{type}}/get/{{id}}/series">{{seriesCount}} series</a>{{/if}}.</h6>
-			  {{else}}
-			  	<p><a href="#/{{type}}/get/{{id}}/books">related books <i class="icon-circle-arrow-right"></i></a></p>
-              	<p><a href="#/{{type}}/get/{{id}}/series">related series <i class="icon-circle-arrow-right"></i></a></p>				
-              {{/if}}
-              
-			  <!-- other items related to this author -->
-              <p><a href="#/{{type}}/get/{{id}}/authors">related authors <i class="icon-circle-arrow-right"></i></a></p>
-			  <p><a href="#/{{type}}/get/{{id}}/tags">related tags <i class="icon-circle-arrow-right"></i></a></p>		
-
-            </div> <!--/end of media body -->
-          </div> <!-- /end of media -->
-        </div> <!-- /span -->
-      </div> <!-- /row --> 
-    </script>
-    
     <!-- if you get a multi response this part will handle showing the table header -->   
     <script id="multi-response-header-template" type="text/x-handlebars-template">
       <div class="row">
@@ -139,7 +104,7 @@
       </div>
 
       <!-- sample navigation options -->
-      <div id="mainOptions" class="container main">
+      <div id="mainOptions" class="container main" style="display: none;">
         <div class="row">
           <div class="span12 entry">
             <div class="row-fluid">
@@ -304,6 +269,7 @@
       <!-- janus logic -->
       <script src="static/janus/janus-config.js"></script>
       <script src="static/janus/janus-utilities.js"></script>
+      <script src="static/janus/janus-logging.js"></script>
       <script src="static/janus/janus-template.js"></script>
       <script src="static/janus/janus-template2.js"></script>
       <script src="static/janus/janus-request.js"></script>
@@ -323,18 +289,18 @@
       <!-- handlebars template stuff -->
       <script>
         $(document).ready(function() {
-		  // load default values from cookies
+          // ensure all modals are hidden to start
+          $(".modal").modal('hide')
+        	
+          // load default values from cookies
 		  loadConfigurationFromCookies();
 
-		  // ensure all modals are hidden to start
-		  $(".modal").modal('hide')
-          
+          // load templates 
+          loadTemplates();
+
           // initialize sammy application
           initSammy();
 		  
-		  // load templates 
-		  loadTemplates();
-
           // make sure version is hidden and that it is 
           // being retrieved 
 		  logger("[version] getting version...");

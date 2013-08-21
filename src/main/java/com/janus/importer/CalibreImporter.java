@@ -224,8 +224,15 @@ public class CalibreImporter {
 		// calculate series for each author
 		for(Author author : authors.values()) {
 			for(Book authorsBook : author.getBooks()) {
-				if(!author.getSeries().contains(authorsBook.getSeries())) {
-					author.getSeries().add(authorsBook.getSeries());
+				if(authorsBook.getSeries() != null) {
+					String seriesName = authorsBook.getSeries().getName();
+					if(seriesName == null || seriesName.isEmpty()) {
+						continue;
+					}
+					
+					if(!author.getSeries().contains(authorsBook.getSeries())) {
+						author.getSeries().add(authorsBook.getSeries());
+					}
 				}
 			}
 			

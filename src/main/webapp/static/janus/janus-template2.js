@@ -5,6 +5,8 @@ helper = {
 
 function JanusTemplate(url, cache)
 {
+	var logger = LoggerFactory.get('template: ' + url);
+	
 	// explicit type conversion
 	if(cache) {
 		cache = true;
@@ -23,9 +25,9 @@ function JanusTemplate(url, cache)
 	var templateString = null;
 	if(200 == response.status) {
 		templateString = response.responseText;
-		logger("[template] loaded template: " + url);
+		logger.info("loaded template");
 	} else {
-		logger("[template] error! " + response.status);
+		logger.error("error! " + response.status);
 		return;
 	}
 	
@@ -38,22 +40,25 @@ function JanusTemplate(url, cache)
 	// create render function
 	var renderFunction = function(data) {
 		if(!data) {
-			logger("[template] error: data is null");
+			logger.error("error: data is null");
 			return false;
 		}
 		if(!compiled) {
-			logger("[template] error: compiled template is null");
+			logger.error("error: called template is null");
 			return false;
 		}
 		
-		// try and parse the data in case a 
-		// string response was given
-		try {
-			data = $.parseJSON(data);
-		} catch (e) {
-			// do nothing, everything
-			// should be fine at this
-			// point
+		// quick hack to fix passing in a string
+		if(typeof data != "object") {
+			// try and parse the data in case a 
+			// string response was given
+			try {
+				data = $.parseJSON(data);
+			} catch (e) {
+				// do nothing, everything
+				// should be fine at this
+				// point
+			}
 		}
 		
 		var rendered = compiled(data);
@@ -72,7 +77,7 @@ function JanusTemplate(url, cache)
 		if(result) {		
 			$(jQuerySelector).html(result);
 		} else {
-			logger("[template] error: result from render is null");
+			logger.error("error: result from render is null");
 		}
 	};
 }

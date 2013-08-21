@@ -1,0 +1,34 @@
+   <div class="row">
+        <div class="span6 entry">
+          <!-- permalink -->
+          <div class="pull-right permalink"><a href="#/<%=input.type%>/get/<%=input.id%>"><i class="icon-link"></i></a></div>
+
+          <h4><em><%=input.name%></em></h4>
+          <%if(input.downloads) {%>
+            <p><em>Downloaded <%=input.downloads%> times</em></p> 
+          <%}%>
+
+          <div class="media">
+            <a class="pull-left" href="#">
+              <img src="static/img/thumbnail.jpg" data-src="s/<%=input.type%>/<%=input.id%>/cover?w=67&h=90" height="90" width="67" class="thumbnail lazy entryThumb"/>
+            </a>
+            
+            <div class="media-body">
+              <%if(input.bookCount) {%>
+                <h6>Author of <a class="btn btn-default btn-xs" href="#/<%=input.type%>/get/<%=input.id%>/books"><%=input.bookCount%> book<% if(input.seriesCount){print("s");}else{print(".");} %></a>
+                <%if(input.seriesCount) {%> 
+                    and <a class="btn btn-default btn-xs" href="#/<%=input.type%>/get/<%=input.id%>/series"><%=input.seriesCount%> series.</a>
+                <%}%></h6>
+              <%} else {%>
+                <p><a href="#/<%=input.type%>/get/<%=input.id%>/books">related books <i class="icon-circle-arrow-right"></i></a></p>
+                <p><a href="#/<%=input.type%>/get/<%=input.id%>/series">related series <i class="icon-circle-arrow-right"></i></a></p>                
+              <%}%>
+              
+              <!-- other items related to this author -->
+              <p><a href="#/<%=input.type%>/get/<%=input.id%>/authors">related authors <i class="icon-circle-arrow-right"></i></a></p>
+              <p><a href="#/<%=input.type%>/get/<%=input.id%>/tags">related tags <i class="icon-circle-arrow-right"></i></a></p>      
+
+            </div> <!--/end of media body -->
+          </div> <!-- /end of media -->
+        </div> <!-- /span -->
+      </div> <!-- /row --> 

@@ -3,9 +3,6 @@
  *
  */
 
-var generic_source = $('#generic-template').html();
-var generic_template = Handlebars.compile(generic_source);
-
 var multi_source = $('#multi-response-header-template').html();
 var multi_template = Handlebars.compile(multi_source);
 

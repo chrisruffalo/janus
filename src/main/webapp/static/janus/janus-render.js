@@ -121,8 +121,6 @@ function renderList(list, intoTarget, addToCurrent) {
     renderSingleItem(item, intoTarget);
   }
   
-  logger("[info] rendered " + list.length + " items");
-  
   return true;
 }
 
@@ -220,7 +218,7 @@ function renderSingleItem(item, intoTarget) {
   if("book" == item.type) {
     html = templates.book.render(item);
   } else if ("author" == item.type || "series" == item.type || "tag" == item.type) {
-    html = generic_template(item);
+    html = templates.generic.render(item);
   } else {
     logger("[warn] target render item has no type, no rendering performed");
     return false;
