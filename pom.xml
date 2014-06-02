@@ -17,16 +17,16 @@
 
 		<!-- product/dependency versions, based on EAP6/AS7.1.1 included versions -->
 		<!-- https://access.redhat.com/knowledge/articles/112673 -->
-		<hibernate.version>4.1.3.Final</hibernate.version>
+		<hibernate.version>4.3.5.Final</hibernate.version>
 		<resteasy.version>2.3.3.Final</resteasy.version>
-		<hibernate.validator.version>4.2.0.Final</hibernate.validator.version>
-		<hibernate.search.version>4.2.0.Final</hibernate.search.version>
+		<hibernate.validator.version>5.1.0.Final</hibernate.validator.version>
+		<hibernate.search.version>4.5.1.Final</hibernate.search.version>
 		<jee6.version>3.0.1.Final</jee6.version>
 		<h2.version>1.3.161</h2.version>
 		<jboss-as.version>7.1.1.Final</jboss-as.version>
 		<slf4j.version>1.6.1</slf4j.version> <!-- from JBoss Logging 3.1.X.GA and Hibernate Validator -->
 		<jetty.version>8.1.8.v20121106</jetty.version>
-		<guava.version>11.0.2</guava.version> <!-- bundled with jboss as 7.1 and eap 6.0x -->
+		<guava.version>16.0.1</guava.version> <!-- bundled with jboss as 7.1 and eap 6.0x -->
 		<commons.configuration.version>1.6</commons.configuration.version> <!-- bundled with jboss as 7.1 and eap 6.0x -->
 
 		<!-- javascript handling form within maven -->
@@ -227,6 +227,13 @@
 		    <artifactId>jackson-core-asl</artifactId>
 		    <version>1.9.13</version>
 		</dependency>		
+
+		<!-- re-use -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+    			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
+		</dependency>
 
 		<!-- testing -->
 		<dependency>

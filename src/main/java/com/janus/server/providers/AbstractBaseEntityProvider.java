@@ -166,7 +166,7 @@ public abstract class AbstractBaseEntityProvider<E extends BaseEntity> extends A
 		this.logger.info("Dropped {} items of type {}", count, typeString);
 		
 		// flush drop
-		this.manager.flush();
+		//this.manager.flush();
 	}
 	
 	public List<E> list(int index, int size) {
