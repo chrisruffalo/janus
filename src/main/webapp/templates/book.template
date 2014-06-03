@@ -39,11 +39,18 @@
               <!-- download(s) -->
               <%if(_.size(book.fileInfo)) {%>
                 <!-- starts local download -->
-                <p><i class="icon-download-alt"></i>&nbsp;
-                <%_.each(book.fileInfo, function(fileInfo) {%>
-                  <a class="btn btn-default btn-xs" target="_blank" href="s/book/<%=book.id%>/file/<%=fileInfo.type%>" type="button"><%=fileInfo.type%> (<%=fileInfo.descriptiveSize%>)</a>      
-                <%});%></p>
-              <%}%>
+                <%if(_.size(book.fileInfo.info)) {%>
+                     <p><i class="icon-download-alt"></i>&nbsp;
+                    <%_.each(book.fileInfo.info, function(fileInfo) {%>
+                      <a class="btn btn-default btn-xs" target="_blank" href="s/book/<%=book.id%>/file/<%=fileInfo.type%>" type="button"><%=fileInfo.type%> (<%=fileInfo.info.descriptiveSize%>)</a>      
+                    <%});%></p>
+                <%} else {%>
+                    <p><i class="icon-download-alt"></i>&nbsp;
+                    <%_.each(book.fileInfo, function(fileInfo) {%>
+                      <a class="btn btn-default btn-xs" target="_blank" href="s/book/<%=book.id%>/file/<%=fileInfo.type%>" type="button"><%=fileInfo.type%> (<%=fileInfo.descriptiveSize%>)</a>      
+                    <%});%></p>
+                <%}%>
+               <%}%>
 
               <!-- other functions -->
               <p><i class="icon-cogs"></i>&nbsp;
